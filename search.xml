@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>hexo+github+zeabur博客部署方案</title>
+    <title>hexo+github+zeabur博客部署方案&amp;git项目管理</title>
     <url>/2024/10/23/1/</url>
-    <content><![CDATA[<h1 id="hexo-github-zeabur博客部署方案"><a href="#hexo-github-zeabur博客部署方案" class="headerlink" title="hexo+github+zeabur博客部署方案"></a>hexo+github+zeabur博客部署方案</h1><h2 id="1-方案流程大概介绍"><a href="#1-方案流程大概介绍" class="headerlink" title="1.方案流程大概介绍"></a>1.方案流程大概介绍</h2><p>​	使用hexo开源框架进行部署，从github仓库下载hexo源代码，使用gitbash工具在源码文件夹下打开，进行调试等工作后，在本地运行查看效果是否满意。</p>
+    <content><![CDATA[<h1 id="hexo-github-zeabur博客部署方案-git项目管理"><a href="#hexo-github-zeabur博客部署方案-git项目管理" class="headerlink" title="hexo+github+zeabur博客部署方案&amp;git项目管理"></a>hexo+github+zeabur博客部署方案&amp;git项目管理</h1><h2 id="1-方案流程大概介绍"><a href="#1-方案流程大概介绍" class="headerlink" title="1.方案流程大概介绍"></a>1.方案流程大概介绍</h2><p>​	使用hexo开源框架进行部署，从github仓库下载hexo源代码，使用gitbash工具在源码文件夹下打开，进行调试等工作后，在本地运行查看效果是否满意。</p>
 <p>​	从腾讯云购买符合自己喜欢的域名，推荐买.cn结尾的域名，价格较为合适，并将其解析到我们的服务器。</p>
 <p>​	服务器使用第三方CI服务zeabur平台，该平台可以实时从在线的githubio仓库中识别网站版本更新及其代码，省去我们手动将其再部署到服务器上的过程。</p>
 <h2 id="2-hexo本地运行。"><a href="#2-hexo本地运行。" class="headerlink" title="2.hexo本地运行。"></a>2.hexo本地运行。</h2><p>​	在调试、下载源代码之前，我们需要先行下载如下软件与环境：</p>
@@ -41,6 +41,14 @@
 
 <p>文章添加图片：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">_config.yml:post_asset_folder: true</span><br><span class="line">安装插件:npm install https://github.com/CodeFalling/hexo-asset-image -- save在/source/_posts目录下新建XXXXXX的文件夹将图片放入其中</span><br><span class="line">![](XXXXXX/1.png)即可</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-git-bash-将项目上传至仓库"><a href="#5-git-bash-将项目上传至仓库" class="headerlink" title="5.git bash 将项目上传至仓库"></a>5.git bash 将项目上传至仓库</h2><p>基本流程：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git init#创建新文件夹作为仓库，并将项目复制进来，使用初始化命令将其变成git仓库</span><br><span class="line">git add .#将项目添加到仓库</span><br><span class="line">git commit -m &quot;注释&quot;#将项目提交至仓库</span><br><span class="line">ssh-keygen -t rsa -C &quot;youemail@163.com&quot;#配置SSH密钥并添加至库中</span><br><span class="line">git remote add origin YOURURL#将本地仓库与git关联</span><br><span class="line">git push -u origin master#若远程仓库中不是空的，那么则去掉-u</span><br></pre></td></tr></table></figure>
+
+<p>一些bug：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git remote rm origin</span><br><span class="line">git remote add origin newurl#出现已经建立remote链接，但是自己又想改成另一个仓库时</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#记得也要提前配置好自己的git账号和name</span><br></pre></td></tr></table></figure>
 
 ]]></content>
       <categories>
@@ -226,6 +234,7 @@
 
 <h2 id="6-其它"><a href="#6-其它" class="headerlink" title="6.其它"></a>6.其它</h2><p>训练过程：遥遥无期ing</p>
 <p>抄录fcos部署源代码：遥遥无期ing</p>
+<p>下位机使用CUBEIDE配置，全部代码已经开源至git仓库：<a href="https://github.com/SAINT784167/YOLO-LOW-CONTORL">https://github.com/SAINT784167/YOLO-LOW-CONTORL</a></p>
 ]]></content>
       <categories>
         <category>部署</category>
