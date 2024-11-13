@@ -1,850 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search>
-  <entry>
-    <title>hexo+github+zeabur博客部署方案&amp;git项目管理</title>
-    <url>/2024/10/23/1/</url>
-    <content><![CDATA[<h1 id="hexo-github-zeabur博客部署方案-amp-git项目管理"><a href="#hexo-github-zeabur博客部署方案-amp-git项目管理" class="headerlink" title="hexo+github+zeabur博客部署方案&amp;git项目管理"></a>hexo+github+zeabur博客部署方案&amp;git项目管理</h1><h1 id="1-方案流程大概介绍"><a href="#1-方案流程大概介绍" class="headerlink" title="1.方案流程大概介绍"></a>1.方案流程大概介绍</h1><p>​    使用hexo开源框架进行部署，从github仓库下载hexo源代码，使用gitbash工具在源码文件夹下打开，进行调试等工作后，在本地运行查看效果是否满意。</p>
-<p>​    从腾讯云购买符合自己喜欢的域名，推荐买.cn结尾的域名，价格较为合适，并将其解析到我们的服务器。</p>
-<p>​    服务器使用第三方CI服务zeabur平台，该平台可以实时从在线的githubio仓库中识别网站版本更新及其代码，省去我们手动将其再部署到服务器上的过程。</p>
-<h1 id="2-hexo本地运行。"><a href="#2-hexo本地运行。" class="headerlink" title="2.hexo本地运行。"></a>2.hexo本地运行。</h1><p>​    在调试、下载源代码之前，我们需要先行下载如下软件与环境：</p>
-<blockquote>
-<p>​    安装git：<a href="https://soft.aijiaer11.cn/soft/124420.html?bd_vid=10376755935823706615">https://soft.aijiaer11.cn/soft/124420.html?bd_vid=10376755935823706615</a></p>
-<p>​    安装node.js:<a href="https://nodejs.org/zh-cn">https://nodejs.org/zh-cn</a></p>
-<p>​    其中，node.js在安装时要选择ADD TO PATH默认选项，这样就不用再单独配置全局变量了。</p>
-</blockquote>
-<p>​    除此之外，还需要提前注册好属于自己的github账号，并提前创建仓库用来存放我们deploy的项目，仓库名为自己的git账号名。例如：你的名字.github.io。之后，进入git账号的developer-settings，创建token。    </p>
-<p>​    配置环境完成后，我们登录hexo网站，跳转github后下载源码.zip文件至文件夹。点击空白处，选择用gitbash打开。接下来，我们需要对gitbash的账户进行设置：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">`git config --global user.name &quot;github上注册的用户名&quot; # 配置用户名`</span><br><span class="line">`git config --global user.email &quot;github上注册的邮箱&quot; # 配置用户邮箱`</span><br><span class="line">`git config --global user.name # 查看配置的用户名`</span><br><span class="line">`git config --global user.email # 查看配置的用户邮箱`</span><br></pre></td></tr></table></figure>
-<p>由于github登录需要科学上网，所以我们还需要配置gitbash的网络</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">`git config --global --unset http.proxy#取消代理`</span><br><span class="line">`git config --global --unset https.proxy#取消代理`</span><br></pre></td></tr></table></figure>
-<p>这里我用的是clash，使用的网络端口是127.0.0.1:7890，clash使用的端口都是127.0.0.1:port，我们输入如下两条指令：（自己使用时请使用自己的clash端口）</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git config --global http.proxy http://127.0.0.1:7890</span><br><span class="line">git config --global https.proxy https://127.0.0.1:7890</span><br></pre></td></tr></table></figure>
-<p>在默认情况下，右键blog文件夹，依次输入如下命令：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo cl#清理生成文件</span><br><span class="line">hexo g#生成项目</span><br><span class="line">hexo s#本地运行</span><br><span class="line">hexo d#将项目deploy至你设置好的仓库中，提前开启VPN</span><br></pre></td></tr></table></figure>
-<p>输入命令<code>hexo d</code>前，我们还需要进入文件夹中，修改_config.yml文件，在文件末端，完善以下deploy相关配置：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: &#x27;git&#x27;</span><br><span class="line">  repo: #你的仓库链接</span><br><span class="line">  branch: main #仓库分支，注意区分main和master</span><br></pre></td></tr></table></figure>
-<p>可以查看自己的环境是否配置成功</p>
-<p>关于博客个性化以及新增页面，发布博客的内容，网上有很多教学，自行查阅，附几条链接：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://hexo.io/zh-cn/ #官方查看内容</span><br><span class="line">https://blog.csdn.net/mjh1667002013/article/details/129290903 #butterfly主题美化</span><br><span class="line">https://butterfly.zhheo.com/create.html #butterfly官方主题</span><br></pre></td></tr></table></figure>
-<h1 id="3-域名解析与服务器网络测试"><a href="#3-域名解析与服务器网络测试" class="headerlink" title="3.域名解析与服务器网络测试"></a>3.域名解析与服务器网络测试</h1><p>​    我们登录腾讯云后，首先进行实名验证，进入到控制台页面即可看到自己购买的域名。我们点击解析，通过zeabur给定的cname等信息将网址解析到zeabur的服务器上，zeabur服务器新建后，你可以通过新建项目，并同时登陆你的github，选择你新建的io库即可，此时，你本地运行的代码通过gitbash已经deploy到git仓库中去，因此，你可以在github中看到其更新，zeabur会实时重新帮您部署这一版网站。</p>
-<h1 id="4-网站迭代更新"><a href="#4-网站迭代更新" class="headerlink" title="4.网站迭代更新"></a>4.网站迭代更新</h1><p>常用：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo cl#清理生成文件，每次修改后重新本地查看时，一定要clean</span><br><span class="line">hexo g#生成项目</span><br><span class="line">hexo s#本地运行</span><br><span class="line">hexo d#将项目deploy至你设置好的仓库中，提前开启VPN</span><br></pre></td></tr></table></figure>
-<p>新建页面：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new page about#创建”关于我“新页面</span><br><span class="line">#创建页面后会在source文件夹中创建文件夹，其中会有一个index.md文件，修改页面配置。一些特殊页面还需要特殊配置，如link还需要在source中创建_data</span><br></pre></td></tr></table></figure>
-<p>文章添加图片：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">_config.yml:post_asset_folder: true</span><br><span class="line">安装插件:npm install https://github.com/CodeFalling/hexo-asset-image -- save在/source/_posts目录下新建XXXXXX的文件夹将图片放入其中</span><br><span class="line">![](XXXXXX/1.png)即可</span><br></pre></td></tr></table></figure>
-<h1 id="5-git-bash-将项目上传至仓库"><a href="#5-git-bash-将项目上传至仓库" class="headerlink" title="5.git bash 将项目上传至仓库"></a>5.git bash 将项目上传至仓库</h1><p>基本流程：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git init#创建新文件夹作为仓库，并将项目复制进来，使用初始化命令将其变成git仓库</span><br><span class="line">git add .#将项目添加到仓库</span><br><span class="line">git commit -m &quot;注释&quot;#将项目提交至仓库</span><br><span class="line">ssh-keygen -t rsa -C &quot;youemail@163.com&quot;#配置SSH密钥并添加至库中</span><br><span class="line">git remote add origin YOURURL#将本地仓库与git关联</span><br><span class="line">git push -u origin master#若远程仓库中不是空的，那么则去掉-u</span><br></pre></td></tr></table></figure>
-<p>一些bug：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git remote rm origin</span><br><span class="line">git remote add origin newurl#出现已经建立remote链接，但是自己又想改成另一个仓库时</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#记得也要提前配置好自己的git账号和name</span><br></pre></td></tr></table></figure>
-]]></content>
+<search> 
+  
+  
+    
+    <entry>
+      <title>从传统控制理论、模型预测控制到强化学习的数学原理</title>
+      <link href="/2024/11/13/3/"/>
+      <url>/2024/11/13/3/</url>
+      
+        <content type="html"><![CDATA[<h1 id="从传统控制理论、模型预测控制到强化学习的数学原理"><a href="#从传统控制理论、模型预测控制到强化学习的数学原理" class="headerlink" title="从传统控制理论、模型预测控制到强化学习的数学原理"></a>从传统控制理论、模型预测控制到强化学习的数学原理</h1><p>所需数学理论：高等数学（微分方程）、泛函理论、线性代数、概率论</p><h1 id="一、写在前面。"><a href="#一、写在前面。" class="headerlink" title="一、写在前面。"></a>一、写在前面。</h1><p>​        在学习探索的时候，看到各种各样的控制算法，ZMP,WBC,MPC,LQR等等等等，发现自己对于控制理论的数学基础理解还是不够深入，于是想系统性的了解一下从经典控制理论到现代强化学习算法中通用的一些思想。</p><p>​        <strong>特别感谢北京理工大学黄销老师的机器人最优课程以及上海交通大学俞勇教授团队所编写的强化学习入门书籍</strong>（URL：<a href="https://hrl.boyuai.com/chapter/1/%E5%88%9D%E6%8E%A2%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0）。**打个广告：强烈推荐大家选择黄销老师的机器人最优控制课程。**">https://hrl.boyuai.com/chapter/1/%E5%88%9D%E6%8E%A2%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0）。**打个广告：强烈推荐大家选择黄销老师的机器人最优控制课程。**</a></p><p>​        第一个大标题将从宏观逻辑上将后文正文中的内容串接起来，更好的理解各种算法思想在发展中的联系。</p><h2 id="1-经典控制理论"><a href="#1-经典控制理论" class="headerlink" title="1.经典控制理论"></a>1.经典控制理论</h2><p>​        经典控制理论中，<strong>变分法</strong>是首先要学习的内容。变分法将从泛函基本理论讲起，学会如何求解<strong>泛函的变分</strong>（函数的求导），通过求解泛函变分的方式来求解连续优化指标在无约束但有固定初始和固定结束值的情况下的极值，也即<strong>欧拉-拉格朗日问题</strong>。将问题变得更复杂一点，对于在欧拉-拉格朗日问题中还存在<strong>某种阶次的微分方程约束</strong>的情况，我们引入<strong>拉格朗日乘子法</strong>，将约束转化为<strong>增广代价函数</strong>的一部分形式使用<strong>欧拉-拉格朗日方程</strong>进行求解。再泛化一些，有时，初始值和终值并非固定的，因此需要求解一个更高自由度的<strong>自由泛函问题</strong>，将会通过分类讨论的方式对各种情况进行分析；最终，对于日常生活中常用的最优控制问题，也即<strong>博尔查问题</strong>，通过引入<strong>Hamiltonian量</strong>的方式简化计算，可以得到使用Hamiltonian量进行计算的<strong>Hamiltonian方程组</strong>，这是一个较为泛化的一般性方程组。</p><p>​        在变分法的基础上，通过Hamiltonian量，有一种方法可以更简单的求解博尔查问题，这就是大名鼎鼎的<strong>庞特里亚金极值原理（PMP</strong>）。它利用了Hamiltonian量的一阶二阶条件，得到了最优控制的关系式，将其代入<strong>规范方程</strong>中（<strong>状态与协态方程</strong>）并处理边界条件，就可以得到闭环形式的最优控制方法。它在数学原理上和Hamiltonian方程组是等价的。</p><p>​        <strong>动态规划方法</strong>是一种很重要的最优控制理论，它是依赖于<strong>最优性原理</strong>为最基本思想进行优化的方法，<strong>Bellman方程（贝尔曼方程）</strong>通过数学的方法将最优性原理表达了出来。通过直接迭代法（逆推法）求解离散状态下的最优控制问题<strong>（博尔查问题）</strong>，我们可以了解到动态规划的基本思想。对于连续性性能指标，我们将Hamiltonian量的一阶二阶条件代入<strong>Hamilton-Jacobi-Bellman 方程</strong>中，并通过边界条件的形式进行假设，使用<strong>试凑法</strong>，求解其微分方程，得到最优控制，这种方法我们一般不会使用，因为其时空复杂度很高，无法通过计算机完成。</p><p>​        <strong>线性二次型控制（LQR）</strong>是一种特殊的控制器。它的优化指标通常是由矩阵二次型进行表示的。使用离散的动态规划方法求解，我们最终会得到离散的<strong>黎卡提(Riccati)方程</strong>，通过连续性的动态规划求解，我们将得到连续的<strong>黎卡提(Riccati)方程</strong>。<strong>线性二次型控制（LQR）使用的解算方式本质上也是一种使用贝尔曼方程的逆推法进行离散迭代的方式，通过黎卡提(Riccati)方程，规定了线性二次型控制的基本控制形式。</strong></p><h2 id="2-模型预测控制"><a href="#2-模型预测控制" class="headerlink" title="2.模型预测控制"></a>2.模型预测控制</h2><h2 id="3-强化学习"><a href="#3-强化学习" class="headerlink" title="3.强化学习"></a>3.强化学习</h2><h1 id="二、经典最优控制方法。"><a href="#二、经典最优控制方法。" class="headerlink" title="二、经典最优控制方法。"></a>二、经典最优控制方法。</h1><h2 id="1-变分法。"><a href="#1-变分法。" class="headerlink" title="1.变分法。"></a>1.变分法。</h2><h3 id="（1）泛函基本理论。"><a href="#（1）泛函基本理论。" class="headerlink" title="（1）泛函基本理论。"></a>（1）泛函基本理论。</h3><p><strong>定义1</strong>.泛函：从任意集合M到实数域R或复数域C的映射称为“泛函”；在变分学和最优控制中，泛函定义域为函数集合，泛函只取实数值。</p><p>例如：</p><script type="math/tex; mode=display">\begin{align}x∈R,M=C(R)是R->R的一阶连续可导全体函数，对于u∈M，\\I_1=max_{x∈R}|u(x)|,I_2(u)=u(x_1),I_3(u)=\int_{-∞}^{+∞}{u^2(x)dx}都是关于x的泛函\end{align}</script><p><strong>定义2</strong>.范数与距离：范数|| · || 可用于度量空间中两点之间的距离d(x,x<em>)=||x-x</em>||。其具有如下性质：</p><script type="math/tex; mode=display">正定性：||x||>=0，且||x||=0 ,if ,x=0\\齐次性：||ax||=|a|||x||,a∈R\\次可加性：||x_1+x_2||=<||x_1||+||x_2||</script><p><strong>定义3</strong>.泛函极小值及增量</p><script type="math/tex; mode=display">假设定义域M是一类函数的集合，若存在e>0,使得：\\J(x^*)=<J(x),if||x-x^*||<e,x∈M\\则称泛函J:M->R在x^*达到局部极小值</script><script type="math/tex; mode=display">若x和x+δx都在泛函J的定义域Ω中，δx∈C(Ω),则泛函J的增量ΔJ定义为：\\ΔJ:=J(x+δx)-J(x)\\计为ΔJ(x,δx)</script><p><strong>定义4</strong>.线性泛函</p><script type="math/tex; mode=display">若泛函J满足齐次性条件：\\J(ax)=aJ(x),∀a∈R,x∈Ω,ax∈Ω\\以及可加性条件：J(x^1+x^2)=J(x^1)+J(x^2),∀x^1,x^2,x^1+x^2∈Ω\\则称J是x的线性泛函</script><p><strong>定义5</strong>.泛函的变分</p><script type="math/tex; mode=display">泛函增量可写为变分的线性泛函和变分的高阶无穷小两部分：\\ΔJ(x,δx)=δJ(x,δx)+g(x,δx)*||δx||\\其中，前项δJ(x,δx)是δx的线性泛函\\后项满足：\lim_{||δx->0||}{g(x,δx)=0}</script><p><strong>通过泛函增量的定义求解</strong>.求解泛函变分，如上</p><p><strong>通过求导法求解</strong>求解泛函变分</p><p>泛函的变分满足：</p><script type="math/tex; mode=display">δJ(x(t),δx(t))=\frac{∂}{∂α}J(x(t)+αδx(t))|_{α=0}</script><p><strong>证明</strong>.泛函求解变分的求导法：</p><script type="math/tex; mode=display">ΔJ(x,δx)=J(x,δx)-J(x)=δJ(x,δx)+g(x,δx)*||δx||</script><p>同时，</p><script type="math/tex; mode=display">ΔJ(x,δx)=J(x,αδx)-J(x)=δJ(x,αδx)+g(x,αδx)*||αδx||</script><script type="math/tex; mode=display">ΔJ(x,δx)=J(x,αδx)-J(x)=αδJ(x,δx)+g(x,αδx)*||αδx||</script><p>此时δx-&gt;0,变化为αδx-&gt;0，可以等价转换为α-&gt;0。</p><p>令其对α求偏导数，在α=0时得到：</p><script type="math/tex; mode=display">δJ(x(t),δx(t)) =\frac{∂}{∂α}J(x(t)+αδx(t))|_{α=0}\\=\lim_{α->0}{\frac{J(x(t)+αδx(t))-J(x)}{α}}\\=δJ(x,δx)+\lim_{α->0}{\frac{g(x,αδx)*||αδx||}{α}}\\=δJ(x,δx)+\lim_{||αδx||->0}{\frac{g(x,αδx)*||αδx||}{αδx}δx}\\=δJ(x,δx)</script><p>证得通过求导法可以求得泛函变分。</p><h3 id="（2）欧拉-拉格朗日问题。"><a href="#（2）欧拉-拉格朗日问题。" class="headerlink" title="（2）欧拉-拉格朗日问题。"></a>（2）欧拉-拉格朗日问题。</h3><p>​        欧拉-拉格朗日问题研究的是针对于一个有初始和终值解的可微函数，求其关于代价函数（连续函数累计代价）的极值问题。我们最终求解出来的结果是<strong>一种关于x(t)关于t为自变量的构造方式</strong>。</p><p>​        对于一个连续可微函数x(t):[t0,tf]-&gt;Rn，满足初始条件x(t0)=x0，在给定的终端时刻tf，达到给定的终端状态x(tf)=xf，求性能指标的极值条件:</p><script type="math/tex; mode=display">J(x(t))=\int_{t_0}^{t_f}{l(x(t),x^.(t),t)dt}</script><p>其中，此处代价函数l二阶连续可微。</p><p><strong>解：</strong></p><p>计算泛函增量：</p><script type="math/tex; mode=display">ΔJ=J(x+δx)-J(x)</script><script type="math/tex; mode=display">ΔJ(x,δx)=J(x+δx)-J(x)\\=\int_{t_0}^{t_f}{l(x(t)+δx(t),x^.(t)+δx^.(t),t)dt-\int_{t_0}^{t_f}{l(x(t),x^.(t),t)dt}}</script><p>计算泛函变分，将积分在x(t),x(t)处进行泰勒展开：</p><script type="math/tex; mode=display">∫ ^f_0[l(x(t), x˙ (t), t) + lx(x(t), x˙ (t), t)δx(t) + lx˙ (x(t), x˙ (t), t)δx˙ (t)+o(||(δx, δx˙ )||) − l(x(t), x˙ (t), t)]dt</script><p>得到泛函变分：</p><script type="math/tex; mode=display">δJ(x, δx, x˙ , δx˙ ) =∫ ^f_0[lx(x(t), x˙ (t), t)δx(t) + lx˙ (x(t), x˙ (t), t)δx˙ (t)] dt</script><p>使用分部积分法去导数与变分之间的依赖：</p><script type="math/tex; mode=display">δJ(x, δx, x˙ , δx˙ ) =∫ ^f_0[lx(x(t), x˙ (t), t)δx(t) + lx˙ (x(t), x˙ (t), t)δx˙ (t)]dt=∫ ^f_0lx(x(t), x˙ (t), t)δxdt+ [lx˙ (x(t), x˙ (t), t)δx]|tft0−∫ ^f_0ddtlx˙ (x(t), x˙ (t), t)δxdt=∫ ^f_0[lx(x(t), x˙ (t), t) − ddtlx˙ (x(t), x˙ (t), t)]δxdt+ [lx˙ (x(t), x˙ (t), t)δx]|tft0 .</script><p>通过泛函极值一阶条件，整理为：</p><script type="math/tex; mode=display">δJ(x,δx)=\int_{t_0}^{t_f}{[l_x(x(t),x^.(t),t)-\frac{d}{dt}l_{x^.}(x(t)),x^.(t),t]δxdt}</script><p>得到欧拉-拉格朗日方程：</p><script type="math/tex; mode=display">l_x(x(t),x^.(t),t)-\frac{d}{dt}[l_{x^.}(x(t),x^.(t),t)]=0</script><p>泛函 <strong>J</strong> 取极值的必要条件是满足欧拉-拉格朗日方程。</p><h3 id="（3）拉格朗日乘子法。"><a href="#（3）拉格朗日乘子法。" class="headerlink" title="（3）拉格朗日乘子法。"></a>（3）拉格朗日乘子法。</h3><p>​        在欧拉-拉格朗日问题的基础上，当此问题不仅有函数初始值、终值，并且还有微分方程的约束时，我们通常会用引入<strong>拉格朗日乘子</strong>构造拉格朗日函数的形式来进行求解。</p><p>​        已知x(t)初值为x(t0)=x0，终值为x(tf)=xf,tf固定，需满足约束如下,（以某种阶次的微分方程约束）：</p><script type="math/tex; mode=display">f(x(t), x˙ (t), t)=0</script><p>​        最小化性能指标：</p><script type="math/tex; mode=display">J(x)=∫^f _0 l(x(t),x^.(t),t)</script><p><strong>解：</strong>        </p><p>考虑时间相关的拉格朗日函数：</p><script type="math/tex; mode=display">J(x, p) =∫ ^f_0l(x, x˙ , t) + p(t)^T f(x, x˙ , t)dt</script><p>因为此处的微分方程约束为f，因此可以通过将其构造为拉格朗日算子与其相乘的方式来将微分方程约束转化为我们所求的基本欧拉-拉格朗日方程的一部分来求解。这样，一个我们不会的、有约束前提的问题，就被转化为了一个基础的有初始值和终值的欧拉-拉格朗日问题。</p><p>接下来，我们对其求解泛函变分：</p><script type="math/tex; mode=display">δJ(x,δx,p,δp)\\=\frac{δ}{δα}\int_{t_0}^{t_f}l(x+αδx,x^.+αδx^.,t)+(p+αδp)^Tf(x+αδx,x^.+αδx^.,t)dt|_{α=0}\\=\int_{t_0}^{t_f}{l_xδx+l_{x^.}δx^.+δp^Tf+p^Tf_xδx+p^Tf_{x^.}δx^{.}}dt\\=\int_{t_0}^{t_f}\{[l_x+p^Tf_x]δx+{[l_{x^.}+p^Tf_{x^.}]δx^.+f^Tδp}\}dt\\=\int_{t_0}^{t_f}\{[l_x+p^Tf_x-\frac{d}{dt}(l_{x^.+}+p^Tf_{x^.})]δx+f^Tδp\}dt\\令\overline{l}(x,δx,p,δp)=l(x(t),x^.(t),t)+p^Tf(x(t),x^.(t),t)</script><p>我们可以看到，此处直接使用了求导法求解泛函变分。将其整理后，得到：</p><script type="math/tex; mode=display">\overline{l}(x,δx,p,δp)=\int_{t_0}^{t_f}[(\overline{l_x}-\frac{d}{dt}\overline{l_{x^.}})δx+f^Tδp]dt</script><p>我们统称引入拉格朗日乘子的函数叫<strong>增广代价函数</strong>；</p><p>由泛函极值的一阶条件可知：</p><script type="math/tex; mode=display">\overline{l_x}(x(t),x^.(t),t)-\frac{d}{dt}\overline{l_{x^.}}(x(t),x^.(t),t)=0\\f(x(t),x^.(t),t)=0</script><p>如果在以上问题的基础上，将状态方程的微分约束修改为如下非齐次形式：</p><script type="math/tex; mode=display">f(x(t), x˙ (t), t)=x^.(t)</script><p>引入拉格朗日乘子，有：</p><script type="math/tex; mode=display">\overline{J}(u,p)=\int_{t_0}^{t_f}\{l(x(t),u(t),t)+p^T(t)[f(x(t),u(t),t)-x^.(t)] \}dt</script><p>我们将在过程中，加入分部积分的方法去除变分和微分之间的关系，如下图所示：</p><script type="math/tex; mode=display">\overline{J}=\int_{t_0}^{t_f}\{l+p^T[f-x^.]\}dt\\δJ=\int_{t_0}^{t_f}\{[l_x+p^Tf_x+p^{.T}]δx+[l_u+p^Tf_u]δu+(f-x^.)^Tδp\}dt-p^Tδx|^{t_f}_{t_0}</script><p>最终得到一阶方程组：</p><script type="math/tex; mode=display">l_x+P^Tf_x+P^{.T}=0\\l_u+P^Tf_u=0\\f-x^.=0</script><p>​        <strong>如若具有多个微分状态方程进行约束，那么我们应该引入多个拉格朗日乘子来解决这个问题。构建一个更大的增广代价函数。在对这种复杂的状态函数，我们可以直接对其使用E-L方程，分别对状态方程的自变量函数进行求导。再带入状态方程即可求出待定系数。具体情况，具体分析。从这里我们也可以看出，掌握推导E-L方程是很重要的，也即针对简单的拉格朗日乘子问题，我们可以通过简单的求变分+一阶条件求解，对于复杂一些的情况，我们可以求E-L</strong></p><h3 id="（4）求解泛函极值的各种情况。（E-L问题、自由泛函问题）"><a href="#（4）求解泛函极值的各种情况。（E-L问题、自由泛函问题）" class="headerlink" title="（4）求解泛函极值的各种情况。（E-L问题、自由泛函问题）"></a>（4）求解泛函极值的各种情况。（E-L问题、自由泛函问题）</h3><p><strong>case1</strong>.初值终值固定。如上</p><p><strong>case2</strong>.初值固定，终值自由，终止时刻固定，求性能指标的极值条件：</p><script type="math/tex; mode=display">J(x) =∫ ^f_0l(x(t), x˙ (t), t)dt.</script><p>得出结果：</p><script type="math/tex; mode=display">l_x(x(t),x^.(t),t)-\frac{d}{dt}[l_{x^.}(x(t),x^.(t),t)]=0\\[l_{x^.}(x,x^.,t)]|^{t_f}_{t_0}=0\\由于初值条件x(t_0)=x_0确定，δx(t_0)=0,有：\\l_{x^.}(x,x^.,t)=0</script><p><strong>case3</strong>.初值固定，终值自由，终止时刻自由，求性能指标的极值条件：</p><script type="math/tex; mode=display">J(x) =∫ ^f_0l(x(t), x˙ (t), t)dt.\\代入泛函变分，由一阶条件可得：\\\frac{δl}{δx}(x(t),x(t^.),t)-\frac{d}{dt}[\frac{δl}{δx^.}(x(t),x(t^.),t)]=0\\l_x(x(t),x^.(t),t)-\frac{δl}{δx^.}(x(t),x^.(t),t)x^.(t_F)=0\\</script><p><strong>case4.</strong>初值固定，终值自由，终止时刻自由，且终值与终止时刻无关，求性能指标的极值条件：</p><script type="math/tex; mode=display">J(x) =∫ ^f_0l(x(t), x˙ (t), t)dt.\\对任一时刻t∈[t_0,t_f],\\\frac{δl}{δx}(x(t),x_.(t),t)-\frac{d}{dt}[\frac{δl}{δx^.}(x(t),x(t^.),t)]=0\\终端时刻满足：\\l=0,\frac{δl}{δx^.}(x(t),x^.(t),t)x^.(t_F)=0</script><h3 id="（5）变分法求解最优控制问题。（博尔查问题）"><a href="#（5）变分法求解最优控制问题。（博尔查问题）" class="headerlink" title="（5）变分法求解最优控制问题。（博尔查问题）"></a>（5）变分法求解最优控制问题。（博尔查问题）</h3><p>一般最优控制问题：</p><p>最小化性能指标：</p><script type="math/tex; mode=display">J(u) = ϕ(x(t_f ), t_f ) +∫ ^f_0l(x(t), u(t), t)dt</script><p>被控对象状态方程：</p><script type="math/tex; mode=display">x˙ (t) = f(x(t),u(t), t),  x(t_0) = x_0.</script><p>终止时刻及其状态待定。</p><p><strong>解：</strong></p><p>我们首先处理微分方程也即被控对象状态方程的泛函极值。</p><p>引入拉格朗日乘子：</p><script type="math/tex; mode=display">J(u, p) = ϕ(x(t_f ), t_f ) +∫ ^{t_f}_{t_0}{l(x(t), u(t), t) +p^T (t)[f(x(t), u(t), t) − x˙ (t)]}dt.</script><p>得到增广代价函数：</p><script type="math/tex; mode=display">J^- = ϕ|_f +∫ ^{t_f}_{t_0}l + p^T [f − x˙ ]dt</script><p>对增广代价函数求变分,增广代价函数各多项式变化为：</p><script type="math/tex; mode=display">ϕ|_{t_F}=ϕ_x|_{t_f}δx_f+ϕ_t|_{t_f}δt_f</script><script type="math/tex; mode=display">∫ ^{t_f}_{t_0}l + p^T [f − x˙ ]dt=∫ ^{t_f}_{t_0}{l_xδx + l_uδu + (f − x˙ )^T δp + p^T [f_xδx + f_uδu − δx˙ ]}dt+ [l + p^T f − x˙ ]|_f δtf</script><p>将积分号内外整理得到：</p><script type="math/tex; mode=display">ϕ_x|_{t_F} δx_{t_F} + [ϕt + l + p^T (f − x˙ )]|_{t_f} δt_f+ ∫ ^{t_f}_{t_0}{[l_x + p^T f_x]δx + [l_u + p^T f_u]δu + (f − x˙ )^T δp − p^T δx˙}dt</script><p>引入Hamiltonian量为：</p><script type="math/tex; mode=display">H(x(t), u(t), p(t), t) = l(x(t), u(t), t) + p(t)^T f(x(t), u(t), t)</script><p>将变分变为Hamiltonian量的变分：</p><script type="math/tex; mode=display">ϕ_x|_{t_F} δx_f + [ϕ_t + H − p^T x˙ ]|_{t_f} δt_f+∫ ^f_0{H_xδx + H_uδu + (f − x˙ )^T δp − p^T δx˙}dt</script><p>去掉变分之间的依赖：</p><script type="math/tex; mode=display">δx_f ≈ δx(t_f ) + x(t_f )δt_f</script><script type="math/tex; mode=display">∫ ^{t_f}_{t_0}−p^T δx˙dt =−p(t_f )^T (δx_f − x˙ (t_f )δt_f ) +∫ ^{t_f}_{t_0}p˙T δxdt</script><p>将变分整理为：</p><script type="math/tex; mode=display">δ  \overline{J} =[ϕ_x − p^T ]|_{t_f} δx_f + [ϕ_t + H]|_{t_f} δt_f ∫ ^f_0{[H_x + p˙^T ]δx + H_uδu + (f − x˙ )^T δp}dt</script><p>得到哈密顿量表示的一阶条件：</p><script type="math/tex; mode=display">H_u=0\\f-x^.=0\\H_x+p^{.T}=0\\[ϕ_x(x(t_f),t_f)-p(t_f)^T]δx_f=0\\[ϕ_t(x(t_f),t_f)+H]δt_f=0</script><h3 id="（6）变分法总结。"><a href="#（6）变分法总结。" class="headerlink" title="（6）变分法总结。"></a>（6）变分法总结。</h3><p><strong>1.使用拉格朗日乘子法处理各类等式约束</strong>。<br><strong>2.求增广形式性能指标的泛函变分。</strong><br><strong>3.使用分部积分公式处理变分之间的导数依赖。</strong><br><strong>4.将终止时刻状态变分δxf 分为由状态自身变分δx(tf ) 和终止时刻变分δtf 组成的两部分。</strong><br><strong>5.得到泛函极值的一阶条件。</strong></p><h2 id="2-庞特里亚金极值原理（PMP）。"><a href="#2-庞特里亚金极值原理（PMP）。" class="headerlink" title="2.庞特里亚金极值原理（PMP）。"></a>2.庞特里亚金极值原理（PMP）。</h2><p>​        针对<strong>博尔查问题</strong>，最小化性能指标：</p><script type="math/tex; mode=display">J(u) = ϕ(x(t_f ), t_f ) +∫ ^{t_f}_{t_0}l(x(t), u(t), t)dt.</script><p>​        被控对象状态方程：</p><script type="math/tex; mode=display">x˙ (t) = f(x(t),u(t), t), x(t0) = x0.</script><p>​        容许控制：u∈U        </p><p><strong>解：</strong></p><p>​        定义哈密尔顿量为：</p><script type="math/tex; mode=display">H(x(t), u(t), p(t), t) = l(x(t), u(t), t) + p^T (t)f(x(t), u(t), t)</script><p>​        考察哈密尔顿量<strong>极值条件</strong>（一阶导为0，二阶导大于0）：</p><script type="math/tex; mode=display">∂H/∂u= 0;  ∂^2H/∂u^2  > 0</script><p>​        得到最优控制得一种控制关系，我们将最优控制带入<strong>规范方程</strong>（<strong>状态方程，协态方程</strong>）</p><script type="math/tex; mode=display">状态方程：x˙^∗(t) = +∂H/∂p</script><script type="math/tex; mode=display">协态方程：p˙^∗(t) = −∂H/∂x</script><p>​        处理边界条件：</p><script type="math/tex; mode=display">[\frac{∂ϕ}{∂x}(x^*(t_f),t_f)-p^*(t_f)]^T∂x_f+[H(x^*(t_f),u^*(t_f),p^*(t_f),t_f)+\frac{∂ϕ}{∂x}(x^*(t^f),t_f)]∂t_f=0\\t_f|fixed,x_f|fixed:x^*(t_f)=x_f\\t_f|fixed,x_f|free:ϕ_x(x^*(t_f),t_f)-p^*(t_f)=0\\t_f|free,x_f|fixed:x^*(t_f)=x_f且H+ϕ_t=0\\t_f|free,x_f|free:ϕ_x(x^*(t_f),t_f)-p^*(t_f)=0且H+ϕ_t=0\\</script><h2 id="3-动态规划方法。"><a href="#3-动态规划方法。" class="headerlink" title="3.动态规划方法。"></a>3.动态规划方法。</h2><h3 id="（1）最优性原理。"><a href="#（1）最优性原理。" class="headerlink" title="（1）最优性原理。"></a>（1）最优性原理。</h3><p>​        <strong>贝尔曼最优性原理</strong>，具有如下性质：无论过去的状态和决策如何，对于前面的决策而言，余下的诸多决策必须构成最优策略的性质。</p><p>子问题的局部最优将导致整个问题的全局最优，即问题具有最优子结构的性质。</p><h3 id="（2）Bellman方程的三种类型离散最优控制问题。"><a href="#（2）Bellman方程的三种类型离散最优控制问题。" class="headerlink" title="（2）Bellman方程的三种类型离散最优控制问题。"></a>（2）Bellman方程的三种类型离散最优控制问题。</h3><p>​        我们目前针对于贝尔曼方程所说的是离散化最优控制问题，我们指定优化过程的参数如下所示：</p><script type="math/tex; mode=display">最小化性能指标：\\J(u)=ϕ_D(x(N),N)+\sum_{k=0}^{N-1}l_D(x(k),u(k),k)\\考虑包含初值和初始时段的更广泛性能指标：\\J(u;x_0,k_0)=ϕ_D(x(N),N)+\sum_{k=k_0}^{N-1}l_D(x(k),u(k),k)\\被控对象状态方程：\\x(k+1)=f_D(x(k),u(k),k),x(k_0)=x_0\\容许控制：u∈U</script><p>​        记最优控制的性能指标记为“值函数”，根据最优性原理，最优控制的充要条件是满足贝尔曼方程：</p><p>​        我们将最优控制的性能指标标记为值函数如下：</p><p>​        </p><script type="math/tex; mode=display">V (x0, k0) = \min_{u∈U}J(u; x0, k0)</script><p>​        Bellman方程如下：</p><script type="math/tex; mode=display">V(x(k),k)=\min_{u(k)∈U}[l_D(x(k),u(k),k)+V(x(k+1),k+1)]\\V(x(N),N)=ϕ_D(x(N),N)</script><p>​        <strong>也即，当前最优是由无数个链式下一个状态的最优决定的，在状态转换的过程中，存在代价函数，此时代价函数由于是离散的，积分会变成累加的形式，马尔可夫决策中的贝尔曼期望方程或贝尔曼最优方程的思想由此而来。</strong></p><p>​        <strong>解释上述bellman方程：我们可以看到，最后一个状态的值函数由求和外决定，它可以是一个不同的形式，一般是确定的；而每一步迭代都是在求和号内部迭代的，它通常由本身的代价函数和上一个状态的值函数决定本状态的值函数。而我们对于链式法则的每一步骤都求解其局部最优，那么我们会得到全局最优的结果。</strong></p><h4 id="a-通过直接迭代求解离散最优控制问题"><a href="#a-通过直接迭代求解离散最优控制问题" class="headerlink" title="a.通过直接迭代求解离散最优控制问题"></a>a.通过直接迭代求解离散最优控制问题</h4><p>​        我们通过一道例题来理解直接迭代求解离散最优控制问题：</p><p><strong>例.直接迭代求解Bellman方程</strong></p><script type="math/tex; mode=display">minJ=x^2(3)+\sum_{k=0}^{2}(x^2(k)+u^2(k))\\s.t.x(k+1)=x(k)+u(k),k=0,1,2......\\终止时刻值函数:V(x(3),3)=ϕ(x(3),3)=x(3)^2</script><p>使用<strong>倒推法</strong>进行求局部最优，我们需要求解使得整体的J全局最优，因此我们需要对V（x(2),2）求解在倒推至K=2时的局部最优：</p><p>我们将k=2时的值函数表示为如下所示：</p><script type="math/tex; mode=display">V(x(2),2)=\min_{u}\{x(2)^2+u(2)^2+V(x(3),3)\}\\=\min_{u}\{x(2)^2+u(2)^2+x(3)^2\}\\=\min_{u}\{x(2)^2+u(2)^2+[x(2)+u(2)]^2\}\\</script><p>我们求其泛函的一阶极值有：</p><script type="math/tex; mode=display">\frac{∂}{∂u}\{x(2)^2+u(2)^2+[x(2)+u(2)]^2\}=0,得到:u(2)=-\frac12x(2)\\V(x(2),2)=x(2)^2+[-\frac12x(2)]+[x(2)-\frac12x(2)]^2=\frac32x(2)^2</script><p>我们可以得到K=2时的局部最优解控制如上所示；</p><p>我们将上述的局部最优解导入K=1时的局部最优解可得：</p><script type="math/tex; mode=display">V(x(1),1)=\min_{u}\{x(1)^2+u(1)^2+V(x(2),2)\}\\=\min_{u}\{x(1)^2+u(1)^2+\frac32x(2)^2\}\\=\min_{u}\{x(1)^2+u(1)^2+\frac32[x(1)+u(1)]^2\}\\\frac{∂}{∂u}\{x(1)^2+u(1)^2+\frac32[x(1)+u(1)]^2\}=0,得到:u(1)=-\frac35x(1)\\V(x(1),1)=x(1)^2+[-\frac35x(1)]+\frac32[x(1)-\frac35x(1)]^2=\frac85x(1)^2</script><p>同理，我们可以迭代至最后一层K=0：</p><script type="math/tex; mode=display">V(x(0),0)=\min_{u}\{x(0)^2+u(0)^2+V(x(1),1)\}\\=\min_{u}\{x(0)^2+u(0)^2+\frac85x(1)^2\}\\=\min_{u}\{x(0)^2+u(0)^2+\frac85[x(0)+u(0)]^2\}\\\frac{∂}{∂u}\{x(0)^2+u(0)^2+\frac85[x(0)+u(0)]^2\}=0,得到:u(0)=-\frac8{13}x(0)\\V(x(0),0)=x(0)^2+[-\frac{8}{13}x(0)]+\frac85[x(0)-\frac{8}{13}x(0)]^2=\frac{21}{13}x(0)^2</script><p>我们便可以得到闭环形式的最终的最优控制：</p><script type="math/tex; mode=display">u(x(0), 0) = − \frac{8}{13}x(0);u(x(1), 1) = − \frac{3}{5}x(1);u(x(2), 2) = − \frac12x(2)</script><h4 id="b-通过遍历离散状态和离散控制空间求解-直接查表法"><a href="#b-通过遍历离散状态和离散控制空间求解-直接查表法" class="headerlink" title="b.通过遍历离散状态和离散控制空间求解(直接查表法)"></a>b.通过遍历离散状态和离散控制空间求解(直接查表法)</h4><p>​        假设我们现在知道对于K+1状态所有的值函数空间，我们对于特定的离散化控制和状态能保证生成的容许状态x(k+1)均在离散化状态空间内：我们则可以得到x(k+1)的状态方程，通过查表则可得到k+1状态的局部最优解。此时所对应的u即为最优控制。</p><h4 id="c-通过遍历当下和下时刻离散状态空间"><a href="#c-通过遍历当下和下时刻离散状态空间" class="headerlink" title="c.通过遍历当下和下时刻离散状态空间"></a>c.通过遍历当下和下时刻离散状态空间</h4><p>​        一般解决线性问题，可以直接求解得出解。</p><script type="math/tex; mode=display">对于上述遍历当前状态和下时刻状态的最优控制算法，若系统状态方程对控制变量是线性的，即x(k+1)=A(x(k),k)+B(x(k),k)u(k)\\则可直接解得状态x(k),x(k+1)对应的控制\\u(k)=B(x(k),k)^{-1}(x(k+1)-A(x(k),k))</script><p>​        求出解析解的过程很精确，但是由于存储数据量较大，会面临维度灾难的问题，求解时空复杂度很高。</p><h3 id="（3）Hamilton-Jacobi-Bellman-方程。"><a href="#（3）Hamilton-Jacobi-Bellman-方程。" class="headerlink" title="（3）Hamilton-Jacobi-Bellman 方程。"></a>（3）Hamilton-Jacobi-Bellman 方程。</h3><p>​        证明太复杂，看不懂，只需要知道结论即可：</p><script type="math/tex; mode=display">对于任意的x,t∈[t_0,t_f],最优控制u^*下的性能指标标记为值函数：\\v(x,t)=\min_{x^*∈U}J(u^*;x,t)\\最优控制的充要条件是Hamilton-Jacobi-Bellman方程：\\-V_t(x(t),t)=\min_{u∈U}{x(t),u(t),V_x(x(t),t),t∈[t_0,t_f]}\\其边界条件为：\\V(x(t_f),t_f)=ϕ(x(t_f),t_f)</script><p>​    </p><h3 id="（4）HJB方程求解连续最优性问题。"><a href="#（4）HJB方程求解连续最优性问题。" class="headerlink" title="（4）HJB方程求解连续最优性问题。"></a>（4）HJB方程求解连续最优性问题。</h3><p>​    我们从一个简单的例题来解决这个问题，该问题的性能指标条件类似于欧拉朗格朗日问题的性能指标。</p><script type="math/tex; mode=display">状体方程\\x^.(t)=x(t)+u(t)\\最小化性能指标\\J(u)=\frac14x^2(t_f)+\int_{0}^{t_f}\frac14u^2(t)dt\\终止时刻t_f|fixed,x(t_f)free</script><p><strong>解：</strong></p><p>考虑哈密尔顿量：</p><script type="math/tex; mode=display">Hamiltonian为\\H(x(t),u(t),V_x)=\frac14u^2(t)+V_x(x(t),t)[x(t)+u(t)]\\一阶条件和二阶条件：\\0=\frac{∂H}{∂u}=\frac12u(t)+V_x(x(t),t),\frac{∂^2H}{∂u^2}=\frac12>0\\于是\\u^*(t)=-2V_x(x(t),t)</script><p><strong>形式上就是用值函数对x的导数作为拉格朗日乘子法中的乘子，这种做法与极值原理是等价的</strong></p><p>将极值条件带入HJB方程：</p><script type="math/tex; mode=display">将极值条件u^*(t)=-2V_x(x(t),t)代入HJB方程\\0=V_t+\frac14(-2V_x)^2+V_xx-2(V_x)^2\\=V_t-V_x^2+V_xx\\以及边界条件：\\V(x(t_f),t_f)=\frac14x^2(t_f)</script><p>使用试凑法化简HJB方程，通过边界条件猜测值函数形式：</p><script type="math/tex; mode=display">V(x(t),t)=\frac12K(t)x(t)\\其中K(t)待定，于是：\\V_x(x(t),t)=K(t)x(t)\\u^*(t)=-2K(t)x(t)\\引入待定函数后，HJB函数化为：\\0=\frac12K^.(t)x^2(t)-K^2(t)x^2(t)+K(t)x^2(t),\\0=\frac12K^.(t)-K^2(t)+K(t)\\以及边界条件：\\\frac12K(t_f)x^2(t_f)=\frac14x^2(t_f)\\F(t_f)=\frac12\\通过分离变量法求解上述方程得：\\K(t)=\frac{e^{t_f-t}}{e^{t_f-t}+e^{-t_f+t}}\\得到闭环最优控制:\\u^*(t)=-2V_x(x(t),t)\\=-\frac{2e^{t_f-t}}{e^{t_f-t}+e^{-t_f+t}}x(t)</script><p>​        <strong>动态规划算法最核心的点都是基于一种最优性原理，也即时时刻刻都使得其满足最优的条件。对于连续函数来说，就是通过让其时时刻刻满足最优性方程，而对于离散来说，就是在每一步都达到局部最优，连续性会从解析解的角度来讨论整个问题，而离散问题则是从迭代局部最优的角度来解决整个问题。</strong></p><h3 id="（5）HJB方程局限性。"><a href="#（5）HJB方程局限性。" class="headerlink" title="（5）HJB方程局限性。"></a>（5）HJB方程局限性。</h3><p>HJB方程一般难以求解，HJB方程对值函数有可微的要求。</p><h3 id="（6）使用动态规划求解连续最优控制过程。"><a href="#（6）使用动态规划求解连续最优控制过程。" class="headerlink" title="（6）使用动态规划求解连续最优控制过程。"></a>（6）使用动态规划求解连续最优控制过程。</h3><p>使用惩罚函数法将终值条件转化至目标函数中<br>求Hamiltonian 极值情况下最优控制<br>获得HJB 方程，并求解<br>得到与HJB 方程解有关的闭环形式最优控制</p><h2 id="4-线性二次型控制（LQR）。"><a href="#4-线性二次型控制（LQR）。" class="headerlink" title="4.线性二次型控制（LQR）。"></a>4.线性二次型控制（LQR）。</h2><h3 id="（1）离散动态规划求解LQR。"><a href="#（1）离散动态规划求解LQR。" class="headerlink" title="（1）离散动态规划求解LQR。"></a>（1）离散动态规划求解LQR。</h3><p>我们对离散情况的线性二次型求解最优控制，将离散情况下的LQR问题描述为：</p><p>离散状态方程：</p><script type="math/tex; mode=display">x_{k+1} = A_kx_k + B_ku_k.</script><p>最小化性能指标：</p><script type="math/tex; mode=display">J=\frac{1}{2}x^T_NHx_N+\frac{1}{2}\sum_{k=0}^{N-1}{[x^T_kQ_kx_k+u^T_kR_ku_k]}</script><p>其中，H和Qk是实对称半正定矩阵，Rk是实对称正定矩阵。</p><p>此处类似于动态规划方法中的直接迭代法求解离散最优控制问题，对最小化性能指标进行解释：</p><script type="math/tex; mode=display">\frac{1}{2}x^T_NHx_N，终止损失，取值越大则终止装填越接近原点\\x^T_kQ_kx_k，过程损失，取值越大则状态尽早接近原点\\u^T_kR_ku_k，取值越大则能量损失越小</script><p><strong>解：</strong></p><p>倒推法，终止值函数：</p><script type="math/tex; mode=display">V(x_N,N)=\frac12x^T_NHx_N</script><p>记PN=H</p><p>在k=N-1时，记录N-1时刻的值函数及其推理：</p><script type="math/tex; mode=display">V(x_{N-1},N-1)=min_{u_N-1}\lbrace\frac12[x^T_{N-1}Q_{N-1}x_{N-1}+u^T_{N-1}R_{N-1}u_{N-1}]+V(x_N,N)\rbrace\\=min_{u_N-1}\lbrace\frac12[x^T_{N-1}Q_{N-1}x_{N-1}+u^T_{N-1}R_{N-1}u_{N-1}]+x_N^TP_Nx_N\rbrace\\=min_{u_N-1}\lbrace\frac12[x^T_{N-1}Q_{N-1}x_{N-1}+u^T_{N-1}R_{N-1}u_{N-1}]+(A_{N-1}x_{N-1}+B_{N-1}u_{N-1})^TP_N(A_{N-1}x_{N-1}+B_{N-1}u_{N-1})\rbrace\\\frac{∂V(x_{N-1},N-1)}{∂u_{N-1}}=u^T_{N-1}R_{N-1}+(A_{N-1}x_{N-1}+B_{N-1}u_{N-1})^TP_NB_{N-1}=0\\u^*_{N-1}=-[R_{N-1}+B^T_{N-1}P_NB_{N-1}]^{-1}B^T_{N-1}P_NA_{N-1}x_{N-1}\\=F_{N-1}x_{N-1}</script><p>我们将反解的矩阵带入k=n-1的最优控制带入值函数，有：</p><script type="math/tex; mode=display">V(x_{N-1},N-1)=\frac12x^T_{N-1}\lbrace Q_{N-1}+F_{N-1}^TR_{N-1}F_{N-1}+(A_{N-1}+B_{N-1}F_{N-1})^TP_N(A_{N-1}+B_{N-1}F_{N-1})\rbrace x_{N-1}\\进一步化简可得：=\frac12x^T_{N-1}P_{N-1}x_{N-1}</script><p>迭代得到最优控制方程组</p><script type="math/tex; mode=display">最优控制方程如下所示：\\u^*_k=F_kx_k\\V(x_k,k)=\frac12 x^T_kP_Kx_k\\需要满足以上闭环形式最优控制，其中，得到离散黎卡提(Riccati)方程：\\P_N=H\\F_k=-[R_k+B_k^TP_{K+1}B_K]^{-1}B^T_KP_{K+1}A_K\\P_k=Q_k+F^T_KR_KF_k+(A_k+B_KF_K)^TP_{K+1}(A_K+B_KF_K)</script><h3 id="（2）连续动态规划求解LQR。"><a href="#（2）连续动态规划求解LQR。" class="headerlink" title="（2）连续动态规划求解LQR。"></a>（2）连续动态规划求解LQR。</h3><p>​        我们将一个连续情况下的线性二次型最优控制描述为如下的数学形式：</p><script type="math/tex; mode=display">连续状态方程：x^.(t)=A(t)x(t)+B(t)u(t)\\最小化性能指标：J=\frac12 x^T(t_f)Hx(t_f)+\frac12 \int_{t_0}^{t_f}[x^T(t)Q(t)x(t)+u^T(t)R(t)u(t)]dt\\t_f fixed ,x(t_f)free.H和Q(t)是实对称半正定矩阵，R(t)是实对称正定矩阵</script><p>我们将其损失条件描述如下所示：</p><script type="math/tex; mode=display">\frac12 x^t(t_f)Hx(t_f)是终止损失，取值越大则终止状态越接近原点\\x^T(t)Q(t)x(t)过程损失，取值越大则状态尽早收敛至原点\\u^T(t)R(t)u(t)取值越大则能量损失越小\\H半正定，Q（t）半正定，R（t）正定</script><p><strong>解：</strong></p><p>考察并计算哈密尔顿量：</p><script type="math/tex; mode=display">Halmiltonian:H(x(t),u(t),V_x,t)=\frac12 x(t)^TQ(t)x(t)+\frac12 u^T(t)R(t)u(t)+V_x[A(t)x(t)+B(t)u(t)]\\一阶条件求解：0=\frac{∂H}{∂u}=R(t)u^*+B^T(t)V_x(x(t),t)\\二阶条件求解：\frac{∂^2H}{∂u^2}=R(t)\\其中u^*=-R^{-1}(t)B^T(t)V_x(x(t),t)\\将极值一阶条件带入Hamiltonian得到：\\H(x(t),u(t),V_x,t)=\frac12x^TQx+V_x^TAx-\frac12V_X^TBR^{-1}B^TV_X</script><p>得到HJB方程：</p><script type="math/tex; mode=display">V_t+\frac12x^TQx+V_x^TAx-\frac12V_X^TBR^{-1}B^TV_X=0\\通过边界条件形式猜测HJB方程为二次形式：\\V(x(t),t)=\frac12x^T(t)K(t)x(t),其中K(t)为实对称正定矩阵\\求解HJB方程后，得到闭环控制的最优控制，连续黎卡提方程:\\K^.(t)+Q(t)-K(t)B(t)R^{-1}(t)B^T(t)K(t)+K(t)A(t)+A^T(t)K(t)=0\\K(t_f)=H\\u^*(t)=-R^{-1}(t)B^T(t)K(t)x(t)</script><h2 id="5-经典控制理论运用例题。"><a href="#5-经典控制理论运用例题。" class="headerlink" title="5.经典控制理论运用例题。"></a>5.经典控制理论运用例题。</h2><h1 id="三、模型预测控制方法。"><a href="#三、模型预测控制方法。" class="headerlink" title="三、模型预测控制方法。"></a>三、模型预测控制方法。</h1><p>​        模型预测控制是一种控制算法的简称,其都具有如下的三个特征：1.预测模型：利用预测末次的那个预测系统在一定控制作用下未来的动态行为。应确保能快速求解。2.滚动优化：对预测模型求解一段时间内的开环最优控制，并实施当前时刻的控制变量；下一采样时刻，重新获取状态作为新的初值，滚动时间窗口重复上述最优控制求解。3.反馈矫正：在求解滚动优化前，系统首先利用反馈信息矫正预测模型。</p><h2 id="1-无约束非线性规划"><a href="#1-无约束非线性规划" class="headerlink" title="1.无约束非线性规划"></a>1.无约束非线性规划</h2><h3 id="（1）函数极值基本理论"><a href="#（1）函数极值基本理论" class="headerlink" title="（1）函数极值基本理论"></a>（1）函数极值基本理论</h3><p>​        若函数F(x)二阶连续可导，则可使用泰勒公式对其近似，存在δ&gt;0，对于任意的||Δx||&lt;δ，进行<strong>泰勒展开</strong>有：</p><script type="math/tex; mode=display">F(x+Δx)≈F(x)+Δx^Tg(x)+\frac12Δx^TG(x)Δx+.......</script><p>其中，g是F的<strong>梯度（gradient）</strong>，G是F的<strong>海森矩阵（Hessian Matrix）</strong>；</p><p>使用矩阵描述，此时，二阶以二次型的方式出现。一阶解算也是值的形式：</p><script type="math/tex; mode=display">x=\begin{bmatrix} x_1  \\ x_2 \\ \vdots\\x_n \end{bmatrix},g=\begin{bmatrix} \frac{∂F}{∂x_1} \\ \vdots\\\frac{∂F}{∂x_n} \end{bmatrix},G=\begin{bmatrix} \frac{∂^2F}{∂x_1^2} & \cdots & \frac{∂^2F}{∂x_1∂x_n}  \\ \vdots & \ddots & \vdots\\\frac{∂^2F}{∂x_n∂x_1} & \cdots & \frac{∂^2F}{∂x_n^2} \end{bmatrix}</script><p>函数极值的一阶条件（必要条件）</p><p>上式中，假定||Δx||&lt;δ，考察泰勒展开的前两项：</p><script type="math/tex; mode=display">x^*为极小值点->g(x^*)=0,梯度为0是极值的必要条件，当自变量为一维时，该条件即导数为0\\该条件下x^*为驻点，该点可能是鞍点或极大值点，所以是必要条件</script><p>函数极值的二阶条件（充分条件）：</p><p>若函数此时梯度已为0，由泰勒展开可得：</p><script type="math/tex; mode=display">F(x+Δx)≈F(x)+\frac12Δx^TG(x)Δx+.......\\此时对于任意的0<||Δx||<δ都有Δx^TG(x)Δx>0,则一定存在F(x^*+Δx)>F(x^*)\\因此，此时我们需要让泰勒展开二次项的线性二次型的值恒大于0，因此海森矩阵的顺序主子式全大于0，海森矩阵应正定\\得到极值充分条件为：海森矩阵正定</script><h3 id="（2）无约束非线性规划的线搜索方法"><a href="#（2）无约束非线性规划的线搜索方法" class="headerlink" title="（2）无约束非线性规划的线搜索方法"></a>（2）无约束非线性规划的线搜索方法</h3><p>​        我们将一个无约束非线性规划问题描述如下：</p><script type="math/tex; mode=display">\min_{x∈X}F(x)\\线搜索方法是通过数值方法迭代地求解函数极值：\\给定：对最优解x^*的初步估计x_0\\迭代：\hat{x_{k+1}}=\hat{x_{k}}+α_kd_k\\其中，α_k为步长，d_k为迭代方向</script><p>​        其中，线搜索的步长和迭代方向是其特征的值，步长分为<strong>精确搜索和非精确搜索</strong>，迭代方向分为<strong>最速下降法（一阶方法）</strong>、<strong>牛顿法（二阶方法）</strong>、<strong>拟牛顿法</strong>，对于不同的系统，我们要选择不同的迭代方向。这对我们迭代的效果影响非常巨大。</p><p><strong>步长选择.</strong></p><p>当我们选择了一个迭代方向dk的情况下，步长αk决定了在一个滚动优化周期内部迭代一次沿着所走方向的“走多远”。其中，精确搜索指的是固定迭代方向dk，寻找何时的步长αk以最小化F(xk+αkdk)；非精确搜索是为了追求高效率快速给出“适当的”步长，迭代方向对线搜索性能影响极大。</p><p>我们以下面的题为例，解释我们的非线性规划的固定（精确）步长线搜索方法：</p><script type="math/tex; mode=display">性能指标：F(x_1,x_2)=x_1^2+x_2^2\\给定\hat{x_0}=(1,1)^T,d_0=(0,2)^T,精确搜索最优步长α_0，以最小化F(x_0+α_0d_0)</script><script type="math/tex; mode=display">根据线搜索迭代公式可知，\\\hat{x_0}+α_0\hat{d_0}=\begin{bmatrix}1\\ 1+2α_0\end{bmatrix}\\于是F(\hat{x_0}+α_0d_0)=1+(1+2α_0)^2\\为了满足必要条件，因此我们需要让其对α_0的导数为0\\0=\frac{∂F}{∂α_0}=4(1+2α_0)\\因此,α_0=-\frac12</script><p>当我们的步长不精确时，就可以经此引出迭代方向的不同确定方法，最常见的就是<strong>最速下降法（梯度下降）</strong>：</p><script type="math/tex; mode=display">对函数F(\hat{x_{k+1}})进行泰勒展开：\\对F(\hat{x_{k+1}})≈F(\hat{x_k})+∇F(\hat{x_k})^T(\hat{x_{k+1}}-\hat{x_k})=F(\hat{x_k})+∇F(\hat{x_k})^Tα_k\hat{d_k}\\令∇F为F的梯度，F、∇F的表达式如下:\\x=\begin{bmatrix}x_1\\x_2\\ \vdots\\x_n\end{bmatrix},∇F=\begin{bmatrix}\frac{∂F}{∂x_1}\\ \vdots\\\frac{∂F}{∂x_n} \end{bmatrix}\\假定α_0>0,迭代能使得函数值序列单调递减，则存在：\\∇F(\hat{x_k})^T\hat{d_k}<0\\选择负梯度方向为线搜索方向（最速下降法）\\\hat{d_k}=-∇F(\hat{x_k})</script><script type="math/tex; mode=display">二阶泰勒展开F(\hat{x})得到：\\F(\hat{x_{k+1}})≈F(\hat{x_{k}})+(\hat{x_{k+1}}-\hat{x_k})^T∇F(\hat{x_k})+\frac12(\hat{x_{k+1}}-\hat{x_k})^T∇^2F(\hat{x_k})(\hat{x_{k+1}}-\hat{x_k})\\令∇^2F为F的海森矩阵\\∇^2F=\begin{bmatrix}\frac{∂^2F}{∂x^2_1}&\cdots&\frac{∂^2F}{∂x_1∂x_n}\\\vdots&\ddots&\vdots\\\frac{∂^2F}{∂x_n∂x_1} &\cdots&\frac{∂^2F}{∂x_n^2}\end{bmatrix}</script><p>将一阶条件导入二阶泰勒展开，推导出<strong>牛顿法</strong>：</p><script type="math/tex; mode=display">0≈∇F(\hat{x_{k+1}})≈∇F(\hat{x_k})+∇^2F(\hat{x_k})(\hat{x_{k+1}}-\hat{x_k})\\\hat{d_k}=-∇^2F^{-1}(\hat{x_k})∇F(\hat{x_k})</script><p>由于海森矩阵计算复杂，<strong>拟牛顿法</strong>在xk附近考虑F(x)的二次逼近</p><script type="math/tex; mode=display">F(\hat{x_{k+1}})≈F(\hat{x_{k}})+(\hat{x_{k+1}}-\hat{x_k})^T∇F(\hat{x_k})+\frac12(\hat{x_{k+1}}-\hat{x_k})^TB_k^{-1}(\hat{x_{k+1}}-\hat{x_k})\\\hat{d_k}=-B_k∇F(\hat{x_k})</script><p>常见的拟牛顿法包括DFP,BFGS等。</p><h2 id="2-有约束非线性规划"><a href="#2-有约束非线性规划" class="headerlink" title="2.有约束非线性规划"></a>2.有约束非线性规划</h2><p>最小化性能指标minF(x)，约束条件为f(x)=&lt;0。</p><h3 id="（1）使用等式约束的函数极值"><a href="#（1）使用等式约束的函数极值" class="headerlink" title="（1）使用等式约束的函数极值"></a>（1）使用等式约束的函数极值</h3><p>使用<strong>直接带入法</strong>求解有等式约束的函数极值：</p><p><strong>解：</strong></p><script type="math/tex; mode=display">x_1,x_2∈R,满x_1+x_2+2=0，最小化性能指标：\\F(x_1,x_2)=x_1^2+x_2^2\\解：将x_1=-2-x_2代入F得到：\\\min_{x_2}F_1(x_2)=(-2-x_2)^2+x_2^2\\求导得到结果。x_2=-1,x_1=-1</script><p>使用<strong>拉格朗日乘子法</strong>求解等式约束的函数极值：</p><p><strong>定理.</strong></p><script type="math/tex; mode=display">对于有等式约束f(x_1,x_2)=0的情况下求F(x_1,x_2)极值问题，引入拉格朗日乘子λ：\\F(x_1,x_2,λ)=F(x_1,x_2)+λf(x_1,x_2)\\F(x_1,x_2)取极值的必要条件是：\\\frac{∂F}{∂λ}=f(x_1,x_2)=0\\\frac{∂F}{∂x_1}=0\\\frac{∂F}{∂x_2}=0\\</script><h3 id="（2）使用不等式约束的函数极值"><a href="#（2）使用不等式约束的函数极值" class="headerlink" title="（2）使用不等式约束的函数极值"></a>（2）使用不等式约束的函数极值</h3><p>将一个使用不等式约束的函数极值问题描述为如下所示：</p><script type="math/tex; mode=display">最小化性能指标：F(x_1,x_2)=x_1^2+x_2^2+x_1x_2\\满足约束:x_2>1.x_1+x_2<=3</script><p>我们将不等式约束的函数极值的条件描述为一个<strong>KKT条件</strong>：</p><script type="math/tex; mode=display">不等式约束f(x)<=0，求F(x)极值。引入拉格朗日乘子λ：\\F(x,λ)=F(x)+λ^Tf(x)\\F(x)取极值的必要条件是KKT条件：\\∇_xF=0\\λ^Tf(x)=0\\λ>=0\\f(x)<=0\\f(x^*)=0,称为激活约束，f(x^*)<0，称为非激活约束</script><p><strong>解：</strong></p><p>求解拉格朗日函数并写出其<strong>KKT条件</strong>：</p><script type="math/tex; mode=display">F(x_1,x_2)=x_1^2+x_2^2+x_1x_2+λ_1(1-x_2)+λ_2(x_2+x_2-3)\\KKT条件：\\\frac{∂F}{∂x_1}=2x_1+x_2+λ_2=0\\\frac{∂F}{∂x_2}=x_1+2x_2-λ_1+λ_2=0\\λ_1(1-x_2)=0\\λ_2(x_1+x_2-3)=0\\令λ_1=λ_2=0，得到x_1=x_2=0，不满足约束，舍去；\\令λ_1=0，λ_2>0，得到λ_2=-9/2，舍去\\令λ_2=0，λ_1>0，得到最优解F=0.75</script><h3 id="（3）（等式约束）二次规划问题（QP）"><a href="#（3）（等式约束）二次规划问题（QP）" class="headerlink" title="（3）（等式约束）二次规划问题（QP）"></a>（3）（等式约束）二次规划问题（QP）</h3><p>将一个在等式约束下的二次规划问题描述为：</p><script type="math/tex; mode=display">最小化性能指标：\min_{x∈R^n}\frac12x^TQx-x^Tb\\约束条件为：Ax=a\\其中，Q恰好是函数F的海森矩阵</script><p><strong>解：</strong></p><script type="math/tex; mode=display">引入拉格朗日乘子：\\F(x,λ)=\frac12x^TQx-x^Tb+λ^T(Ax-a)\\由KKT条件有：\\0=∇_xF=Qx-b+A^Tλ(此步骤是由矩阵求导的性质得出的)\\0=Ax-a(此步骤是KKT条件的激活函数)\\将函数构造为矩阵形式：\\\begin{bmatrix}Q&A^T\\A&0\end{bmatrix}\begin{bmatrix}x\\λ\end{bmatrix}=\begin{bmatrix}b\\a\end{bmatrix}</script><h2 id="3-最优策略求解方法"><a href="#3-最优策略求解方法" class="headerlink" title="3.最优策略求解方法"></a>3.最优策略求解方法</h2><h3 id="（1）间接法求解最优控制"><a href="#（1）间接法求解最优控制" class="headerlink" title="（1）间接法求解最优控制"></a>（1）间接法求解最优控制</h3><p>​        间接法求解最优控制问题借助了极值原理和打靶法的思想，也即根据极值原理得到最优控制问题的必要条件（关于状态和协态变量的微分方程组，结合边界条件和横截条件），构建两点边值问题，之后采用<strong>单重或多重打靶法</strong>进行优化求解。</p><p>​        </p><script type="math/tex; mode=display">初值问题IVP：\\x^._1=x_2\\x^._2=λsinhλx^._1\\x_1(0)=0,x_2(0)=-0.518621\\边值问题BVP：\\x^._1=x_2\\x^._2=λsinhλx^._1\\x_1(0)=0,x_1(1)=1\\</script><p>通过以下例子来解释使用<strong>单重打靶法</strong>进行滚动优化：</p><script type="math/tex; mode=display">x^.=x\\可以得到解析解：x=x(t_0)e^{t-t_0}\\寻找合适的初值x(t_0)以使得x(t_f)=x_f.假定初值为s，终止时刻打靶误差为：\\c(s)=x_f-x(t_f)=x_f-x_0e^{t_f-t_0}=x_f-se^{t_f-t_0}\\此时我们构造了误差函数只需要我们进行对误差函数的优化问题，也即找到合适的s使得c(s)=0成立\\初始化s=x(t_0)(此处为猜测)\\打靶：求解常微分方程初值问题IVP，得到x(t_f;s)\\得到停止时刻的误差c(s)=x(t_f;s)-x_f\\使用非线性规划方法重复以上过程，求解c(s)=0\\滚动优化过程,使用牛顿法实现打靶：0=c(s_{k+1})=c(s_k)+\frac{∂c}{∂s}(s_k)(s_{k+1}-s_k)\\s_{k+1}=s_k-\frac{∂c}{∂s}(s_k)^{-1}c(s_k)</script><p>​        单重打靶法存在弊端，初值是通过猜测的方式产生，若猜测不好可能会导致无解或不收敛，同样，对非线性问题的收敛性也较差。为了解决这样的问题，使用<strong>多重打靶法</strong>实现，以下是使用多重打靶法求解上述问题的过程：</p><script type="math/tex; mode=display">在以上时间的一半处t_1=(t_0+t_f)/2再立一靶，猜测t_0点取值为s_1=x(t_0),猜测在t_1点取值为s_2=x(t_1),s=(s_1,s_2)^T\\于是应满足二维约束条件：\\0=c_1(s1,s2)=s_2-s_1e^{t_1-t_0}\\0=c_2(s1,s2)=x_f-s_2e^{t_f-t_1}\\通过上述方法，我们可以将整个时域过程划分为多份，将问题转化为多个时间段内对误差函数的最优问题，\\将一个长时域上的IVP问题化解为多个IVP问题</script><p>​        多重打靶法相比于单重打靶法，其优势在于可运用整个轨迹的初始已知信息，并且分块后系统更加线性，收敛效果更好；其缺点就是需要猜测整个状态轨迹作为初值，计算上较为复杂。</p><h3 id="（2）直接法求解最优控制"><a href="#（2）直接法求解最优控制" class="headerlink" title="（2）直接法求解最优控制"></a>（2）直接法求解最优控制</h3><script type="math/tex; mode=display">将最优控制指标写为：\\\min_uϕ(x(T))+\int_{0}^{T}l(x(T),u(T))dt，其中T确定\\约束条件写为：\\s.t.x(0)=x_0\\x^.(t)-f(x(t),u(t))=0\\c(x(t),u(t))<=0\\m(x(T))=0\\引入时间变换，将自由终止时间转化为固定终止时间(1),我们可以得到：\\t=τT,τ∈[0, 1]\\\frac{d}{dτ}x(τ)=Tf(x(τ),u(τ))\\上述控制指标被写为：\\minϕ(x(1))+\int_{0}^{1}l(x(τ),u(τ))dτ\\将时间轴分成n个这样时间变换的过程，并直接利用打靶法，将最优控制问题转化为非线性规划问题\\自变量是控制u(t;q)的参数q，状态可以写成q的数值积分</script><p><strong>以下是使用LQR线性二次型控制器加上MPC模型预测控制方法的连续形式预测控制的例子：</strong></p><script type="math/tex; mode=display">预测模型：在[t_k,t_k+T]上，以x(t_k)为初值的定常线性二次型控制\\滚动优化：[t_k,t_k+T]时段可求得开环最优控制\\u^*(τ)=ϕ(x(t_k),τ;t_k,T)\\在该轮滚动优化中只进行[t_k,t_{k+1}]部分\\反馈矫正：求解下个滚动优化前，更新预测模型的初值x(t_{k+1})\\在[t_k,t_k+T],控制仅依赖于t_k时刻反馈矫正的初值x(t_k)\\当|t_{k+1}-t_k|->0时，x(τ)≈x(t_k)</script><h2 id="4-最优控制例题。"><a href="#4-最优控制例题。" class="headerlink" title="4.最优控制例题。"></a>4.最优控制例题。</h2><h1 id="四、强化学习方法。"><a href="#四、强化学习方法。" class="headerlink" title="四、强化学习方法。"></a>四、强化学习方法。</h1>]]></content>
+      
+      
       <categories>
-        <category>部署</category>
+          
+          <category> 机器人运动控制 </category>
+          
       </categories>
-      <tags>
-        <tag>hexo</tag>
-        <tag>github</tag>
-        <tag>zeabur</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>从传统控制理论、模型预测控制到强化学习的数学原理</title>
-    <url>/2024/11/13/3/</url>
-    <content><![CDATA[<h1 id="从传统控制理论、模型预测控制到强化学习的数学原理"><a href="#从传统控制理论、模型预测控制到强化学习的数学原理" class="headerlink" title="从传统控制理论、模型预测控制到强化学习的数学原理"></a>从传统控制理论、模型预测控制到强化学习的数学原理</h1><p>所需数学理论：高等数学（微分方程）、泛函理论、线性代数、概率论</p>
-<h1 id="一、写在前面。"><a href="#一、写在前面。" class="headerlink" title="一、写在前面。"></a>一、写在前面。</h1><p>​        在学习探索的时候，看到各种各样的控制算法，ZMP,WBC,MPC,LQR等等等等，发现自己对于控制理论的数学基础理解还是不够深入，于是想系统性的了解一下从经典控制理论到现代强化学习算法中通用的一些思想。</p>
-<p>​        <strong>特别感谢北京理工大学黄销老师的机器人最优课程以及上海交通大学俞勇教授团队所编写的强化学习入门书籍</strong>（URL：<a href="https://hrl.boyuai.com/chapter/1/%E5%88%9D%E6%8E%A2%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0）。**打个广告：强烈推荐大家选择黄销老师的机器人最优控制课程。**">https://hrl.boyuai.com/chapter/1/%E5%88%9D%E6%8E%A2%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0）。**打个广告：强烈推荐大家选择黄销老师的机器人最优控制课程。**</a></p>
-<p>​        第一个大标题将从宏观逻辑上将后文正文中的内容串接起来，更好的理解各种算法思想在发展中的联系。</p>
-<h2 id="1-经典控制理论"><a href="#1-经典控制理论" class="headerlink" title="1.经典控制理论"></a>1.经典控制理论</h2><p>​        经典控制理论中，<strong>变分法</strong>是首先要学习的内容。变分法将从泛函基本理论讲起，学会如何求解<strong>泛函的变分</strong>（函数的求导），通过求解泛函变分的方式来求解连续优化指标在无约束但有固定初始和固定结束值的情况下的极值，也即<strong>欧拉-拉格朗日问题</strong>。将问题变得更复杂一点，对于在欧拉-拉格朗日问题中还存在<strong>某种阶次的微分方程约束</strong>的情况，我们引入<strong>拉格朗日乘子法</strong>，将约束转化为<strong>增广代价函数</strong>的一部分形式使用<strong>欧拉-拉格朗日方程</strong>进行求解。再泛化一些，有时，初始值和终值并非固定的，因此需要求解一个更高自由度的<strong>自由泛函问题</strong>，将会通过分类讨论的方式对各种情况进行分析；最终，对于日常生活中常用的最优控制问题，也即<strong>博尔查问题</strong>，通过引入<strong>Hamiltonian量</strong>的方式简化计算，可以得到使用Hamiltonian量进行计算的<strong>Hamiltonian方程组</strong>，这是一个较为泛化的一般性方程组。</p>
-<p>​        在变分法的基础上，通过Hamiltonian量，有一种方法可以更简单的求解博尔查问题，这就是大名鼎鼎的<strong>庞特里亚金极值原理（PMP</strong>）。它利用了Hamiltonian量的一阶二阶条件，得到了最优控制的关系式，将其代入<strong>规范方程</strong>中（<strong>状态与协态方程</strong>）并处理边界条件，就可以得到闭环形式的最优控制方法。它在数学原理上和Hamiltonian方程组是等价的。</p>
-<p>​        <strong>动态规划方法</strong>是一种很重要的最优控制理论，它是依赖于<strong>最优性原理</strong>为最基本思想进行优化的方法，<strong>Bellman方程（贝尔曼方程）</strong>通过数学的方法将最优性原理表达了出来。通过直接迭代法（逆推法）求解离散状态下的最优控制问题<strong>（博尔查问题）</strong>，我们可以了解到动态规划的基本思想。对于连续性性能指标，我们将Hamiltonian量的一阶二阶条件代入<strong>Hamilton-Jacobi-Bellman 方程</strong>中，并通过边界条件的形式进行假设，使用<strong>试凑法</strong>，求解其微分方程，得到最优控制，这种方法我们一般不会使用，因为其时空复杂度很高，无法通过计算机完成。</p>
-<p>​        <strong>线性二次型控制（LQR）</strong>是一种特殊的控制器。它的优化指标通常是由矩阵二次型进行表示的。使用离散的动态规划方法求解，我们最终会得到离散的<strong>黎卡提(Riccati)方程</strong>，通过连续性的动态规划求解，我们将得到连续的<strong>黎卡提(Riccati)方程</strong>。<strong>线性二次型控制（LQR）使用的解算方式本质上也是一种使用贝尔曼方程的逆推法进行离散迭代的方式，通过黎卡提(Riccati)方程，规定了线性二次型控制的基本控制形式。</strong></p>
-<h2 id="2-模型预测控制"><a href="#2-模型预测控制" class="headerlink" title="2.模型预测控制"></a>2.模型预测控制</h2><h2 id="3-强化学习"><a href="#3-强化学习" class="headerlink" title="3.强化学习"></a>3.强化学习</h2><h1 id="二、经典最优控制方法。"><a href="#二、经典最优控制方法。" class="headerlink" title="二、经典最优控制方法。"></a>二、经典最优控制方法。</h1><h2 id="1-变分法。"><a href="#1-变分法。" class="headerlink" title="1.变分法。"></a>1.变分法。</h2><h3 id="（1）泛函基本理论。"><a href="#（1）泛函基本理论。" class="headerlink" title="（1）泛函基本理论。"></a>（1）泛函基本理论。</h3><p><strong>定义1</strong>.泛函：从任意集合M到实数域R或复数域C的映射称为“泛函”；在变分学和最优控制中，泛函定义域为函数集合，泛函只取实数值。</p>
-<p>例如：</p>
-<script type="math/tex; mode=display">
-x∈R,M=C(R)是R->R的一阶连续可导全体函数，对于u∈M，\\
-I_1=max_{x∈R}|u(x)|,I_2(u)=u(x_1),I_3(u)=\int_{-∞}^{+∞}{u^2(x)dx}\\
-都是关于x的泛函</script><p><strong>定义2</strong>.范数与距离：范数|| · || 可用于度量空间中两点之间的距离d(x,x<em>)=||x-x</em>||。其具有如下性质：</p>
-<script type="math/tex; mode=display">
-正定性：||x||>=0，且||x||=0 ,if ,x=0\\
-齐次性：||ax||=|a|||x||,a∈R\\
-次可加性：||x_1+x_2||=<||x_1||+||x_2||</script><p><strong>定义3</strong>.泛函极小值及增量</p>
-<script type="math/tex; mode=display">
-假设定义域M是一类函数的集合，若存在e>0,使得：\\
-J(x^*)=<J(x),if||x-x^*||<e,x∈M\\
-则称泛函J:M->R在x^*达到局部极小值</script><script type="math/tex; mode=display">
-若x和x+δx都在泛函J的定义域Ω中，δx∈C(Ω),则泛函J的增量ΔJ定义为：\\
-ΔJ:=J(x+δx)-J(x)\\
-计为ΔJ(x,δx)</script><p><strong>定义4</strong>.线性泛函</p>
-<script type="math/tex; mode=display">
-若泛函J满足齐次性条件：\\
-J(ax)=aJ(x),∀a∈R,x∈Ω,ax∈Ω\\
-以及可加性条件：
-J(x^1+x^2)=J(x^1)+J(x^2),∀x^1,x^2,x^1+x^2∈Ω\\
-则称J是x的线性泛函</script><p><strong>定义5</strong>.泛函的变分</p>
-<script type="math/tex; mode=display">
-泛函增量可写为变分的线性泛函和变分的高阶无穷小两部分：\\
-ΔJ(x,δx)=δJ(x,δx)+g(x,δx)*||δx||\\
-其中，前项δJ(x,δx)是δx的线性泛函\\
-后项满足：
-\lim_{||δx->0||}{g(x,δx)=0}</script><p><strong>通过泛函增量的定义求解</strong>.求解泛函变分，如上</p>
-<p><strong>通过求导法求解</strong>求解泛函变分</p>
-<p>泛函的变分满足：</p>
-<script type="math/tex; mode=display">
-δJ(x(t),δx(t))=\frac{∂}{∂α}J(x(t)+αδx(t))|_{α=0}</script><p><strong>证明</strong>.泛函求解变分的求导法：</p>
-<script type="math/tex; mode=display">
-ΔJ(x,δx)=J(x,δx)-J(x)=δJ(x,δx)+g(x,δx)*||δx||</script><p>同时，</p>
-<script type="math/tex; mode=display">
-ΔJ(x,δx)=J(x,αδx)-J(x)=δJ(x,αδx)+g(x,αδx)*||αδx||</script><script type="math/tex; mode=display">
-ΔJ(x,δx)=J(x,αδx)-J(x)=αδJ(x,δx)+g(x,αδx)*||αδx||</script><p>此时δx-&gt;0,变化为αδx-&gt;0，可以等价转换为α-&gt;0。</p>
-<p>令其对α求偏导数，在α=0时得到：</p>
-<script type="math/tex; mode=display">
-δJ(x(t),δx(t)) =\frac{∂}{∂α}J(x(t)+αδx(t))|_{α=0}\\
-=\lim_{α->0}{\frac{J(x(t)+αδx(t))-J(x)}{α}}\\
-=δJ(x,δx)+\lim_{α->0}{\frac{g(x,αδx)*||αδx||}{α}}\\
-=δJ(x,δx)+\lim_{||αδx||->0}{\frac{g(x,αδx)*||αδx||}{αδx}δx}\\
-=δJ(x,δx)</script><p>证得通过求导法可以求得泛函变分。</p>
-<h3 id="（2）欧拉-拉格朗日问题。"><a href="#（2）欧拉-拉格朗日问题。" class="headerlink" title="（2）欧拉-拉格朗日问题。"></a>（2）欧拉-拉格朗日问题。</h3><p>​        欧拉-拉格朗日问题研究的是针对于一个有初始和终值解的可微函数，求其关于代价函数（连续函数累计代价）的极值问题。我们最终求解出来的结果是<strong>一种关于x(t)关于t为自变量的构造方式</strong>。</p>
-<p>​        对于一个连续可微函数x(t):[t0,tf]-&gt;Rn，满足初始条件x(t0)=x0，在给定的终端时刻tf，达到给定的终端状态x(tf)=xf，求性能指标的极值条件:</p>
-<script type="math/tex; mode=display">
-J(x(t))=\int_{t_0}^{t_f}{l(x(t),x^.(t),t)dt}</script><p>其中，此处代价函数l二阶连续可微。</p>
-<p><strong>解：</strong></p>
-<p>计算泛函增量：</p>
-<script type="math/tex; mode=display">
-ΔJ=J(x+δx)-J(x)</script><script type="math/tex; mode=display">
-ΔJ(x,δx)=J(x+δx)-J(x)\\
-=\int_{t_0}^{t_f}{l(x(t)+δx(t),x^.(t)+δx^.(t),t)dt-\int_{t_0}^{t_f}{l(x(t),x^.(t),t)dt}}</script><p>计算泛函变分，将积分在x(t),x(t)处进行泰勒展开：</p>
-<script type="math/tex; mode=display">
-∫ ^f
-_0
-[l(x(t), x˙ (t), t) + lx(x(t), x˙ (t), t)δx(t) + lx˙ (x(t), x˙ (t), t)δx˙ (t)
-+o(||(δx, δx˙ )||) − l(x(t), x˙ (t), t)]dt</script><p>得到泛函变分：</p>
-<script type="math/tex; mode=display">
-δJ(x, δx, x˙ , δx˙ ) =
-∫ ^f
-_0
-[lx(x(t), x˙ (t), t)δx(t) + lx˙ (x(t), x˙ (t), t)δx˙ (t)] dt</script><p>使用分部积分法去导数与变分之间的依赖：</p>
-<script type="math/tex; mode=display">
-δJ(x, δx, x˙ , δx˙ ) =
-∫ ^f
-_0
-[lx(x(t), x˙ (t), t)δx(t) + lx˙ (x(t), x˙ (t), t)δx˙ (t)]dt
-=
-∫ ^f
-_0
-lx(x(t), x˙ (t), t)δxdt
-+ [lx˙ (x(t), x˙ (t), t)δx]|tf
-t0
-−
-∫ ^f
-_0
-d
-dt
-lx˙ (x(t), x˙ (t), t)δxdt
-=
-∫ ^f
-_0
-[
-lx(x(t), x˙ (t), t) − d
-dt
-lx˙ (x(t), x˙ (t), t)
-]
-δxdt
-+ [lx˙ (x(t), x˙ (t), t)δx]|tf
-t0 .</script><p>通过泛函极值一阶条件，整理为：</p>
-<script type="math/tex; mode=display">
-δJ(x,δx)=\int_{t_0}^{t_f}{[l_x(x(t),x^.(t),t)-\frac{d}{dt}l_{x^.}(x(t)),x^.(t),t]δxdt}</script><p>得到欧拉-拉格朗日方程：</p>
-<script type="math/tex; mode=display">
-l_x(x(t),x^.(t),t)-\frac{d}{dt}[l_{x^.}(x(t),x^.(t),t)]=0</script><p>泛函 <strong>J</strong> 取极值的必要条件是满足欧拉-拉格朗日方程。</p>
-<h3 id="（3）拉格朗日乘子法。"><a href="#（3）拉格朗日乘子法。" class="headerlink" title="（3）拉格朗日乘子法。"></a>（3）拉格朗日乘子法。</h3><p>​        在欧拉-拉格朗日问题的基础上，当此问题不仅有函数初始值、终值，并且还有微分方程的约束时，我们通常会用引入<strong>拉格朗日乘子</strong>构造拉格朗日函数的形式来进行求解。</p>
-<p>​        已知x(t)初值为x(t0)=x0，终值为x(tf)=xf,tf固定，需满足约束如下,（以某种阶次的微分方程约束）：</p>
-<script type="math/tex; mode=display">
-f(x(t), x˙ (t), t)=0</script><p>​        最小化性能指标：</p>
-<script type="math/tex; mode=display">
-J(x)=∫^f _0 l(x(t),x^.(t),t)</script><p><strong>解：</strong>        </p>
-<p>考虑时间相关的拉格朗日函数：</p>
-<script type="math/tex; mode=display">
-J(x, p) =
-∫ ^f
-_0
-l(x, x˙ , t) + p(t)^T f(x, x˙ , t)dt</script><p>因为此处的微分方程约束为f，因此可以通过将其构造为拉格朗日算子与其相乘的方式来将微分方程约束转化为我们所求的基本欧拉-拉格朗日方程的一部分来求解。这样，一个我们不会的、有约束前提的问题，就被转化为了一个基础的有初始值和终值的欧拉-拉格朗日问题。</p>
-<p>接下来，我们对其求解泛函变分：</p>
-<script type="math/tex; mode=display">
-δJ(x,δx,p,δp)\\
-=\frac{δ}{δα}\int_{t_0}^{t_f}l(x+αδx,x^.+αδx^.,t)+(p+αδp)^Tf(x+αδx,x^.+αδx^.,t)dt|_{α=0}\\
-=\int_{t_0}^{t_f}{l_xδx+l_{x^.}δx^.+δp^Tf+p^Tf_xδx+p^Tf_{x^.}δx^{.}}dt\\
-=\int_{t_0}^{t_f}\{[l_x+p^Tf_x]δx+{[l_{x^.}+p^Tf_{x^.}]δx^.+f^Tδp}\}dt\\
-=\int_{t_0}^{t_f}\{[l_x+p^Tf_x-\frac{d}{dt}(l_{x^.+}+p^Tf_{x^.})]δx+f^Tδp\}dt\\
-令\overline{l}(x,δx,p,δp)=l(x(t),x^.(t),t)+p^Tf(x(t),x^.(t),t)</script><p>我们可以看到，此处直接使用了求导法求解泛函变分。将其整理后，得到：</p>
-<script type="math/tex; mode=display">
-\overline{l}(x,δx,p,δp)=\int_{t_0}^{t_f}[(\overline{l_x}-\frac{d}{dt}\overline{l_{x^.}})δx+f^Tδp]dt</script><p>我们统称引入拉格朗日乘子的函数叫<strong>增广代价函数</strong>；</p>
-<p>由泛函极值的一阶条件可知：</p>
-<script type="math/tex; mode=display">
-\overline{l_x}(x(t),x^.(t),t)-\frac{d}{dt}\overline{l_{x^.}}(x(t),x^.(t),t)=0\\
-f(x(t),x^.(t),t)=0</script><p>如果在以上问题的基础上，将状态方程的微分约束修改为如下非齐次形式：</p>
-<script type="math/tex; mode=display">
-f(x(t), x˙ (t), t)=x^.(t)</script><p>引入拉格朗日乘子，有：</p>
-<script type="math/tex; mode=display">
-\overline{J}(u,p)=\int_{t_0}^{t_f}\{l(x(t),u(t),t)+p^T(t)[f(x(t),u(t),t)-x^.(t)] \}dt</script><p>我们将在过程中，加入分部积分的方法去除变分和微分之间的关系，如下图所示：</p>
-<script type="math/tex; mode=display">
-\overline{J}=\int_{t_0}^{t_f}\{l+p^T[f-x^.]\}dt\\
-δJ=\int_{t_0}^{t_f}\{[l_x+p^Tf_x+p^{.T}]δx+[l_u+p^Tf_u]δu+(f-x^.)^Tδp\}dt-p^Tδx|^{t_f}_{t_0}</script><p>最终得到一阶方程组：</p>
-<script type="math/tex; mode=display">
-l_x+P^Tf_x+P^{.T}=0\\
-l_u+P^Tf_u=0\\
-f-x^.=0</script><p>​        <strong>如若具有多个微分状态方程进行约束，那么我们应该引入多个拉格朗日乘子来解决这个问题。构建一个更大的增广代价函数。在对这种复杂的状态函数，我们可以直接对其使用E-L方程，分别对状态方程的自变量函数进行求导。再带入状态方程即可求出待定系数。具体情况，具体分析。从这里我们也可以看出，掌握推导E-L方程是很重要的，也即针对简单的拉格朗日乘子问题，我们可以通过简单的求变分+一阶条件求解，对于复杂一些的情况，我们可以求E-L</strong></p>
-<h3 id="（4）求解泛函极值的各种情况。（E-L问题、自由泛函问题）"><a href="#（4）求解泛函极值的各种情况。（E-L问题、自由泛函问题）" class="headerlink" title="（4）求解泛函极值的各种情况。（E-L问题、自由泛函问题）"></a>（4）求解泛函极值的各种情况。（E-L问题、自由泛函问题）</h3><p><strong>case1</strong>.初值终值固定。如上</p>
-<p><strong>case2</strong>.初值固定，终值自由，终止时刻固定，求性能指标的极值条件：</p>
-<script type="math/tex; mode=display">
-J(x) =
-∫ ^f
-_0
-l(x(t), x˙ (t), t)dt.</script><p>得出结果：</p>
-<script type="math/tex; mode=display">
-l_x(x(t),x^.(t),t)-\frac{d}{dt}[l_{x^.}(x(t),x^.(t),t)]=0\\
-[l_{x^.}(x,x^.,t)]|^{t_f}_{t_0}=0\\
-由于初值条件x(t_0)=x_0确定，δx(t_0)=0,有：\\
-l_{x^.}(x,x^.,t)=0</script><p><strong>case3</strong>.初值固定，终值自由，终止时刻自由，求性能指标的极值条件：</p>
-<script type="math/tex; mode=display">
-J(x) =
-∫ ^f
-_0
-l(x(t), x˙ (t), t)dt.\\
-代入泛函变分，由一阶条件可得：\\
-\frac{δl}{δx}(x(t),x(t^.),t)-\frac{d}{dt}[\frac{δl}{δx^.}(x(t),x(t^.),t)]=0\\
-l_x(x(t),x^.(t),t)-\frac{δl}{δx^.}(x(t),x^.(t),t)x^.(t_F)=0\\</script><p><strong>case4.</strong>初值固定，终值自由，终止时刻自由，且终值与终止时刻无关，求性能指标的极值条件：</p>
-<script type="math/tex; mode=display">
-J(x) =
-∫ ^f
-_0
-l(x(t), x˙ (t), t)dt.\\
-对任一时刻t∈[t_0,t_f],\\
-\frac{δl}{δx}(x(t),x_.(t),t)-\frac{d}{dt}[\frac{δl}{δx^.}(x(t),x(t^.),t)]=0\\
-终端时刻满足：\\
-l=0,\frac{δl}{δx^.}(x(t),x^.(t),t)x^.(t_F)=0</script><h3 id="（5）变分法求解最优控制问题。（博尔查问题）"><a href="#（5）变分法求解最优控制问题。（博尔查问题）" class="headerlink" title="（5）变分法求解最优控制问题。（博尔查问题）"></a>（5）变分法求解最优控制问题。（博尔查问题）</h3><p>一般最优控制问题：</p>
-<p>最小化性能指标：</p>
-<script type="math/tex; mode=display">
-J(u) = ϕ(x(t_f ), t_f ) +
-∫ ^f
-_0
-l(x(t), u(t), t)dt</script><p>被控对象状态方程：</p>
-<script type="math/tex; mode=display">
-x˙ (t) = f(x(t),u(t), t),  x(t_0) = x_0.</script><p>终止时刻及其状态待定。</p>
-<p><strong>解：</strong></p>
-<p>我们首先处理微分方程也即被控对象状态方程的泛函极值。</p>
-<p>引入拉格朗日乘子：</p>
-<script type="math/tex; mode=display">
-J(u, p) = ϕ(x(t_f ), t_f ) +
-∫ ^{t_f}
-_{t_0}
-{l(x(t), u(t), t) 
-+p^T (t)[f(x(t), u(t), t) − x˙ (t)]
-}
-dt.</script><p>得到增广代价函数：</p>
-<script type="math/tex; mode=display">
-J^- = ϕ|_f +
-∫ ^{t_f}
-_{t_0}
-l + p^T [f − x˙ ]dt</script><p>对增广代价函数求变分,增广代价函数各多项式变化为：</p>
-<script type="math/tex; mode=display">
-ϕ|_{t_F}=ϕ_x|_{t_f}δx_f+ϕ_t|_{t_f}δt_f</script><script type="math/tex; mode=display">
-∫ ^{t_f}
-_{t_0}
-l + p^T [f − x˙ ]dt=
-∫ ^{t_f}
-_{t_0}
-{
-l_xδx + l_uδu + (f − x˙ )^T δp + p^T [f_xδx + f_uδu − δx˙ ]
-}
-dt
-+ [l + p^T f − x˙ ]|_f δtf</script><p>将积分号内外整理得到：</p>
-<script type="math/tex; mode=display">
-ϕ_x|_{t_F} δx_{t_F} + [ϕt + l + p^T (f − x˙ )]|_{t_f} δt_f+ ∫ ^{t_f}
-_{t_0}
-{
-[l_x + p^T f_x]δx + [l_u + p^T f_u]δu + (f − x˙ )^T δp − p^T δx˙
-}
-dt</script><p>引入Hamiltonian量为：</p>
-<script type="math/tex; mode=display">
-H(x(t), u(t), p(t), t) = l(x(t), u(t), t) + p(t)^T f(x(t), u(t), t)</script><p>将变分变为Hamiltonian量的变分：</p>
-<script type="math/tex; mode=display">
-ϕ_x|_{t_F} δx_f + [ϕ_t + H − p^T x˙ ]|_{t_f} δt_f
-+
-∫ ^f
-_0
-{
-H_xδx + H_uδu + (f − x˙ )^T δp − p^T δx˙
-}
-dt</script><p>去掉变分之间的依赖：</p>
-<script type="math/tex; mode=display">
-δx_f ≈ δx(t_f ) + x(t_f )δt_f</script><script type="math/tex; mode=display">
-∫ ^{t_f}
-_{t_0}
-−p^T δx˙dt =
-−p(t_f )^T (δx_f − x˙ (t_f )δt_f ) +
-∫ ^{t_f}
-_{t_0}
-p˙T δxdt</script><p>将变分整理为：</p>
-<script type="math/tex; mode=display">
-δ  \overline{J} =[ϕ_x − p^T ]|_{t_f} δx_f + [ϕ_t + H]|_{t_f} δt_f ∫ ^f
-_0
-{
-[H_x + p˙^T ]δx + H_uδu + (f − x˙ )^T δp
-}
-dt</script><p>得到哈密顿量表示的一阶条件：</p>
-<script type="math/tex; mode=display">
-H_u=0\\
-f-x^.=0\\
-H_x+p^{.T}=0\\
-[ϕ_x(x(t_f),t_f)-p(t_f)^T]δx_f=0\\
-[ϕ_t(x(t_f),t_f)+H]δt_f=0</script><h3 id="（6）变分法总结。"><a href="#（6）变分法总结。" class="headerlink" title="（6）变分法总结。"></a>（6）变分法总结。</h3><p><strong>1.使用拉格朗日乘子法处理各类等式约束</strong>。<br><strong>2.求增广形式性能指标的泛函变分。</strong><br><strong>3.使用分部积分公式处理变分之间的导数依赖。</strong><br><strong>4.将终止时刻状态变分δxf 分为由状态自身变分δx(tf ) 和终止时刻变分δtf 组成的两部分。</strong><br><strong>5.得到泛函极值的一阶条件。</strong></p>
-<h2 id="2-庞特里亚金极值原理（PMP）。"><a href="#2-庞特里亚金极值原理（PMP）。" class="headerlink" title="2.庞特里亚金极值原理（PMP）。"></a>2.庞特里亚金极值原理（PMP）。</h2><p>​        针对<strong>博尔查问题</strong>，最小化性能指标：</p>
-<script type="math/tex; mode=display">
-J(u) = ϕ(x(t_f ), t_f ) +
-∫ ^{t_f}
-_{t_0}
-l(x(t), u(t), t)dt.</script><p>​        被控对象状态方程：</p>
-<script type="math/tex; mode=display">
-x˙ (t) = f(x(t),u(t), t), x(t0) = x0.</script><p>​        容许控制：u∈U        </p>
-<p><strong>解：</strong></p>
-<p>​        定义哈密尔顿量为：</p>
-<script type="math/tex; mode=display">
-H(x(t), u(t), p(t), t) = l(x(t), u(t), t) + p^T (t)f(x(t), u(t), t)</script><p>​        考察哈密尔顿量<strong>极值条件</strong>（一阶导为0，二阶导大于0）：</p>
-<script type="math/tex; mode=display">
-∂H/
-∂u
-= 0;  
-∂^2H/
-∂u^2  > 0</script><p>​        得到最优控制得一种控制关系，我们将最优控制带入<strong>规范方程</strong>（<strong>状态方程，协态方程</strong>）</p>
-<script type="math/tex; mode=display">
-状态方程：x˙
-^∗
-(t) = +
-∂H
-/∂p</script><script type="math/tex; mode=display">
-协态方程：p˙
-^∗
-(t) = −∂H
-/∂x</script><p>​        处理边界条件：</p>
-<script type="math/tex; mode=display">
-[\frac{∂ϕ}{∂x}(x^*(t_f),t_f)-p^*(t_f)]^T∂x_f+[H(x^*(t_f),u^*(t_f),p^*(t_f),t_f)+\frac{∂ϕ}{∂x}(x^*(t^f),t_f)]∂t_f=0\\
-t_f|fixed,x_f|fixed:x^*(t_f)=x_f\\
-t_f|fixed,x_f|free:ϕ_x(x^*(t_f),t_f)-p^*(t_f)=0\\
-t_f|free,x_f|fixed:x^*(t_f)=x_f且H+ϕ_t=0\\
-t_f|free,x_f|free:ϕ_x(x^*(t_f),t_f)-p^*(t_f)=0且H+ϕ_t=0\\</script><h2 id="3-动态规划方法。"><a href="#3-动态规划方法。" class="headerlink" title="3.动态规划方法。"></a>3.动态规划方法。</h2><h3 id="（1）最优性原理。"><a href="#（1）最优性原理。" class="headerlink" title="（1）最优性原理。"></a>（1）最优性原理。</h3><p>​        <strong>贝尔曼最优性原理</strong>，具有如下性质：无论过去的状态和决策如何，对于前面的决策而言，余下的诸多决策必须构成最优策略的性质。</p>
-<p>子问题的局部最优将导致整个问题的全局最优，即问题具有最优子结构的性质。</p>
-<h3 id="（2）Bellman方程的三种类型离散最优控制问题。"><a href="#（2）Bellman方程的三种类型离散最优控制问题。" class="headerlink" title="（2）Bellman方程的三种类型离散最优控制问题。"></a>（2）Bellman方程的三种类型离散最优控制问题。</h3><p>​        我们目前针对于贝尔曼方程所说的是离散化最优控制问题，我们指定优化过程的参数如下所示：</p>
-<script type="math/tex; mode=display">
-最小化性能指标：\\
-J(u)=ϕ_D(x(N),N)+\sum_{k=0}^{N-1}l_D(x(k),u(k),k)\\
-考虑包含初值和初始时段的更广泛性能指标：\\
-J(u;x_0,k_0)=ϕ_D(x(N),N)+\sum_{k=k_0}^{N-1}l_D(x(k),u(k),k)\\
-被控对象状态方程：\\
-x(k+1)=f_D(x(k),u(k),k),x(k_0)=x_0\\
-容许控制：u∈U</script><p>​        记最优控制的性能指标记为“值函数”，根据最优性原理，最优控制的充要条件是满足贝尔曼方程：</p>
-<p>​        我们将最优控制的性能指标标记为值函数如下：</p>
-<p>​        </p>
-<script type="math/tex; mode=display">
-V (x0, k0) = \min
-_{u∈U}
-J(u; x0, k0)</script><p>​        Bellman方程如下：</p>
-<script type="math/tex; mode=display">
-V(x(k),k)=\min_{u(k)∈U}[l_D(x(k),u(k),k)+V(x(k+1),k+1)]\\
-V(x(N),N)=ϕ_D(x(N),N)</script><p>​        <strong>也即，当前最优是由无数个链式下一个状态的最优决定的，在状态转换的过程中，存在代价函数，此时代价函数由于是离散的，积分会变成累加的形式，马尔可夫决策中的贝尔曼期望方程或贝尔曼最优方程的思想由此而来。</strong></p>
-<p>​        <strong>解释上述bellman方程：我们可以看到，最后一个状态的值函数由求和外决定，它可以是一个不同的形式，一般是确定的；而每一步迭代都是在求和号内部迭代的，它通常由本身的代价函数和上一个状态的值函数决定本状态的值函数。而我们对于链式法则的每一步骤都求解其局部最优，那么我们会得到全局最优的结果。</strong></p>
-<h4 id="a-通过直接迭代求解离散最优控制问题"><a href="#a-通过直接迭代求解离散最优控制问题" class="headerlink" title="a.通过直接迭代求解离散最优控制问题"></a>a.通过直接迭代求解离散最优控制问题</h4><p>​        我们通过一道例题来理解直接迭代求解离散最优控制问题：</p>
-<p><strong>例.直接迭代求解Bellman方程</strong></p>
-<script type="math/tex; mode=display">
-minJ=x^2(3)+\sum_{k=0}^{2}(x^2(k)+u^2(k))\\
-s.t.x(k+1)=x(k)+u(k),k=0,1,2......\\
-终止时刻值函数:V(x(3),3)=ϕ(x(3),3)=x(3)^2</script><p>使用<strong>倒推法</strong>进行求局部最优，我们需要求解使得整体的J全局最优，因此我们需要对V（x(2),2）求解在倒推至K=2时的局部最优：</p>
-<p>我们将k=2时的值函数表示为如下所示：</p>
-<script type="math/tex; mode=display">
-V(x(2),2)=\min_{u}\{x(2)^2+u(2)^2+V(x(3),3)\}\\
-=\min_{u}\{x(2)^2+u(2)^2+x(3)^2\}\\
-=\min_{u}\{x(2)^2+u(2)^2+[x(2)+u(2)]^2\}\\</script><p>我们求其泛函的一阶极值有：</p>
-<script type="math/tex; mode=display">
-\frac{∂}{∂u}\{x(2)^2+u(2)^2+[x(2)+u(2)]^2\}=0,得到:u(2)=-\frac12x(2)\\
-V(x(2),2)=x(2)^2+[-\frac12x(2)]+[x(2)-\frac12x(2)]^2=\frac32x(2)^2</script><p>我们可以得到K=2时的局部最优解控制如上所示；</p>
-<p>我们将上述的局部最优解导入K=1时的局部最优解可得：</p>
-<script type="math/tex; mode=display">
-V(x(1),1)=\min_{u}\{x(1)^2+u(1)^2+V(x(2),2)\}\\
-=\min_{u}\{x(1)^2+u(1)^2+\frac32x(2)^2\}\\
-=\min_{u}\{x(1)^2+u(1)^2+\frac32[x(1)+u(1)]^2\}\\
-\frac{∂}{∂u}\{x(1)^2+u(1)^2+\frac32[x(1)+u(1)]^2\}=0,得到:u(1)=-\frac35x(1)\\
-V(x(1),1)=x(1)^2+[-\frac35x(1)]+\frac32[x(1)-\frac35x(1)]^2=\frac85x(1)^2</script><p>同理，我们可以迭代至最后一层K=0：</p>
-<script type="math/tex; mode=display">
-V(x(0),0)=\min_{u}\{x(0)^2+u(0)^2+V(x(1),1)\}\\
-=\min_{u}\{x(0)^2+u(0)^2+\frac85x(1)^2\}\\
-=\min_{u}\{x(0)^2+u(0)^2+\frac85[x(0)+u(0)]^2\}\\
-\frac{∂}{∂u}\{x(0)^2+u(0)^2+\frac85[x(0)+u(0)]^2\}=0,得到:u(0)=-\frac8{13}x(0)\\
-V(x(0),0)=x(0)^2+[-\frac{8}{13}x(0)]+\frac85[x(0)-\frac{8}{13}x(0)]^2=\frac{21}{13}x(0)^2</script><p>我们便可以得到闭环形式的最终的最优控制：</p>
-<script type="math/tex; mode=display">
-u(x(0), 0) = − \frac{8}{13}
-
-x(0);
-u(x(1), 1) = − \frac{3}{5}
-
-x(1);
-u(x(2), 2) = − \frac12
-x(2)</script><h4 id="b-通过遍历离散状态和离散控制空间求解-直接查表法"><a href="#b-通过遍历离散状态和离散控制空间求解-直接查表法" class="headerlink" title="b.通过遍历离散状态和离散控制空间求解(直接查表法)"></a>b.通过遍历离散状态和离散控制空间求解(直接查表法)</h4><p>​        假设我们现在知道对于K+1状态所有的值函数空间，我们对于特定的离散化控制和状态能保证生成的容许状态x(k+1)均在离散化状态空间内：我们则可以得到x(k+1)的状态方程，通过查表则可得到k+1状态的局部最优解。此时所对应的u即为最优控制。</p>
-<h4 id="c-通过遍历当下和下时刻离散状态空间"><a href="#c-通过遍历当下和下时刻离散状态空间" class="headerlink" title="c.通过遍历当下和下时刻离散状态空间"></a>c.通过遍历当下和下时刻离散状态空间</h4><p>​        一般解决线性问题，可以直接求解得出解。</p>
-<script type="math/tex; mode=display">
-对于上述遍历当前状态和下时刻状态的最优控制算法，若系统状态方程对控制变量是线性的，即x(k+1)=A(x(k),k)+B(x(k),k)u(k)\\
-则可直接解得状态x(k),x(k+1)对应的控制\\
-u(k)=B(x(k),k)^{-1}(x(k+1)-A(x(k),k))</script><p>​        求出解析解的过程很精确，但是由于存储数据量较大，会面临维度灾难的问题，求解时空复杂度很高。</p>
-<h3 id="（3）Hamilton-Jacobi-Bellman-方程。"><a href="#（3）Hamilton-Jacobi-Bellman-方程。" class="headerlink" title="（3）Hamilton-Jacobi-Bellman 方程。"></a>（3）Hamilton-Jacobi-Bellman 方程。</h3><p>​        证明太复杂，看不懂，只需要知道结论即可：</p>
-<script type="math/tex; mode=display">
-对于任意的x,t∈[t_0,t_f],最优控制u^*下的性能指标标记为值函数：\\
-v(x,t)=\min_{x^*∈U}J(u^*;x,t)\\
-最优控制的充要条件是Hamilton-Jacobi-Bellman方程：\\
--V_t(x(t),t)=\min_{u∈U}{x(t),u(t),V_x(x(t),t),t∈[t_0,t_f]}\\
-其边界条件为：\\
-V(x(t_f),t_f)=ϕ(x(t_f),t_f)</script><p>​    </p>
-<h3 id="（4）HJB方程求解连续最优性问题。"><a href="#（4）HJB方程求解连续最优性问题。" class="headerlink" title="（4）HJB方程求解连续最优性问题。"></a>（4）HJB方程求解连续最优性问题。</h3><p>​    我们从一个简单的例题来解决这个问题，该问题的性能指标条件类似于欧拉朗格朗日问题的性能指标。</p>
-<script type="math/tex; mode=display">
-状体方程\\
-x^.(t)=x(t)+u(t)\\
-最小化性能指标\\
-J(u)=\frac14x^2(t_f)+\int_{0}^{t_f}\frac14u^2(t)dt\\
-终止时刻t_f|fixed,x(t_f)free</script><p><strong>解：</strong></p>
-<p>考虑哈密尔顿量：</p>
-<script type="math/tex; mode=display">
-Hamiltonian为\\
-H(x(t),u(t),V_x)=\frac14u^2(t)+V_x(x(t),t)[x(t)+u(t)]\\
-一阶条件和二阶条件：\\
-0=\frac{∂H}{∂u}=\frac12u(t)+V_x(x(t),t),\frac{∂^2H}{∂u^2}=\frac12>0\\
-于是\\
-u^*(t)=-2V_x(x(t),t)</script><p><strong>形式上就是用值函数对x的导数作为拉格朗日乘子法中的乘子，这种做法与极值原理是等价的</strong></p>
-<p>将极值条件带入HJB方程：</p>
-<script type="math/tex; mode=display">
-将极值条件u^*(t)=-2V_x(x(t),t)代入HJB方程\\
-0=V_t+\frac14(-2V_x)^2+V_xx-2(V_x)^2\\
-=V_t-V_x^2+V_xx\\
-以及边界条件：\\
-V(x(t_f),t_f)=\frac14x^2(t_f)</script><p>使用试凑法化简HJB方程，通过边界条件猜测值函数形式：</p>
-<script type="math/tex; mode=display">
-V(x(t),t)=\frac12K(t)x(t)\\
-其中K(t)待定，于是：\\
-V_x(x(t),t)=K(t)x(t)\\
-u^*(t)=-2K(t)x(t)\\
-引入待定函数后，HJB函数化为：\\
-0=\frac12K^.(t)x^2(t)-K^2(t)x^2(t)+K(t)x^2(t),\\
-0=\frac12K^.(t)-K^2(t)+K(t)\\
-以及边界条件：\\
-\frac12K(t_f)x^2(t_f)=\frac14x^2(t_f)\\
-F(t_f)=\frac12\\
-通过分离变量法求解上述方程得：\\
-K(t)=\frac{e^{t_f-t}}{e^{t_f-t}+e^{-t_f+t}}\\
-得到闭环最优控制:\\
-u^*(t)=-2V_x(x(t),t)\\
-=-\frac{2e^{t_f-t}}{e^{t_f-t}+e^{-t_f+t}}x(t)</script><p>​        <strong>动态规划算法最核心的点都是基于一种最优性原理，也即时时刻刻都使得其满足最优的条件。对于连续函数来说，就是通过让其时时刻刻满足最优性方程，而对于离散来说，就是在每一步都达到局部最优，连续性会从解析解的角度来讨论整个问题，而离散问题则是从迭代局部最优的角度来解决整个问题。</strong></p>
-<h3 id="（5）HJB方程局限性。"><a href="#（5）HJB方程局限性。" class="headerlink" title="（5）HJB方程局限性。"></a>（5）HJB方程局限性。</h3><p>HJB方程一般难以求解，HJB方程对值函数有可微的要求。</p>
-<h3 id="（6）使用动态规划求解连续最优控制过程。"><a href="#（6）使用动态规划求解连续最优控制过程。" class="headerlink" title="（6）使用动态规划求解连续最优控制过程。"></a>（6）使用动态规划求解连续最优控制过程。</h3><p>使用惩罚函数法将终值条件转化至目标函数中<br>求Hamiltonian 极值情况下最优控制<br>获得HJB 方程，并求解<br>得到与HJB 方程解有关的闭环形式最优控制</p>
-<h2 id="4-线性二次型控制（LQR）。"><a href="#4-线性二次型控制（LQR）。" class="headerlink" title="4.线性二次型控制（LQR）。"></a>4.线性二次型控制（LQR）。</h2><h3 id="（1）离散动态规划求解LQR。"><a href="#（1）离散动态规划求解LQR。" class="headerlink" title="（1）离散动态规划求解LQR。"></a>（1）离散动态规划求解LQR。</h3><p>我们对离散情况的线性二次型求解最优控制，将离散情况下的LQR问题描述为：</p>
-<p>离散状态方程：</p>
-<script type="math/tex; mode=display">
-x_{k+1} = A_kx_k + B_ku_k.</script><p>最小化性能指标：</p>
-<script type="math/tex; mode=display">
-J=\frac{1}{2}x^T_NHx_N+\frac{1}{2}\sum_{k=0}^{N-1}{[x^T_kQ_kx_k+u^T_kR_ku_k]}</script><p>其中，H和Qk是实对称半正定矩阵，Rk是实对称正定矩阵。</p>
-<p>此处类似于动态规划方法中的直接迭代法求解离散最优控制问题，对最小化性能指标进行解释：</p>
-<script type="math/tex; mode=display">
-\frac{1}{2}x^T_NHx_N，终止损失，取值越大则终止装填越接近原点\\
-x^T_kQ_kx_k，过程损失，取值越大则状态尽早接近原点\\
-u^T_kR_ku_k，取值越大则能量损失越小</script><p><strong>解：</strong></p>
-<p>倒推法，终止值函数：</p>
-<script type="math/tex; mode=display">
-V(x_N,N)=\frac12x^T_NHx_N</script><p>记PN=H</p>
-<p>在k=N-1时，记录N-1时刻的值函数及其推理：</p>
-<script type="math/tex; mode=display">
-V(x_{N-1},N-1)=min_{u_N-1}\lbrace\frac12[x^T_{N-1}Q_{N-1}x_{N-1}+u^T_{N-1}R_{N-1}u_{N-1}]+V(x_N,N)\rbrace\\
-=min_{u_N-1}\lbrace\frac12[x^T_{N-1}Q_{N-1}x_{N-1}+u^T_{N-1}R_{N-1}u_{N-1}]+x_N^TP_Nx_N\rbrace\\
-=min_{u_N-1}\lbrace\frac12[x^T_{N-1}Q_{N-1}x_{N-1}+u^T_{N-1}R_{N-1}u_{N-1}]+(A_{N-1}x_{N-1}+B_{N-1}u_{N-1})^TP_N(A_{N-1}x_{N-1}+B_{N-1}u_{N-1})\rbrace\\
-\frac{∂V(x_{N-1},N-1)}{∂u_{N-1}}=u^T_{N-1}R_{N-1}+(A_{N-1}x_{N-1}+B_{N-1}u_{N-1})^TP_NB_{N-1}=0\\
-u^*_{N-1}=-[R_{N-1}+B^T_{N-1}P_NB_{N-1}]^{-1}B^T_{N-1}P_NA_{N-1}x_{N-1}\\
-=F_{N-1}x_{N-1}</script><p>我们将反解的矩阵带入k=n-1的最优控制带入值函数，有：</p>
-<script type="math/tex; mode=display">
-V(x_{N-1},N-1)=\frac12x^T_{N-1}\lbrace Q_{N-1}+F_{N-1}^TR_{N-1}F_{N-1}+(A_{N-1}+B_{N-1}F_{N-1})^TP_N(A_{N-1}+B_{N-1}F_{N-1})\rbrace x_{N-1}\\
-进一步化简可得：=\frac12x^T_{N-1}P_{N-1}x_{N-1}</script><p>迭代得到最优控制方程组</p>
-<script type="math/tex; mode=display">
-最优控制方程如下所示：\\
-u^*_k=F_kx_k\\
-V(x_k,k)=\frac12 x^T_kP_Kx_k\\
-需要满足以上闭环形式最优控制，其中，得到离散黎卡提(Riccati)方程：\\
-P_N=H\\
-F_k=-[R_k+B_k^TP_{K+1}B_K]^{-1}B^T_KP_{K+1}A_K\\
-P_k=Q_k+F^T_KR_KF_k+(A_k+B_KF_K)^TP_{K+1}(A_K+B_KF_K)</script><h3 id="（2）连续动态规划求解LQR。"><a href="#（2）连续动态规划求解LQR。" class="headerlink" title="（2）连续动态规划求解LQR。"></a>（2）连续动态规划求解LQR。</h3><p>​        我们将一个连续情况下的线性二次型最优控制描述为如下的数学形式：</p>
-<script type="math/tex; mode=display">
-连续状态方程：x^.(t)=A(t)x(t)+B(t)u(t)\\
-最小化性能指标：J=\frac12 x^T(t_f)Hx(t_f)+\frac12 \int_{t_0}^{t_f}[x^T(t)Q(t)x(t)+u^T(t)R(t)u(t)]dt\\
-t_f fixed ,x(t_f)free.H和Q(t)是实对称半正定矩阵，R(t)是实对称正定矩阵</script><p>我们将其损失条件描述如下所示：</p>
-<script type="math/tex; mode=display">
-\frac12 x^t(t_f)Hx(t_f)是终止损失，取值越大则终止状态越接近原点\\
-x^T(t)Q(t)x(t)过程损失，取值越大则状态尽早收敛至原点\\
-u^T(t)R(t)u(t)取值越大则能量损失越小\\
-H半正定，Q（t）半正定，R（t）正定</script><p><strong>解：</strong></p>
-<p>考察并计算哈密尔顿量：</p>
-<script type="math/tex; mode=display">
-Halmiltonian:H(x(t),u(t),V_x,t)=\frac12 x(t)^TQ(t)x(t)+\frac12 u^T(t)R(t)u(t)+V_x[A(t)x(t)+B(t)u(t)]\\
-一阶条件求解：0=\frac{∂H}{∂u}=R(t)u^*+B^T(t)V_x(x(t),t)\\
-二阶条件求解：\frac{∂^2H}{∂u^2}=R(t)\\
-其中u^*=-R^{-1}(t)B^T(t)V_x(x(t),t)\\
-将极值一阶条件带入Hamiltonian得到：\\
-H(x(t),u(t),V_x,t)=\frac12x^TQx+V_x^TAx-\frac12V_X^TBR^{-1}B^TV_X</script><p>得到HJB方程：</p>
-<script type="math/tex; mode=display">
-V_t+\frac12x^TQx+V_x^TAx-\frac12V_X^TBR^{-1}B^TV_X=0\\
-通过边界条件形式猜测HJB方程为二次形式：\\
-V(x(t),t)=\frac12x^T(t)K(t)x(t),其中K(t)为实对称正定矩阵\\
-求解HJB方程后，得到闭环控制的最优控制，连续黎卡提方程:\\
-K^.(t)+Q(t)-K(t)B(t)R^{-1}(t)B^T(t)K(t)+K(t)A(t)+A^T(t)K(t)=0\\
-K(t_f)=H\\
-u^*(t)=-R^{-1}(t)B^T(t)K(t)x(t)</script><h2 id="5-经典控制理论运用例题。"><a href="#5-经典控制理论运用例题。" class="headerlink" title="5.经典控制理论运用例题。"></a>5.经典控制理论运用例题。</h2><h1 id="三、模型预测控制方法。"><a href="#三、模型预测控制方法。" class="headerlink" title="三、模型预测控制方法。"></a>三、模型预测控制方法。</h1><p>​        模型预测控制是一种控制算法的简称,其都具有如下的三个特征：1.预测模型：利用预测末次的那个预测系统在一定控制作用下未来的动态行为。应确保能快速求解。2.滚动优化：对预测模型求解一段时间内的开环最优控制，并实施当前时刻的控制变量；下一采样时刻，重新获取状态作为新的初值，滚动时间窗口重复上述最优控制求解。3.反馈矫正：在求解滚动优化前，系统首先利用反馈信息矫正预测模型。</p>
-<h2 id="1-无约束非线性规划"><a href="#1-无约束非线性规划" class="headerlink" title="1.无约束非线性规划"></a>1.无约束非线性规划</h2><h3 id="（1）函数极值基本理论"><a href="#（1）函数极值基本理论" class="headerlink" title="（1）函数极值基本理论"></a>（1）函数极值基本理论</h3><p>​        若函数F(x)二阶连续可导，则可使用泰勒公式对其近似，存在δ&gt;0，对于任意的||Δx||&lt;δ，进行<strong>泰勒展开</strong>有：</p>
-<script type="math/tex; mode=display">
-F(x+Δx)≈F(x)+Δx^Tg(x)+\frac12Δx^TG(x)Δx+.......</script><p>其中，g是F的<strong>梯度（gradient）</strong>，G是F的<strong>海森矩阵（Hessian Matrix）</strong>；</p>
-<p>使用矩阵描述，此时，二阶以二次型的方式出现。一阶解算也是值的形式：</p>
-<script type="math/tex; mode=display">
-x=\begin{bmatrix} x_1  \\ x_2 \\ \vdots\\x_n \end{bmatrix},g=\begin{bmatrix} \frac{∂F}{∂x_1} \\ \vdots\\\frac{∂F}{∂x_n} \end{bmatrix},G=\begin{bmatrix} \frac{∂^2F}{∂x_1^2} & \cdots & \frac{∂^2F}{∂x_1∂x_n}  \\ \vdots & \ddots & \vdots\\\frac{∂^2F}{∂x_n∂x_1} & \cdots & \frac{∂^2F}{∂x_n^2} \end{bmatrix}</script><p>函数极值的一阶条件（必要条件）</p>
-<p>上式中，假定||Δx||&lt;δ，考察泰勒展开的前两项：</p>
-<script type="math/tex; mode=display">
-x^*为极小值点->g(x^*)=0,梯度为0是极值的必要条件，当自变量为一维时，该条件即导数为0\\
-该条件下x^*为驻点，该点可能是鞍点或极大值点，所以是必要条件</script><p>函数极值的二阶条件（充分条件）：</p>
-<p>若函数此时梯度已为0，由泰勒展开可得：</p>
-<script type="math/tex; mode=display">
-F(x+Δx)≈F(x)+\frac12Δx^TG(x)Δx+.......\\
-此时对于任意的0<||Δx||<δ都有Δx^TG(x)Δx>0,则一定存在F(x^*+Δx)>F(x^*)\\
-因此，此时我们需要让泰勒展开二次项的线性二次型的值恒大于0，因此海森矩阵的顺序主子式全大于0，海森矩阵应正定\\
-得到极值充分条件为：海森矩阵正定</script><h3 id="（2）无约束非线性规划的线搜索方法"><a href="#（2）无约束非线性规划的线搜索方法" class="headerlink" title="（2）无约束非线性规划的线搜索方法"></a>（2）无约束非线性规划的线搜索方法</h3><p>​        我们将一个无约束非线性规划问题描述如下：</p>
-<script type="math/tex; mode=display">
-\min_{x∈X}F(x)\\
-线搜索方法是通过数值方法迭代地求解函数极值：\\
-给定：对最优解x^*的初步估计x_0\\
-迭代：\hat{x_{k+1}}=\hat{x_{k}}+α_kd_k\\
-其中，α_k为步长，d_k为迭代方向</script><p>​        其中，线搜索的步长和迭代方向是其特征的值，步长分为<strong>精确搜索和非精确搜索</strong>，迭代方向分为<strong>最速下降法（一阶方法）</strong>、<strong>牛顿法（二阶方法）</strong>、<strong>拟牛顿法</strong>，对于不同的系统，我们要选择不同的迭代方向。这对我们迭代的效果影响非常巨大。</p>
-<p><strong>步长选择.</strong></p>
-<p>当我们选择了一个迭代方向dk的情况下，步长αk决定了在一个滚动优化周期内部迭代一次沿着所走方向的“走多远”。其中，精确搜索指的是固定迭代方向dk，寻找何时的步长αk以最小化F(xk+αkdk)；非精确搜索是为了追求高效率快速给出“适当的”步长，迭代方向对线搜索性能影响极大。</p>
-<p>我们以下面的题为例，解释我们的非线性规划的固定（精确）步长线搜索方法：</p>
-<script type="math/tex; mode=display">
-性能指标：F(x_1,x_2)=x_1^2+x_2^2\\
-给定\hat{x_0}=(1,1)^T,d_0=(0,2)^T,精确搜索最优步长α_0，以最小化F(x_0+α_0d_0)</script><script type="math/tex; mode=display">
-根据线搜索迭代公式可知，\\
-\hat{x_0}+α_0\hat{d_0}=\begin{bmatrix}1\\ 1+2α_0\end{bmatrix}\\
-于是F(\hat{x_0}+α_0d_0)=1+(1+2α_0)^2\\
-为了满足必要条件，因此我们需要让其对α_0的导数为0\\
-0=\frac{∂F}{∂α_0}=4(1+2α_0)\\
-因此,α_0=-\frac12</script><p>当我们的步长不精确时，就可以经此引出迭代方向的不同确定方法，最常见的就是<strong>最速下降法（梯度下降）</strong>：</p>
-<script type="math/tex; mode=display">
-对函数F(\hat{x_{k+1}})进行泰勒展开：\\
-对F(\hat{x_{k+1}})≈F(\hat{x_k})+∇F(\hat{x_k})^T(\hat{x_{k+1}}-\hat{x_k})=F(\hat{x_k})+∇F(\hat{x_k})^Tα_k\hat{d_k}\\
-令∇F为F的梯度，F、∇F的表达式如下:\\
-x=\begin{bmatrix}x_1\\x_2\\ \vdots\\x_n\end{bmatrix},∇F=\begin{bmatrix}\frac{∂F}{∂x_1}\\ \vdots\\\frac{∂F}{∂x_n} \end{bmatrix}\\
-假定α_0>0,迭代能使得函数值序列单调递减，则存在：\\
-∇F(\hat{x_k})^T\hat{d_k}<0\\
-选择负梯度方向为线搜索方向（最速下降法）\\
-\hat{d_k}=-∇F(\hat{x_k})</script><script type="math/tex; mode=display">
-二阶泰勒展开F(\hat{x})得到：\\
-F(\hat{x_{k+1}})≈F(\hat{x_{k}})+(\hat{x_{k+1}}-\hat{x_k})^T∇F(\hat{x_k})+\frac12(\hat{x_{k+1}}-\hat{x_k})^T∇^2F(\hat{x_k})(\hat{x_{k+1}}-\hat{x_k})\\
-令∇^2F为F的海森矩阵\\
-∇^2F=\begin{bmatrix}\frac{∂^2F}{∂x^2_1}&\cdots&\frac{∂^2F}{∂x_1∂x_n}\\\vdots&\ddots&\vdots\\\frac{∂^2F}{∂x_n∂x_1} &\cdots&\frac{∂^2F}{∂x_n^2}\end{bmatrix}</script><p>将一阶条件导入二阶泰勒展开，推导出<strong>牛顿法</strong>：</p>
-<script type="math/tex; mode=display">
-0≈∇F(\hat{x_{k+1}})≈∇F(\hat{x_k})+∇^2F(\hat{x_k})(\hat{x_{k+1}}-\hat{x_k})\\
-\hat{d_k}=-∇^2F^{-1}(\hat{x_k})∇F(\hat{x_k})</script><p>由于海森矩阵计算复杂，<strong>拟牛顿法</strong>在xk附近考虑F(x)的二次逼近</p>
-<script type="math/tex; mode=display">
-F(\hat{x_{k+1}})≈F(\hat{x_{k}})+(\hat{x_{k+1}}-\hat{x_k})^T∇F(\hat{x_k})+\frac12(\hat{x_{k+1}}-\hat{x_k})^TB_k^{-1}(\hat{x_{k+1}}-\hat{x_k})\\
-\hat{d_k}=-B_k∇F(\hat{x_k})</script><p>常见的拟牛顿法包括DFP,BFGS等。</p>
-<h2 id="2-有约束非线性规划"><a href="#2-有约束非线性规划" class="headerlink" title="2.有约束非线性规划"></a>2.有约束非线性规划</h2><p>最小化性能指标minF(x)，约束条件为f(x)=&lt;0。</p>
-<h3 id="（1）使用等式约束的函数极值"><a href="#（1）使用等式约束的函数极值" class="headerlink" title="（1）使用等式约束的函数极值"></a>（1）使用等式约束的函数极值</h3><p>使用<strong>直接带入法</strong>求解有等式约束的函数极值：</p>
-<p><strong>解：</strong></p>
-<script type="math/tex; mode=display">
-x_1,x_2∈R,满x_1+x_2+2=0，最小化性能指标：\\
-F(x_1,x_2)=x_1^2+x_2^2\\
-解：将x_1=-2-x_2代入F得到：\\
-\min_{x_2}F_1(x_2)=(-2-x_2)^2+x_2^2\\
-求导得到结果。x_2=-1,x_1=-1</script><p>使用<strong>拉格朗日乘子法</strong>求解等式约束的函数极值：</p>
-<p><strong>定理.</strong></p>
-<script type="math/tex; mode=display">
-对于有等式约束f(x_1,x_2)=0的情况下求F(x_1,x_2)极值问题，引入拉格朗日乘子λ：\\
-F(x_1,x_2,λ)=F(x_1,x_2)+λf(x_1,x_2)\\
-F(x_1,x_2)取极值的必要条件是：\\
-\frac{∂F}{∂λ}=f(x_1,x_2)=0\\
-\frac{∂F}{∂x_1}=0\\
-\frac{∂F}{∂x_2}=0\\</script><h3 id="（2）使用不等式约束的函数极值"><a href="#（2）使用不等式约束的函数极值" class="headerlink" title="（2）使用不等式约束的函数极值"></a>（2）使用不等式约束的函数极值</h3><p>将一个使用不等式约束的函数极值问题描述为如下所示：</p>
-<script type="math/tex; mode=display">
-最小化性能指标：F(x_1,x_2)=x_1^2+x_2^2+x_1x_2\\
-满足约束:x_2>1.x_1+x_2<=3</script><p>我们将不等式约束的函数极值的条件描述为一个<strong>KKT条件</strong>：</p>
-<script type="math/tex; mode=display">
-不等式约束f(x)<=0，求F(x)极值。引入拉格朗日乘子λ：\\
-F(x,λ)=F(x)+λ^Tf(x)\\
-F(x)取极值的必要条件是KKT条件：\\
-∇_xF=0\\
-λ^Tf(x)=0\\
-λ>=0\\
-f(x)<=0\\
-f(x^*)=0,称为激活约束，f(x^*)<0，称为非激活约束</script><p><strong>解：</strong></p>
-<p>求解拉格朗日函数并写出其<strong>KKT条件</strong>：</p>
-<script type="math/tex; mode=display">
-F(x_1,x_2)=x_1^2+x_2^2+x_1x_2+λ_1(1-x_2)+λ_2(x_2+x_2-3)\\
-KKT条件：\\
-\frac{∂F}{∂x_1}=2x_1+x_2+λ_2=0\\
-\frac{∂F}{∂x_2}=x_1+2x_2-λ_1+λ_2=0\\
-λ_1(1-x_2)=0\\
-λ_2(x_1+x_2-3)=0\\
-令λ_1=λ_2=0，得到x_1=x_2=0，不满足约束，舍去；\\
-令λ_1=0，λ_2>0，得到λ_2=-9/2，舍去\\
-令λ_2=0，λ_1>0，得到最优解F=0.75</script><h3 id="（3）（等式约束）二次规划问题（QP）"><a href="#（3）（等式约束）二次规划问题（QP）" class="headerlink" title="（3）（等式约束）二次规划问题（QP）"></a>（3）（等式约束）二次规划问题（QP）</h3><p>将一个在等式约束下的二次规划问题描述为：</p>
-<script type="math/tex; mode=display">
-最小化性能指标：\min_{x∈R^n}\frac12x^TQx-x^Tb\\
-约束条件为：Ax=a\\
-其中，Q恰好是函数F的海森矩阵</script><p><strong>解：</strong></p>
-<script type="math/tex; mode=display">
-引入拉格朗日乘子：\\
-F(x,λ)=\frac12x^TQx-x^Tb+λ^T(Ax-a)\\
-由KKT条件有：\\
-0=∇_xF=Qx-b+A^Tλ(此步骤是由矩阵求导的性质得出的)\\
-0=Ax-a(此步骤是KKT条件的激活函数)\\
-将函数构造为矩阵形式：\\
-\begin{bmatrix}Q&A^T\\A&0\end{bmatrix}\begin{bmatrix}x\\λ\end{bmatrix}=\begin{bmatrix}b\\a\end{bmatrix}</script><h2 id="3-最优策略求解方法"><a href="#3-最优策略求解方法" class="headerlink" title="3.最优策略求解方法"></a>3.最优策略求解方法</h2><h3 id="（1）间接法求解最优控制"><a href="#（1）间接法求解最优控制" class="headerlink" title="（1）间接法求解最优控制"></a>（1）间接法求解最优控制</h3><p>​        间接法求解最优控制问题借助了极值原理和打靶法的思想，也即根据极值原理得到最优控制问题的必要条件（关于状态和协态变量的微分方程组，结合边界条件和横截条件），构建两点边值问题，之后采用<strong>单重或多重打靶法</strong>进行优化求解。</p>
-<p>​        </p>
-<script type="math/tex; mode=display">
-初值问题IVP：\\
-x^._1=x_2\\
-x^._2=λsinhλx^._1\\
-x_1(0)=0,x_2(0)=-0.518621\\
-边值问题BVP：\\
-x^._1=x_2\\
-x^._2=λsinhλx^._1\\
-x_1(0)=0,x_1(1)=1\\</script><p>通过以下例子来解释使用<strong>单重打靶法</strong>进行滚动优化：</p>
-<script type="math/tex; mode=display">
-x^.=x\\
-可以得到解析解：x=x(t_0)e^{t-t_0}\\
-寻找合适的初值x(t_0)以使得x(t_f)=x_f.假定初值为s，终止时刻打靶误差为：\\
-c(s)=x_f-x(t_f)=x_f-x_0e^{t_f-t_0}=x_f-se^{t_f-t_0}\\
-此时我们构造了误差函数只需要我们进行对误差函数的优化问题，也即找到合适的s使得c(s)=0成立\\
-初始化s=x(t_0)(此处为猜测)\\
-打靶：求解常微分方程初值问题IVP，得到x(t_f;s)\\
-得到停止时刻的误差c(s)=x(t_f;s)-x_f\\
-使用非线性规划方法重复以上过程，求解c(s)=0\\
-滚动优化过程,使用牛顿法实现打靶：0=c(s_{k+1})=c(s_k)+\frac{∂c}{∂s}(s_k)(s_{k+1}-s_k)\\
-s_{k+1}=s_k-\frac{∂c}{∂s}(s_k)^{-1}c(s_k)</script><p>​        单重打靶法存在弊端，初值是通过猜测的方式产生，若猜测不好可能会导致无解或不收敛，同样，对非线性问题的收敛性也较差。为了解决这样的问题，使用<strong>多重打靶法</strong>实现，以下是使用多重打靶法求解上述问题的过程：</p>
-<script type="math/tex; mode=display">
-在以上时间的一半处t_1=(t_0+t_f)/2再立一靶，猜测t_0点取值为s_1=x(t_0),猜测在t_1点取值为s_2=x(t_1),s=(s_1,s_2)^T\\
-于是应满足二维约束条件：\\
-0=c_1(s1,s2)=s_2-s_1e^{t_1-t_0}\\
-0=c_2(s1,s2)=x_f-s_2e^{t_f-t_1}\\
-通过上述方法，我们可以将整个时域过程划分为多份，将问题转化为多个时间段内对误差函数的最优问题，\\将一个长时域上的IVP问题化解为多个IVP问题</script><p>​        多重打靶法相比于单重打靶法，其优势在于可运用整个轨迹的初始已知信息，并且分块后系统更加线性，收敛效果更好；其缺点就是需要猜测整个状态轨迹作为初值，计算上较为复杂。</p>
-<h3 id="（2）直接法求解最优控制"><a href="#（2）直接法求解最优控制" class="headerlink" title="（2）直接法求解最优控制"></a>（2）直接法求解最优控制</h3><script type="math/tex; mode=display">
-将最优控制指标写为：\\
-\min_uϕ(x(T))+\int_{0}^{T}l(x(T),u(T))dt，其中T确定\\
-约束条件写为：\\
-s.t.x(0)=x_0\\
-x^.(t)-f(x(t),u(t))=0\\
-c(x(t),u(t))<=0\\
-m(x(T))=0\\
-引入时间变换，将自由终止时间转化为固定终止时间(1),我们可以得到：\\
-t=τT,τ∈[0, 1]\\
-\frac{d}{dτ}x(τ)=Tf(x(τ),u(τ))\\
-上述控制指标被写为：\\
-minϕ(x(1))+\int_{0}^{1}l(x(τ),u(τ))dτ\\
-将时间轴分成n个这样时间变换的过程，并直接利用打靶法，将最优控制问题转化为非线性规划问题\\
-自变量是控制u(t;q)的参数q，状态可以写成q的数值积分</script><p><strong>以下是使用LQR线性二次型控制器加上MPC模型预测控制方法的连续形式预测控制的例子：</strong></p>
-<script type="math/tex; mode=display">
-预测模型：在[t_k,t_k+T]上，以x(t_k)为初值的定常线性二次型控制\\
-滚动优化：[t_k,t_k+T]时段可求得开环最优控制\\
-u^*(τ)=ϕ(x(t_k),τ;t_k,T)\\
-在该轮滚动优化中只进行[t_k,t_{k+1}]部分\\
-反馈矫正：求解下个滚动优化前，更新预测模型的初值x(t_{k+1})\\
-在[t_k,t_k+T],控制仅依赖于t_k时刻反馈矫正的初值x(t_k)\\
-当|t_{k+1}-t_k|->0时，x(τ)≈x(t_k)</script><h2 id="4-最优控制例题。"><a href="#4-最优控制例题。" class="headerlink" title="4.最优控制例题。"></a>4.最优控制例题。</h2><h1 id="四、强化学习方法。"><a href="#四、强化学习方法。" class="headerlink" title="四、强化学习方法。"></a>四、强化学习方法。</h1>]]></content>
+      
+      
+        <tags>
+            
+            <tag> 变分法 </tag>
+            
+            <tag> 动态规划 </tag>
+            
+            <tag> LQR </tag>
+            
+            <tag> MPC </tag>
+            
+            <tag> RL </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>基于yolov5、fcos的目标识别跟踪系统</title>
+      <link href="/2024/10/28/2/"/>
+      <url>/2024/10/28/2/</url>
+      
+        <content type="html"><![CDATA[<h1 id="基于yolov5、fcos的目标识别跟踪系统"><a href="#基于yolov5、fcos的目标识别跟踪系统" class="headerlink" title="基于yolov5、fcos的目标识别跟踪系统"></a>基于yolov5、fcos的目标识别跟踪系统</h1><p>​    几个月前做一个需求，需要做一个关于一类物体的识别和跟踪任务。当时首先考虑到是一类物体、身份的识别，使用单纯的对一个特定物体特征提取的识别并不能帮助我对一类物体进行识别跟踪，因此，我打算使用yolo这种端到端的目标识别算法。后来考虑到我需要部署的平台算力又很有限，同时还要注重实时性，也就是通讯速率的问题，这种情况下对于我实时监测的帧数fps要求很高，还需要部署加速模型。</p><p>​    思来想去，树莓派上能够利用的加速方案即便加速了也不够识别算法的要求（onnx转ncnn等，加速之后大概也在10fps以下，仍然不够，个人建议稳定20fps以上），最后选择地瓜机器人（原地平线x3派），使用板载部署fcos跟踪识别。板载使用双核BPU资源，（AI算力达到5TOPS，比香橙派更小）将后处理等操作从神经元网络中提出来单独放在板上跑，最终能够稳定30fps（如果想跑自己的识别算法，需要通过docker将onnx文件转为bin文件，挂载天工开物toolchain），在部署代码中加入串口通讯等内容将识别数据与下位机通讯，从而达到跟踪的目的。</p><p>​    <strong>本项目学习逻辑顺序：首先，我们需要知道在电脑端部署上位机过程及输出过程，因为pc端属于算力相当充足的平台，可以看作理想平台，在此基础上，我们写下位机的逻辑代码，并搭建通讯协议，这时我们可以测试下位机的代码逻辑在理想平台运行下是否正确，也即电脑做上位机，32做下位机；测试完成后，再将上位机移植到算力有限平台，在此过程中，我们只需要解决有关通讯速率的问题就好了。</strong></p><p>​    博客主要内容为：</p><p>​        1.将yolo算法本地运行以及部署至树莓派的过程；</p><p>​        2.使用x3派官方部署的fcos识别作为上位机去与下位机通讯，完成识别并跟踪的需求。</p><h1 id="1-方案设计-amp-引脚分配。"><a href="#1-方案设计-amp-引脚分配。" class="headerlink" title="1.方案设计&amp;引脚分配。"></a>1.方案设计&amp;引脚分配。</h1><p>​    本案例采用单目摄像头识别，通过usb连接地平线X3派。地平线X3派官方已经安装好USB转TTL驱动（若这里使用的是树莓派，则一定要提前看下位机使用usb转ttl通讯的芯片型号安装驱动），通过usb连接STM32F103C8T6驱动板，板载获取信息后发出PWM波信号控制舵机转动。具体接线如下图所示：</p><p><img src="/2024/10/28/2/yolo.png" alt></p><p>​    其中，由电脑通过typeC对typeC口对地平线X3派供电，地平线和下位机通过usb对typec口通信，并且通过该线对下位机供电。此处供电只对PWM输出口其中一半的引脚进行供电，在测试时，若接入其中未供电的引脚，舵机会发出电流异响。下两图是下位机的原理图以及系统引脚分配:</p><p><img src="/2024/10/28/2/ylt.png" alt></p><p>引脚分配：</p><div class="table-container"><table><thead><tr><th>需求</th><th>需求个数</th><th>使用功能</th><th>引脚对应</th><th>说明</th></tr></thead><tbody><tr><td>底部旋转舵机</td><td>1</td><td>使用TIM4定时器功能产生PWM波形（output）</td><td>PB6（R26）</td><td>TIM4      PWMgenerationCH1</td></tr><tr><td>俯仰舵机</td><td>1</td><td>使用TIM4定时器功能产生PWM波形（output）</td><td>PB7(R27)</td><td>TIM4 PWMgenerationCH2</td></tr><tr><td>串口通讯与接收</td><td>1</td><td>在调试时可以使用电脑usb口直接进行串口通信，或者在打开串口通信设置后，进行引脚引出</td><td>PA13/PA14复用功能</td><td>通过usb进行通讯，改为串口通信</td></tr><tr><td>OLED屏幕显示</td><td>1</td><td>在调试时返回变换前和后的坐标值</td><td>PB5\PB4\PB3\PA15</td><td>使用SPI1通讯；对外推挽输出即可</td></tr><tr><td>KY-008激光模块</td><td>1</td><td>数字IO口（舵机占用）</td><td>PB8（R29）</td><td>一边接地，一边直接接入GPIO口即可。</td></tr><tr><td>syn6288语音播报模块</td><td>1</td><td>输出实时合成中文字符</td><td>PB10isTX/PB11isRX</td><td>串口资源3，目前已经禁用，使用socket协议直接和工控机通讯即可。</td></tr><tr><td>DEBUG</td><td>1</td><td></td><td>PA4</td><td>LEDBLUE</td></tr><tr><td>stlink</td><td>4</td><td>下载与调试</td><td>下4：swclk-PA14 swdio-PA13 3.3-3.3 GND-GND</td><td></td></tr><tr><td><strong>上位机接线需求</strong></td><td><strong>需求个数</strong></td><td><strong>使用功能</strong></td><td><strong>引脚对应</strong></td><td><strong>说明</strong></td></tr><tr><td>以太网远程桌面</td><td>1</td><td>VNCVIEWER</td><td>RJ45端子接网线</td><td>链接树莓派或X3派时，需要指定本地以太网IPV4地址为固定，树莓派请参考CSDN上教程，X3派请进入网络与共享中心-更改适配器设置-IPV4地址-属性-192.168.0.100（参照地平线手册）</td></tr><tr><td>通讯</td><td>1</td><td>usb</td><td>usb3.0</td><td></td></tr><tr><td>摄像头</td><td>1</td><td>usb</td><td>usb3.0</td><td>注意，若是定焦需要记住焦距，若是变焦则需要确定出厂焦距（目前焦距），如果实在记不住也没关系</td></tr></tbody></table></div><h1 id="2-在计算机本地下载并应用yolo算法。"><a href="#2-在计算机本地下载并应用yolo算法。" class="headerlink" title="2.在计算机本地下载并应用yolo算法。"></a>2.在计算机本地下载并应用yolo算法。</h1><h3 id="（1）配置环境。"><a href="#（1）配置环境。" class="headerlink" title="（1）配置环境。"></a>（1）配置环境。</h3><p>​    由于平台部署算力有限，因此选择使用YOLOV5-LITE轻量化版本。由于YOLOV5LITE的1.5版本export的环境与我所搭配的主环境冲突，于是选择1.4版本。以下是我的环境：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CUDA版本:12.1</span><br><span class="line">Python=3.11matplotlib=3.8.3opencv-python=4.9.0.80pillow=10.2.0 </span><br><span class="line">scipy=1.12.0 torch=2.2.1 torchversion=0.17.1 tensorboard=2.16.2 </span><br><span class="line">seaborn=0.13.2 pandas serial（通讯）</span><br></pre></td></tr></table></figure><p>​    使用conda创建虚拟环境命令：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">conda create -n env_name python=3.11#创建环境以及python版本</span><br><span class="line">conda env list#显示所有环境或者cd进入conda的evns中去ls</span><br><span class="line">conda activate env_name#激活进入环境中，可以在激活后在powershell中下载并配置环境</span><br></pre></td></tr></table></figure><h3 id="（2）本地运行YOLOV5。"><a href="#（2）本地运行YOLOV5。" class="headerlink" title="（2）本地运行YOLOV5。"></a>（2）本地运行YOLOV5。</h3><p>​    前往：<a href="https://github.com/ppogg/YOLOv5-Lite，下载源代码.zip至本地。">https://github.com/ppogg/YOLOv5-Lite，下载源代码.zip至本地。</a></p><p>​    在release中下载.pt预权重文件，这里使用YOLOV5LITE-S.pt文件，使用权重文件的s版本（最简化）。</p><p>​    以下是对YOLOV5LITE-1.4源码进行一些最基本的处理：</p><p>​        到基础能用的地步，更改所涉及到的文件：detect.py、plot.py、datasets.py</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">detect.py#</span><br><span class="line">#修改1：修改预训练权重文件的绝对地址------------------------------------------------------------------------------</span><br><span class="line">parser.add_argument(&#x27;--weights&#x27;, nargs=&#x27;+&#x27;, type=str, default=&#x27;D:/YOLOv5-Litev1.5/v5lites.pt&#x27;,help=&#x27;model.pt path(s)&#x27;)#此处default修改为自己下载的.pt文件的绝对地址</span><br><span class="line">#修改2：将YOLO从从指定地址读取图片识别模式修改至使用本地摄像头实时检测模式----------------------------------------------</span><br><span class="line">parser.add_argument(&#x27;--source&#x27;, type=str, default=&#x27;0&#x27;, help=&#x27;source&#x27;) #default修改为绝对地址为图片识别，若为0、1等等则为使用该数字端口的摄像头，一般0为本地，1为所接的第一个外部摄像头</span><br><span class="line"></span><br><span class="line">datasets.py</span><br><span class="line">#若要调用摄像头，同时还要在utils文件夹中logging文件夹下的datasets需要修改第279行代码，以下是datasets语言文件下代码修改：</span><br><span class="line">if &#x27;youtube.com/&#x27; in str(url) or &#x27;youtu.be/&#x27; in str(url): # if source is</span><br><span class="line">YouTube video</span><br><span class="line">#str(url)是本地摄像头，从url修改为str(url)</span><br><span class="line">check_requirements((&#x27;pafy&#x27;, &#x27;youtube_dl&#x27;))</span><br><span class="line"></span><br><span class="line">plot.py</span><br><span class="line">#修改3：输出获取中线点坐标并显示---------------------------------------------------------------------------------</span><br><span class="line">#在plot.py中ctrl+h搜索plot_one_box函数，并将函数修改至如下：</span><br><span class="line">def plot_one_box(x, img, color=None, label=None, line_thickness=3):</span><br><span class="line"># Plots one bounding box on image img</span><br><span class="line">tl = line_thickness or round(0.002 * (img.shape[0] + img.shape[1]) / 2)+ 1 # line/font thickness</span><br><span class="line">color = color or [random.randint(0, 255) for _ in range(3)]</span><br><span class="line">c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))</span><br><span class="line">cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)</span><br><span class="line">cv2.circle(img, ((c1[0] + c2[0]) // 2, (c1[1] + c2[1]) // 2), 3, (0, 0,</span><br><span class="line">255), thickness=tl)</span><br><span class="line"># 创建了个中心点坐标变量</span><br><span class="line">Center = (((c2[0] - c1[0]) / 2 + c1[0]), ((c2[1] - c1[1]) / 2 + c1[1]))</span><br><span class="line">cv2.putText(img, str(Center), ((c1[0] + c2[0]) // 2, (c1[1] + c2[1]) //2), 0, 0.8, (0, 0, 255), thickness=4, lineType=cv2.LINE_AA)</span><br><span class="line">print(&quot;左上点的坐标为：(&quot; + str(c1[0]) + &quot;,&quot; + str(c1[1]) + &quot;)，右下点的坐标为(&quot; + str(c2[0]) + &quot;,&quot; +str(c2[1]) + &quot;)&quot;)</span><br><span class="line">print(&quot;中心点的坐标为：(&quot; + str((c2[0] - c1[0]) / 2 + c1[0]) + &quot;,&quot; +str((c2[1] - c1[1]) / 2 + c1[1]) + &quot;)&quot;)</span><br><span class="line">#打印左上角和右下角的坐标</span><br><span class="line">if label:</span><br><span class="line">tf = max(tl - 1, 1) # font thickness</span><br><span class="line">t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]</span><br><span class="line">c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3</span><br><span class="line">cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA) # filled</span><br><span class="line">cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255,255], thickness=tf, lineType=cv2.LINE_AA)</span><br></pre></td></tr></table></figure><p>​    此时，在右下角添加pycharm虚拟环境，选择之前创建好的虚拟环境，运行detect.py，此时若出现显示调用摄像头识别框且显示识别框的中心点坐标则说明配置成功。</p><h3 id="（3）将文件export。"><a href="#（3）将文件export。" class="headerlink" title="（3）将文件export。"></a>（3）将文件export。</h3><p>​    首先，需要对export文件做出解释：export文件只是一个输出性文件，所输出的相当于只是另一个形式的.pt纯权重文件，因此若要在板载上部署仍需要进行以上基础修改操作：添加onnx权重矩阵地址、修改摄像头端口号及其分辨率、修改plot函数。</p><p>​    一般来说，我们为了识别一类物品，需要自己单独训练一个模型，但是我懒OVO，所以我会直接用官方识别几十种label的预权重模型，并加以修改为只输出识别一类物品（如人）。如果有时间的话，下一次研究的时候我再加上训练过程的记录吧。</p><p>​    言归正传，我们需要输出能够被树莓派和x3派成功使用，则需要我们修改opset版本号：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">torch.onnx.export(...,opset_version=11,...)#修改为11</span><br></pre></td></tr></table></figure><p>​    直接输出即可。</p><h1 id="3-跟踪思路：下位机处理逻辑与源代码"><a href="#3-跟踪思路：下位机处理逻辑与源代码" class="headerlink" title="3.跟踪思路：下位机处理逻辑与源代码"></a>3.跟踪思路：下位机处理逻辑与源代码</h1><p>​    我们从上位机得到输出的只能是一个人物检测框的中心点坐标，我们需要据此将舵机云台进行调整。</p><h3 id="（1）坐标系转换"><a href="#（1）坐标系转换" class="headerlink" title="（1）坐标系转换"></a>（1）坐标系转换</h3><p><img src="/2024/10/28/2/坐标系.png" alt></p><p>​    为了让云台知道自己该如何旋转，我们需要将其特征转换到一个中央对准的坐标系中去，我们所使用的像素画幅为640*480的矩形。即从识别坐标系opencv转换到旋转判定坐标系中。如果该类物体的坐标在1、2象限，那俯仰舵机向上旋转单位角度并继续获取旋转后坐标再进行比对；若该类物体坐标在2、3象限，那么水平舵机则向左旋转单位角度并继续获取旋转后坐标再进行比对。假设我们设定一个瞄准区域为（-25，25），也即当其旋转至此范围内时，判定为已经瞄准，则停止旋转，如下图所示：</p><p>​                <img src="/2024/10/28/2/zuobiaoxi.png" alt> </p><p>​    但是若旋转角度不变，则会产生一个问题，那就是：如果单位旋转角度过小，那么瞄准所需要的时间则会很长；如果单位旋转角度过大，那么瞄准所需要的时间虽然很短，但是由于中心瞄准区域的大小不宜太大，很容易造成转过了的情况，从而导致在人物中心点处左右摇摆。因此，针对不同的角度差值，使用不同的单位旋转角度，可以在一定程度上模拟位置式pid的效果——即，差的越远转的越快，差的越近转的越慢。实测跟踪效果会更好。</p><p><strong>T.I.P.S 不建议对角度进行惯性滤波，会导致跟随太慢的问题。</strong>（通信频率远小于100HZ）</p><p><strong>P.S.在使用之前，我们应当先对舵机进行标定（放在行程的中心点处）再进行安装。</strong></p><h3 id="（2）焦距变换-坐标系转换（未验证）"><a href="#（2）焦距变换-坐标系转换（未验证）" class="headerlink" title="（2）焦距变换+坐标系转换（未验证）"></a>（2）焦距变换+坐标系转换（未验证）</h3><p>​    我们可以看出来，上面那种方法麻烦且定位慢，那么为什么我们不能直接一下子就转到想要的角度呢？原因是我们使用的工业USB摄像头属于单目摄像头，一般来说不用单目摄像头进行测距，没有三维空间第三个坐标的信息，我们很难获取直接的坐标。但是，如果我们了解单目摄像头以及YOLO算法识别坐标的本质，那我们也同样能够获得这个三维空间的Z坐标信息。</p><p>​    在引脚分配部分，我曾提到要记住摄像头的焦距信息，使用单目摄像机的YOLO算法识别时，世界的影像被投影到一个平行于目前摄像头平面的二维平面上，它们之间的距离则是焦距，此时焦距单位按照像素计算。如下图所示：</p><p><img src="/2024/10/28/2/fushitu.png" alt></p><p>​    在平视情况下，我们也可以通过该种计算方法来直接旋转到目标转角。</p><p>​    <strong>P.S.按照理论来说这种方法很准，但是我个人在使用的时候，实际部署到上位机的时候确实不怎么准确（应该是我把焦距搞错了），没找到特别具体的原因，欢迎一试。</strong></p><h3 id="（3）下位机控制代码"><a href="#（3）下位机控制代码" class="headerlink" title="（3）下位机控制代码"></a>（3）下位机控制代码</h3><p>​    基于单纯的坐标系转换方法，使用STM32CUBEIDE编写和配置下位机。经过配置和引脚分配，配置如下图所示：</p><p>​    总体引脚:</p><p><img src="/2024/10/28/2/1.png" alt></p><p>​    时钟树：</p><p><img src="/2024/10/28/2/2.png" alt></p><p>PWM波：</p><p><img src="/2024/10/28/2/3.png" alt></p><p>烧录与通讯口：（usart3未使用）</p><p><img src="/2024/10/28/2/4.png" alt></p><p>使用最简单方案：坐标转换法</p><p>这里只对部分代码进行解析：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int x1=changebuff[0]*100+changebuff[1]*10+changebuff[2];</span><br><span class="line">int y1=changebuff[3]*100+changebuff[4]*10+changebuff[5];</span><br><span class="line">int x=changebuff[0]*100+changebuff[1]*10+changebuff[2]-320;</span><br><span class="line">int y=-(changebuff[3]*100+changebuff[4]*10+changebuff[5]-240);</span><br><span class="line">//从缓冲区读取并将坐标转换为中心坐标系</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">int quadrant;//判断坐标系</span><br><span class="line">if(x&gt;0&amp;&amp;y&gt;0)</span><br><span class="line">&#123;</span><br><span class="line">quadrant=1;</span><br><span class="line">&#125;</span><br><span class="line">else if(x&lt;0&amp;&amp;y&gt;0)</span><br><span class="line">&#123;</span><br><span class="line">    quadrant=2;</span><br><span class="line">&#125;</span><br><span class="line">else if(x&lt;0&amp;&amp;y&lt;0)</span><br><span class="line">&#123;</span><br><span class="line">    quadrant=3;</span><br><span class="line">&#125;</span><br><span class="line">else if(x&gt;0&amp;&amp;y&lt;0)</span><br><span class="line">&#123;</span><br><span class="line">    quadrant=4;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line">//控制左右旋转，确定当x在正负50以内为锁定成功，当其远不在锁定范围内时，移动步长为5，当其小于120时，移动步长为1，精确锁定。</span><br><span class="line">      int change_angle=5;</span><br><span class="line">  int change_angle1=1;</span><br><span class="line">  int range_max=100;</span><br><span class="line">  int range_min=50;</span><br><span class="line">  if(abs(x)&gt;50)</span><br><span class="line">  &#123;</span><br><span class="line">   if(abs(x)&gt;120)</span><br><span class="line">   &#123;</span><br><span class="line">   if(quadrant==1||quadrant==4)</span><br><span class="line">     &#123;</span><br><span class="line">       orgin1=orgin1-change_angle;</span><br><span class="line">       if(orgin1&gt;=180)</span><br><span class="line">       &#123;</span><br><span class="line">       orgin1=180;</span><br><span class="line">       &#125;</span><br><span class="line">       if(orgin1&lt;5)</span><br><span class="line">       &#123;</span><br><span class="line">         orgin1=5;</span><br><span class="line">       &#125;</span><br><span class="line">       servo_angle_left_right(orgin1);</span><br><span class="line">     &#125;</span><br><span class="line">   if(quadrant==2||quadrant==3)</span><br><span class="line">     &#123;</span><br><span class="line">       orgin1=orgin1+change_angle;</span><br><span class="line">       if(orgin1&gt;=180)</span><br><span class="line">       &#123;</span><br><span class="line">          orgin1=180;</span><br><span class="line">       &#125;</span><br><span class="line">       if(orgin1&lt;5)</span><br><span class="line">       &#123;</span><br><span class="line">          orgin1=5;</span><br><span class="line">       &#125;</span><br><span class="line">       servo_angle_left_right(orgin1);</span><br><span class="line">     &#125;</span><br><span class="line">   if(quadrant==1||quadrant==2)</span><br><span class="line">     &#123;</span><br><span class="line">       orgin2=orgin2+change_angle;change_angle;</span><br><span class="line">       if(orgin2&gt;=180)</span><br><span class="line"> &#123;</span><br><span class="line">   orgin2=180;</span><br><span class="line">     &#125;</span><br><span class="line">   if(orgin2&lt;5)</span><br><span class="line"> &#123;</span><br><span class="line">   orgin2=5;</span><br><span class="line"> &#125;</span><br><span class="line">       //servo_angle_up_down(orgin2);</span><br><span class="line">     &#125;</span><br><span class="line">   if(quadrant==3||quadrant==4)</span><br><span class="line">     &#123;</span><br><span class="line">       orgin2=orgin2-change_angle;</span><br><span class="line">       if(orgin2&gt;=180)</span><br><span class="line">     &#123;</span><br><span class="line">   orgin2=180;</span><br><span class="line">     &#125;</span><br><span class="line">   if(orgin2&lt;5)</span><br><span class="line">     &#123;</span><br><span class="line">   orgin2=5;</span><br><span class="line">     &#125;</span><br><span class="line">       //servo_angle_up_down(orgin2);</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   else</span><br><span class="line">   &#123;</span><br><span class="line">   if(quadrant==1||quadrant==4)</span><br><span class="line">        &#123;</span><br><span class="line">          orgin1=orgin1-change_angle1;</span><br><span class="line">          if(orgin1&gt;=180)</span><br><span class="line">          &#123;</span><br><span class="line">          orgin1=180;</span><br><span class="line">          &#125;</span><br><span class="line">          if(orgin1&lt;5)</span><br><span class="line">          &#123;</span><br><span class="line">            orgin1=5;</span><br><span class="line">          &#125;</span><br><span class="line">          servo_angle_left_right(orgin1);</span><br><span class="line">        &#125;</span><br><span class="line">      if(quadrant==2||quadrant==3)</span><br><span class="line">        &#123;</span><br><span class="line">          orgin1=orgin1+change_angle1;</span><br><span class="line">          if(orgin1&gt;=180)</span><br><span class="line">          &#123;</span><br><span class="line">             orgin1=180;</span><br><span class="line">          &#125;</span><br><span class="line">          if(orgin1&lt;5)</span><br><span class="line">          &#123;</span><br><span class="line">             orgin1=5;</span><br><span class="line">          &#125;</span><br><span class="line">          servo_angle_left_right(orgin1);</span><br><span class="line">        &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure><h1 id="4-在树莓派（地平线X3派）中使用yolov5算法（fcos目标检测算法）。"><a href="#4-在树莓派（地平线X3派）中使用yolov5算法（fcos目标检测算法）。" class="headerlink" title="4.在树莓派（地平线X3派）中使用yolov5算法（fcos目标检测算法）。"></a>4.在树莓派（地平线X3派）中使用yolov5算法（fcos目标检测算法）。</h1><p>地平线X3派中已经部署完毕，有机会再补充这部分部署代码（官方代码抄录）；</p><p>树莓派中部署：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br></pre></td><td class="code"><pre><span class="line">import cv2</span><br><span class="line">import numpy as np</span><br><span class="line">import onnxruntime as ort</span><br><span class="line">import time</span><br><span class="line"> </span><br><span class="line">def plot_one_box(x, img, color=None, label=None, line_thickness=None):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    description: Plots one bounding box on image img,</span><br><span class="line">                 this function comes from YoLov5 project.</span><br><span class="line">    param: </span><br><span class="line">        x:      a box likes [x1,y1,x2,y2]</span><br><span class="line">        img:    a opencv image object</span><br><span class="line">        color:  color to draw rectangle, such as (0,255,0)</span><br><span class="line">        label:  str</span><br><span class="line">        line_thickness: int</span><br><span class="line">    return:</span><br><span class="line">        no return</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    tl = (</span><br><span class="line">        line_thickness or round(0.002 * (img.shape[0] + img.shape[1]) / 2) + 1</span><br><span class="line">    )  # line/font thickness</span><br><span class="line">    color = color or [random.randint(0, 255) for _ in range(3)]</span><br><span class="line">    c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))</span><br><span class="line">    cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)</span><br><span class="line">    if label:</span><br><span class="line">        tf = max(tl - 1, 1)  # font thickness</span><br><span class="line">        t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]</span><br><span class="line">        c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3</span><br><span class="line">        cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled</span><br><span class="line">        cv2.putText(</span><br><span class="line">            img,</span><br><span class="line">            label,</span><br><span class="line">            (c1[0], c1[1] - 2),</span><br><span class="line">            0,</span><br><span class="line">            tl / 3,</span><br><span class="line">            [225, 255, 255],</span><br><span class="line">            thickness=tf,</span><br><span class="line">            lineType=cv2.LINE_AA,</span><br><span class="line">        )</span><br><span class="line"> </span><br><span class="line">def _make_grid( nx, ny):</span><br><span class="line">        xv, yv = np.meshgrid(np.arange(ny), np.arange(nx))</span><br><span class="line">        return np.stack((xv, yv), 2).reshape((-1, 2)).astype(np.float32)</span><br><span class="line"> </span><br><span class="line">def cal_outputs(outs,nl,na,model_w,model_h,anchor_grid,stride):</span><br><span class="line">    </span><br><span class="line">    row_ind = 0</span><br><span class="line">    grid = [np.zeros(1)] * nl</span><br><span class="line">    for i in range(nl):</span><br><span class="line">        h, w = int(model_w/ stride[i]), int(model_h / stride[i])</span><br><span class="line">        length = int(na * h * w)</span><br><span class="line">        if grid[i].shape[2:4] != (h, w):</span><br><span class="line">            grid[i] = _make_grid(w, h)</span><br><span class="line"> </span><br><span class="line">        outs[row_ind:row_ind + length, 0:2] = (outs[row_ind:row_ind + length, 0:2] * 2. - 0.5 + np.tile(</span><br><span class="line">            grid[i], (na, 1))) * int(stride[i])</span><br><span class="line">        outs[row_ind:row_ind + length, 2:4] = (outs[row_ind:row_ind + length, 2:4] * 2) ** 2 * np.repeat(</span><br><span class="line">            anchor_grid[i], h * w, axis=0)</span><br><span class="line">        row_ind += length</span><br><span class="line">    return outs</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">def post_process_opencv(outputs,model_h,model_w,img_h,img_w,thred_nms,thred_cond):</span><br><span class="line">    conf = outputs[:,4].tolist()</span><br><span class="line">    c_x = outputs[:,0]/model_w*img_w</span><br><span class="line">    c_y = outputs[:,1]/model_h*img_h</span><br><span class="line">    w  = outputs[:,2]/model_w*img_w</span><br><span class="line">    h  = outputs[:,3]/model_h*img_h</span><br><span class="line">    p_cls = outputs[:,5:]</span><br><span class="line">    if len(p_cls.shape)==1:</span><br><span class="line">        p_cls = np.expand_dims(p_cls,1)</span><br><span class="line">    cls_id = np.argmax(p_cls,axis=1)</span><br><span class="line"> </span><br><span class="line">    p_x1 = np.expand_dims(c_x-w/2,-1)</span><br><span class="line">    p_y1 = np.expand_dims(c_y-h/2,-1)</span><br><span class="line">    p_x2 = np.expand_dims(c_x+w/2,-1)</span><br><span class="line">    p_y2 = np.expand_dims(c_y+h/2,-1)</span><br><span class="line">    areas = np.concatenate((p_x1,p_y1,p_x2,p_y2),axis=-1)</span><br><span class="line">    </span><br><span class="line">    areas = areas.tolist()</span><br><span class="line">    ids = cv2.dnn.NMSBoxes(areas,conf,thred_cond,thred_nms)</span><br><span class="line">    if len(ids)&gt;0:</span><br><span class="line">        return  np.array(areas)[ids],np.array(conf)[ids],cls_id[ids]</span><br><span class="line">    else:</span><br><span class="line">        return [],[],[]</span><br><span class="line">def infer_img(img0,net,model_h,model_w,nl,na,stride,anchor_grid,thred_nms=0.4,thred_cond=0.5):</span><br><span class="line">    # 图像预处理</span><br><span class="line">    img = cv2.resize(img0, [model_w,model_h], interpolation=cv2.INTER_AREA)</span><br><span class="line">    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)</span><br><span class="line">    img = img.astype(np.float32) / 255.0</span><br><span class="line">    blob = np.expand_dims(np.transpose(img, (2, 0, 1)), axis=0)</span><br><span class="line"> </span><br><span class="line">    # 模型推理</span><br><span class="line">    outs = net.run(None, &#123;net.get_inputs()[0].name: blob&#125;)[0].squeeze(axis=0)</span><br><span class="line"> </span><br><span class="line">    # 输出坐标矫正</span><br><span class="line">    outs = cal_outputs(outs,nl,na,model_w,model_h,anchor_grid,stride)</span><br><span class="line"> </span><br><span class="line">    # 检测框计算</span><br><span class="line">    img_h,img_w,_ = np.shape(img0)</span><br><span class="line">    boxes,confs,ids = post_process_opencv(outs,model_h,model_w,img_h,img_w,thred_nms,thred_cond)</span><br><span class="line"> </span><br><span class="line">    return  boxes,confs,ids</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line"> </span><br><span class="line">    # 模型加载切换为自己的权重矩阵</span><br><span class="line">    model_pb_path = &quot;best.onnx&quot;</span><br><span class="line">    so = ort.SessionOptions()</span><br><span class="line">    net = ort.InferenceSession(model_pb_path, so)</span><br><span class="line">    </span><br><span class="line">    # 标签字典，切换为官方的字典，并且修改为只检测一类</span><br><span class="line">    dic_labels= &#123;0:&#x27;drug&#x27;,</span><br><span class="line">            1:&#x27;glue&#x27;,</span><br><span class="line">            2:&#x27;prime&#x27;&#125;</span><br><span class="line">    </span><br><span class="line">    # 模型参数</span><br><span class="line">    model_h = 320</span><br><span class="line">    model_w = 320</span><br><span class="line">    nl = 3</span><br><span class="line">    na = 3</span><br><span class="line">    stride=[8.,16.,32.]</span><br><span class="line">    anchors = [[10, 13, 16, 30, 33, 23], [30, 61, 62, 45, 59, 119], [116, 90, 156, 198, 373, 326]]</span><br><span class="line">    anchor_grid = np.asarray(anchors, dtype=np.float32).reshape(nl, -1, 2)</span><br><span class="line">    </span><br><span class="line">    video = 0</span><br><span class="line">    cap = cv2.VideoCapture(video)</span><br><span class="line">    flag_det = False</span><br><span class="line">    while True:</span><br><span class="line">        success, img0 = cap.read()</span><br><span class="line">        if success:</span><br><span class="line">            </span><br><span class="line">            if flag_det:</span><br><span class="line">                t1 = time.time()</span><br><span class="line">                det_boxes,scores,ids = infer_img(img0,net,model_h,model_w,nl,na,stride,anchor_grid,thred_nms=0.4,thred_cond=0.5)</span><br><span class="line">                t2 = time.time()</span><br><span class="line">            </span><br><span class="line">                </span><br><span class="line">                for box,score,id in zip(det_boxes,scores,ids):</span><br><span class="line">                    label = &#x27;%s:%.2f&#x27;%(dic_labels[id],score)</span><br><span class="line">            </span><br><span class="line">                    plot_one_box(box.astype(np.int16), img0, color=(255,0,0), label=label, line_thickness=None)</span><br><span class="line">                    </span><br><span class="line">                str_FPS = &quot;FPS: %.2f&quot;%(1./(t2-t1))</span><br><span class="line">                </span><br><span class="line">                cv2.putText(img0,str_FPS,(50,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,255,0),3)</span><br><span class="line">                </span><br><span class="line">            </span><br><span class="line">            cv2.imshow(&quot;video&quot;,img0)</span><br><span class="line">        key=cv2.waitKey(1) &amp; 0xFF    </span><br><span class="line">        if key == ord(&#x27;q&#x27;):</span><br><span class="line">        </span><br><span class="line">            break</span><br><span class="line">        elif key &amp; 0xFF == ord(&#x27;s&#x27;):</span><br><span class="line">            flag_det = not flag_det</span><br><span class="line">            print(flag_det)</span><br><span class="line">            </span><br><span class="line">    cap.release() </span><br></pre></td></tr></table></figure><h1 id="5-地平线x3派与下位机通讯。"><a href="#5-地平线x3派与下位机通讯。" class="headerlink" title="5.地平线x3派与下位机通讯。"></a>5.地平线x3派与下位机通讯。</h1><p>基于以上部署，我们做出以下修改：</p><p>首先修改为自己权重矩阵的绝对路径和字典库罗列。</p><p>修改为只检测一类：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">if label == &#x27;person&#x27;</span><br><span class="line"> plot_one_box(box.astype(np.int16), img0, color=(255,0,0), label=label, line_thickness=None)</span><br><span class="line">                    </span><br><span class="line">                str_FPS = &quot;FPS: %.2f&quot;%(1./(t2-t1))</span><br><span class="line">                </span><br><span class="line">                cv2.putText(img0,str_FPS,(50,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,255,0),3)</span><br><span class="line">                </span><br><span class="line">            </span><br><span class="line">            cv2.imshow(&quot;video&quot;,img0)</span><br></pre></td></tr></table></figure><p><strong>[warning]此种方法依然检测了多种类，只是只显示和输出了一类结果，实时性有待提高，还是应该自己训练为最佳。</strong></p><p>若实现通讯，上位机应该在plot中加入修改以下内容（以YOLO为例）：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line">#修改plots.py中plot_one_box内容</span><br><span class="line">def plot_one_box(x, img, color=None, label=None, line_thickness=3):</span><br><span class="line">    # Plots one bounding box on image img</span><br><span class="line">    tl = line_thickness or round(0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness</span><br><span class="line">    color = color or [random.randint(0, 255) for _ in range(3)]</span><br><span class="line">    c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))</span><br><span class="line">    cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)</span><br><span class="line">    cv2.circle(img, ((c1[0] + c2[0]) // 2, (c1[1] + c2[1]) // 2), 3, (0, 0, 255), thickness=tl)</span><br><span class="line">    # 创建了个中心点坐标变量</span><br><span class="line">    Center = (((c2[0] - c1[0]) / 2 + c1[0]), ((c2[1] - c1[1]) / 2 + c1[1]))</span><br><span class="line">    cv2.putText(img, str(Center), ((c1[0] + c2[0]) // 2, (c1[1] + c2[1]) // 2), 0, 0.8, (0, 0, 255),  thickness=4, lineType=cv2.LINE_AA)</span><br><span class="line">    #print(&quot;左上点的坐标为：(&quot; + str(c1[0]) + &quot;,&quot; + str(c1[1]) + &quot;)，右下点的坐标为(&quot; + str(c2[0]) + &quot;,&quot; + str(c2[1]) + &quot;)&quot;)</span><br><span class="line">    #print(str(int((c2[0] - c1[0]) / 2) + c1[0])+str(int((c2[1] - c1[1]) / 2) + c1[1]))</span><br><span class="line">    ##ser = serial.Serial(&#x27;COM6&#x27;, 115200, timeout=1)  # &#x27;COM5&#x27;是你的串口号，115200是波特率，timeout是超时时间（单位为秒）</span><br><span class="line">    ##if ser.is_open:</span><br><span class="line">    ##   print(&quot;串口已打开&quot;)</span><br><span class="line">    if 10&lt;=Center[0]&lt;100:</span><br><span class="line">        #print(str(0)+str(int(Center[0])) + str(int(Center[1])))</span><br><span class="line">        str2=str(0)+str(int(Center[0])) + str(int(Center[1]))</span><br><span class="line">        #encoded_str = str2.encode(&#x27;utf-8&#x27;)</span><br><span class="line">        ##    send_data_hex = bytes.fromhex(str2)</span><br><span class="line">        ##   ser.write(send_data_hex)</span><br><span class="line">        sleep(0.1)</span><br><span class="line">        ##   data=ser.read_all().hex()</span><br><span class="line">        ##   print(data)</span><br><span class="line"></span><br><span class="line">    if Center[0]&lt;10:</span><br><span class="line">        #print(str(0)+str(0) + str(int(Center[0])) + str(int(Center[1])))</span><br><span class="line">        str2 = str(0)+str(0) + str(int(Center[0])) + str(int(Center[1]))</span><br><span class="line">        #encoded_str = str2.encode(&#x27;utf-8&#x27;)</span><br><span class="line">        send_data_hex = bytes.fromhex(str2)</span><br><span class="line">        ##   ser.write(send_data_hex)</span><br><span class="line">        sleep(0.1)</span><br><span class="line">        ##  data = ser.read_all().hex()</span><br><span class="line">        ##    print(data)</span><br><span class="line"></span><br><span class="line">    if 10&lt;=Center[1]&lt;100:</span><br><span class="line">        #print(str(int(Center[0])) + str(0)+str(int(Center[1])))</span><br><span class="line">        str2 = str(int(Center[0])) + str(0)+str(int(Center[1]))</span><br><span class="line">        #encoded_str = str2.encode(&#x27;utf-8&#x27;)</span><br><span class="line">        send_data_hex = bytes.fromhex(str2)</span><br><span class="line">    ##   ser.write(send_data_hex)</span><br><span class="line">    sleep(0.1)</span><br><span class="line">    ##   data = ser.read_all().hex()</span><br><span class="line">    ##  print(data)</span><br><span class="line"></span><br><span class="line">if Center[1]&lt;10:</span><br><span class="line">    #print(str(int(Center[0])) + str(0)+str(0)+str(int(Center[1])))</span><br><span class="line">    str2 = str(int(Center[0])) + str(0)+str(0)+str(int(Center[1]))</span><br><span class="line">    #encoded_str = str2.encode(&#x27;utf-8&#x27;)</span><br><span class="line">    ##   send_data_hex = bytes.fromhex(str2)</span><br><span class="line">    ##   ser.write(send_data_hex)</span><br><span class="line">    sleep(0.1)</span><br><span class="line">    ##   data = ser.read_all().hex()</span><br><span class="line">    ##  print(data)</span><br><span class="line"></span><br><span class="line">if Center[0]&gt;100 and Center[1]&gt;100:</span><br><span class="line">    print(str(int(Center[0])) + str(int(Center[1])))</span><br><span class="line">    str2 = str(int(Center[0])) + str(int(Center[1]))</span><br><span class="line">    #print(str2)</span><br><span class="line">    #encoded_str = str2.encode(&#x27;utf-8&#x27;)</span><br><span class="line">    ##  send_data_hex = bytes.fromhex(str2)</span><br><span class="line">    ##  ser.write(send_data_hex)</span><br><span class="line">    sleep(0.1)</span><br><span class="line">    ##  data = ser.read_all()</span><br><span class="line">   # print(data)</span><br><span class="line">##  data1 = data.hex()</span><br><span class="line">    ##  print(data1)</span><br><span class="line"></span><br><span class="line">if label:</span><br><span class="line">    tf = max(tl - 1, 1)  # font thickness</span><br><span class="line">    t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]</span><br><span class="line">    c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3</span><br><span class="line">    cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled</span><br><span class="line">    cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)</span><br></pre></td></tr></table></figure><p>因为是使用十六进制传递坐标信息，因此下位机应该将所传输的十六进制ASCII码值解码，如下图所示：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">HAL_UART_Receive(&amp;huart3,buff,3,HAL_MAX_DELAY);</span><br><span class="line">HAL_UART_Transmit(&amp;huart3,buff,3,HAL_MAX_DELAY);</span><br><span class="line">intbuff[0]=buff[0];</span><br><span class="line">intbuff[1]=buff[1];</span><br><span class="line">intbuff[2]=buff[2];</span><br><span class="line">intbuff[0]=floor(intbuff[0]/16)*10+intbuff[0]%16;</span><br><span class="line">intbuff[1]=floor(intbuff[1]/16)*10+intbuff[1]%16;</span><br><span class="line">intbuff[2]=floor(intbuff[2]/16)*10+intbuff[2]%16;</span><br><span class="line">changebuff[0]=floor(intbuff[0]/10);</span><br><span class="line">changebuff[1]=intbuff[0]-changebuff[0]*10;</span><br><span class="line">changebuff[2]=floor(intbuff[1]/10);</span><br><span class="line">changebuff[3]=intbuff[1]-changebuff[2]*10;</span><br><span class="line">changebuff[4]=floor(intbuff[2]/10);</span><br><span class="line">changebuff[5]=intbuff[2]-changebuff[4]*10;</span><br></pre></td></tr></table></figure><h1 id="6-其它"><a href="#6-其它" class="headerlink" title="6.其它"></a>6.其它</h1><p>训练过程：遥遥无期ing</p><p>抄录fcos部署源代码：遥遥无期ing</p><p>下位机使用CUBEIDE配置，全部代码已经开源至git仓库：<a href="https://github.com/SAINT784167/YOLO-LOW-CONTORL">https://github.com/SAINT784167/YOLO-LOW-CONTORL</a></p>]]></content>
+      
+      
       <categories>
-        <category>机器人运动控制</category>
+          
+          <category> 计算机视觉 </category>
+          
       </categories>
-      <tags>
-        <tag>变分法</tag>
-        <tag>动态规划</tag>
-        <tag>LQR</tag>
-        <tag>MPC</tag>
-        <tag>RL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>基于yolov5、fcos的目标识别跟踪系统</title>
-    <url>/2024/10/28/2/</url>
-    <content><![CDATA[<h1 id="基于yolov5、fcos的目标识别跟踪系统"><a href="#基于yolov5、fcos的目标识别跟踪系统" class="headerlink" title="基于yolov5、fcos的目标识别跟踪系统"></a>基于yolov5、fcos的目标识别跟踪系统</h1><p>​    几个月前做一个需求，需要做一个关于一类物体的识别和跟踪任务。当时首先考虑到是一类物体、身份的识别，使用单纯的对一个特定物体特征提取的识别并不能帮助我对一类物体进行识别跟踪，因此，我打算使用yolo这种端到端的目标识别算法。后来考虑到我需要部署的平台算力又很有限，同时还要注重实时性，也就是通讯速率的问题，这种情况下对于我实时监测的帧数fps要求很高，还需要部署加速模型。</p>
-<p>​    思来想去，树莓派上能够利用的加速方案即便加速了也不够识别算法的要求（onnx转ncnn等，加速之后大概也在10fps以下，仍然不够，个人建议稳定20fps以上），最后选择地瓜机器人（原地平线x3派），使用板载部署fcos跟踪识别。板载使用双核BPU资源，（AI算力达到5TOPS，比香橙派更小）将后处理等操作从神经元网络中提出来单独放在板上跑，最终能够稳定30fps（如果想跑自己的识别算法，需要通过docker将onnx文件转为bin文件，挂载天工开物toolchain），在部署代码中加入串口通讯等内容将识别数据与下位机通讯，从而达到跟踪的目的。</p>
-<p>​    <strong>本项目学习逻辑顺序：首先，我们需要知道在电脑端部署上位机过程及输出过程，因为pc端属于算力相当充足的平台，可以看作理想平台，在此基础上，我们写下位机的逻辑代码，并搭建通讯协议，这时我们可以测试下位机的代码逻辑在理想平台运行下是否正确，也即电脑做上位机，32做下位机；测试完成后，再将上位机移植到算力有限平台，在此过程中，我们只需要解决有关通讯速率的问题就好了。</strong></p>
-<p>​    博客主要内容为：</p>
-<p>​        1.将yolo算法本地运行以及部署至树莓派的过程；</p>
-<p>​        2.使用x3派官方部署的fcos识别作为上位机去与下位机通讯，完成识别并跟踪的需求。</p>
-<h1 id="1-方案设计-amp-引脚分配。"><a href="#1-方案设计-amp-引脚分配。" class="headerlink" title="1.方案设计&amp;引脚分配。"></a>1.方案设计&amp;引脚分配。</h1><p>​    本案例采用单目摄像头识别，通过usb连接地平线X3派。地平线X3派官方已经安装好USB转TTL驱动（若这里使用的是树莓派，则一定要提前看下位机使用usb转ttl通讯的芯片型号安装驱动），通过usb连接STM32F103C8T6驱动板，板载获取信息后发出PWM波信号控制舵机转动。具体接线如下图所示：</p>
-<p><img src="/2024/10/28/2/yolo.png" alt></p>
-<p>​    其中，由电脑通过typeC对typeC口对地平线X3派供电，地平线和下位机通过usb对typec口通信，并且通过该线对下位机供电。此处供电只对PWM输出口其中一半的引脚进行供电，在测试时，若接入其中未供电的引脚，舵机会发出电流异响。下两图是下位机的原理图以及系统引脚分配:</p>
-<p><img src="/2024/10/28/2/ylt.png" alt></p>
-<p>引脚分配：</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>需求</th>
-<th>需求个数</th>
-<th>使用功能</th>
-<th>引脚对应</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>底部旋转舵机</td>
-<td>1</td>
-<td>使用TIM4定时器功能产生PWM波形（output）</td>
-<td>PB6（R26）</td>
-<td>TIM4      PWMgenerationCH1</td>
-</tr>
-<tr>
-<td>俯仰舵机</td>
-<td>1</td>
-<td>使用TIM4定时器功能产生PWM波形（output）</td>
-<td>PB7(R27)</td>
-<td>TIM4 PWMgenerationCH2</td>
-</tr>
-<tr>
-<td>串口通讯与接收</td>
-<td>1</td>
-<td>在调试时可以使用电脑usb口直接进行串口通信，或者在打开串口通信设置后，进行引脚引出</td>
-<td>PA13/PA14复用功能</td>
-<td>通过usb进行通讯，改为串口通信</td>
-</tr>
-<tr>
-<td>OLED屏幕显示</td>
-<td>1</td>
-<td>在调试时返回变换前和后的坐标值</td>
-<td>PB5\PB4\PB3\PA15</td>
-<td>使用SPI1通讯；对外推挽输出即可</td>
-</tr>
-<tr>
-<td>KY-008激光模块</td>
-<td>1</td>
-<td>数字IO口（舵机占用）</td>
-<td>PB8（R29）</td>
-<td>一边接地，一边直接接入GPIO口即可。</td>
-</tr>
-<tr>
-<td>syn6288语音播报模块</td>
-<td>1</td>
-<td>输出实时合成中文字符</td>
-<td>PB10isTX/PB11isRX</td>
-<td>串口资源3，目前已经禁用，使用socket协议直接和工控机通讯即可。</td>
-</tr>
-<tr>
-<td>DEBUG</td>
-<td>1</td>
-<td></td>
-<td>PA4</td>
-<td>LEDBLUE</td>
-</tr>
-<tr>
-<td>stlink</td>
-<td>4</td>
-<td>下载与调试</td>
-<td>下4：swclk-PA14 swdio-PA13 3.3-3.3 GND-GND</td>
-<td></td>
-</tr>
-<tr>
-<td><strong>上位机接线需求</strong></td>
-<td><strong>需求个数</strong></td>
-<td><strong>使用功能</strong></td>
-<td><strong>引脚对应</strong></td>
-<td><strong>说明</strong></td>
-</tr>
-<tr>
-<td>以太网远程桌面</td>
-<td>1</td>
-<td>VNCVIEWER</td>
-<td>RJ45端子接网线</td>
-<td>链接树莓派或X3派时，需要指定本地以太网IPV4地址为固定，树莓派请参考CSDN上教程，X3派请进入网络与共享中心-更改适配器设置-IPV4地址-属性-192.168.0.100（参照地平线手册）</td>
-</tr>
-<tr>
-<td>通讯</td>
-<td>1</td>
-<td>usb</td>
-<td>usb3.0</td>
-<td></td>
-</tr>
-<tr>
-<td>摄像头</td>
-<td>1</td>
-<td>usb</td>
-<td>usb3.0</td>
-<td>注意，若是定焦需要记住焦距，若是变焦则需要确定出厂焦距（目前焦距），如果实在记不住也没关系</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h1 id="2-在计算机本地下载并应用yolo算法。"><a href="#2-在计算机本地下载并应用yolo算法。" class="headerlink" title="2.在计算机本地下载并应用yolo算法。"></a>2.在计算机本地下载并应用yolo算法。</h1><h3 id="（1）配置环境。"><a href="#（1）配置环境。" class="headerlink" title="（1）配置环境。"></a>（1）配置环境。</h3><p>​    由于平台部署算力有限，因此选择使用YOLOV5-LITE轻量化版本。由于YOLOV5LITE的1.5版本export的环境与我所搭配的主环境冲突，于是选择1.4版本。以下是我的环境：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CUDA版本:12.1</span><br><span class="line">Python=3.11		matplotlib=3.8.3	opencv-python=4.9.0.80		pillow=10.2.0 </span><br><span class="line">scipy=1.12.0 	torch=2.2.1 		torchversion=0.17.1 		tensorboard=2.16.2 </span><br><span class="line">seaborn=0.13.2 	pandas 				serial（通讯）</span><br></pre></td></tr></table></figure>
-<p>​    使用conda创建虚拟环境命令：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">conda create -n env_name python=3.11#创建环境以及python版本</span><br><span class="line">conda env list#显示所有环境或者cd进入conda的evns中去ls</span><br><span class="line">conda activate env_name#激活进入环境中，可以在激活后在powershell中下载并配置环境</span><br></pre></td></tr></table></figure>
-<h3 id="（2）本地运行YOLOV5。"><a href="#（2）本地运行YOLOV5。" class="headerlink" title="（2）本地运行YOLOV5。"></a>（2）本地运行YOLOV5。</h3><p>​    前往：<a href="https://github.com/ppogg/YOLOv5-Lite，下载源代码.zip至本地。">https://github.com/ppogg/YOLOv5-Lite，下载源代码.zip至本地。</a></p>
-<p>​    在release中下载.pt预权重文件，这里使用YOLOV5LITE-S.pt文件，使用权重文件的s版本（最简化）。</p>
-<p>​    以下是对YOLOV5LITE-1.4源码进行一些最基本的处理：</p>
-<p>​        到基础能用的地步，更改所涉及到的文件：detect.py、plot.py、datasets.py</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">detect.py#</span><br><span class="line">#修改1：修改预训练权重文件的绝对地址------------------------------------------------------------------------------</span><br><span class="line">parser.add_argument(&#x27;--weights&#x27;, nargs=&#x27;+&#x27;, type=str, default=&#x27;D:/YOLOv5-		Litev1.5/v5lites.pt&#x27;,help=&#x27;model.pt path(s)&#x27;)#此处default修改为自己下载的.pt文件的绝对地址</span><br><span class="line">#修改2：将YOLO从从指定地址读取图片识别模式修改至使用本地摄像头实时检测模式----------------------------------------------</span><br><span class="line">parser.add_argument(&#x27;--source&#x27;, type=str, default=&#x27;0&#x27;, help=&#x27;source&#x27;) #default修改为绝对地址为图片识别，若为0、1等等则为使用该数字端口的摄像头，一般0为本地，1为所接的第一个外部摄像头</span><br><span class="line"></span><br><span class="line">datasets.py</span><br><span class="line">#若要调用摄像头，同时还要在utils文件夹中logging文件夹下的datasets需要修改第279行代码，以下是datasets语言文件下代码修改：</span><br><span class="line">if &#x27;youtube.com/&#x27; in str(url) or &#x27;youtu.be/&#x27; in str(url): # if source is</span><br><span class="line">YouTube video</span><br><span class="line">#str(url)是本地摄像头，从url修改为str(url)</span><br><span class="line">check_requirements((&#x27;pafy&#x27;, &#x27;youtube_dl&#x27;))</span><br><span class="line"></span><br><span class="line">plot.py</span><br><span class="line">#修改3：输出获取中线点坐标并显示---------------------------------------------------------------------------------</span><br><span class="line">#在plot.py中ctrl+h搜索plot_one_box函数，并将函数修改至如下：</span><br><span class="line">def plot_one_box(x, img, color=None, label=None, line_thickness=3):</span><br><span class="line"># Plots one bounding box on image img</span><br><span class="line">	tl = line_thickness or round(0.002 * (img.shape[0] + img.shape[1]) / 2)+ 1 # line/font thickness</span><br><span class="line">	color = color or [random.randint(0, 255) for _ in range(3)]</span><br><span class="line">	c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))</span><br><span class="line">	cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)</span><br><span class="line">	cv2.circle(img, ((c1[0] + c2[0]) // 2, (c1[1] + c2[1]) // 2), 3, (0, 0,</span><br><span class="line">255), thickness=tl)</span><br><span class="line">	# 创建了个中心点坐标变量</span><br><span class="line">	Center = (((c2[0] - c1[0]) / 2 + c1[0]), ((c2[1] - c1[1]) / 2 + c1[1]))</span><br><span class="line">	cv2.putText(img, str(Center), ((c1[0] + c2[0]) // 2, (c1[1] + c2[1]) //2), 0, 0.8, (0, 0, 255), thickness=4, lineType=cv2.LINE_AA)</span><br><span class="line">	print(&quot;左上点的坐标为：(&quot; + str(c1[0]) + &quot;,&quot; + str(c1[1]) + &quot;)，右下点的坐标为(&quot; + str(c2[0]) + &quot;,&quot; +str(c2[1]) + &quot;)&quot;)</span><br><span class="line">	print(&quot;中心点的坐标为：(&quot; + str((c2[0] - c1[0]) / 2 + c1[0]) + &quot;,&quot; +str((c2[1] - c1[1]) / 2 + c1[1]) + &quot;)&quot;)</span><br><span class="line">	#打印左上角和右下角的坐标</span><br><span class="line">if label:</span><br><span class="line">	tf = max(tl - 1, 1) # font thickness</span><br><span class="line">	t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]</span><br><span class="line">	c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3</span><br><span class="line">	cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA) # filled</span><br><span class="line">	cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255,255], thickness=tf, lineType=cv2.LINE_AA)</span><br></pre></td></tr></table></figure>
-<p>​    此时，在右下角添加pycharm虚拟环境，选择之前创建好的虚拟环境，运行detect.py，此时若出现显示调用摄像头识别框且显示识别框的中心点坐标则说明配置成功。</p>
-<h3 id="（3）将文件export。"><a href="#（3）将文件export。" class="headerlink" title="（3）将文件export。"></a>（3）将文件export。</h3><p>​    首先，需要对export文件做出解释：export文件只是一个输出性文件，所输出的相当于只是另一个形式的.pt纯权重文件，因此若要在板载上部署仍需要进行以上基础修改操作：添加onnx权重矩阵地址、修改摄像头端口号及其分辨率、修改plot函数。</p>
-<p>​    一般来说，我们为了识别一类物品，需要自己单独训练一个模型，但是我懒OVO，所以我会直接用官方识别几十种label的预权重模型，并加以修改为只输出识别一类物品（如人）。如果有时间的话，下一次研究的时候我再加上训练过程的记录吧。</p>
-<p>​    言归正传，我们需要输出能够被树莓派和x3派成功使用，则需要我们修改opset版本号：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">torch.onnx.export(...,opset_version=11,...)#修改为11</span><br></pre></td></tr></table></figure>
-<p>​    直接输出即可。</p>
-<h1 id="3-跟踪思路：下位机处理逻辑与源代码"><a href="#3-跟踪思路：下位机处理逻辑与源代码" class="headerlink" title="3.跟踪思路：下位机处理逻辑与源代码"></a>3.跟踪思路：下位机处理逻辑与源代码</h1><p>​    我们从上位机得到输出的只能是一个人物检测框的中心点坐标，我们需要据此将舵机云台进行调整。</p>
-<h3 id="（1）坐标系转换"><a href="#（1）坐标系转换" class="headerlink" title="（1）坐标系转换"></a>（1）坐标系转换</h3><p><img src="/2024/10/28/2/坐标系.png" alt></p>
-<p>​    为了让云台知道自己该如何旋转，我们需要将其特征转换到一个中央对准的坐标系中去，我们所使用的像素画幅为640*480的矩形。即从识别坐标系opencv转换到旋转判定坐标系中。如果该类物体的坐标在1、2象限，那俯仰舵机向上旋转单位角度并继续获取旋转后坐标再进行比对；若该类物体坐标在2、3象限，那么水平舵机则向左旋转单位角度并继续获取旋转后坐标再进行比对。假设我们设定一个瞄准区域为（-25，25），也即当其旋转至此范围内时，判定为已经瞄准，则停止旋转，如下图所示：</p>
-<p>​                <img src="/2024/10/28/2/zuobiaoxi.png" alt> </p>
-<p>​    但是若旋转角度不变，则会产生一个问题，那就是：如果单位旋转角度过小，那么瞄准所需要的时间则会很长；如果单位旋转角度过大，那么瞄准所需要的时间虽然很短，但是由于中心瞄准区域的大小不宜太大，很容易造成转过了的情况，从而导致在人物中心点处左右摇摆。因此，针对不同的角度差值，使用不同的单位旋转角度，可以在一定程度上模拟位置式pid的效果——即，差的越远转的越快，差的越近转的越慢。实测跟踪效果会更好。</p>
-<p><strong>T.I.P.S 不建议对角度进行惯性滤波，会导致跟随太慢的问题。</strong>（通信频率远小于100HZ）</p>
-<p><strong>P.S.在使用之前，我们应当先对舵机进行标定（放在行程的中心点处）再进行安装。</strong></p>
-<h3 id="（2）焦距变换-坐标系转换（未验证）"><a href="#（2）焦距变换-坐标系转换（未验证）" class="headerlink" title="（2）焦距变换+坐标系转换（未验证）"></a>（2）焦距变换+坐标系转换（未验证）</h3><p>​    我们可以看出来，上面那种方法麻烦且定位慢，那么为什么我们不能直接一下子就转到想要的角度呢？原因是我们使用的工业USB摄像头属于单目摄像头，一般来说不用单目摄像头进行测距，没有三维空间第三个坐标的信息，我们很难获取直接的坐标。但是，如果我们了解单目摄像头以及YOLO算法识别坐标的本质，那我们也同样能够获得这个三维空间的Z坐标信息。</p>
-<p>​    在引脚分配部分，我曾提到要记住摄像头的焦距信息，使用单目摄像机的YOLO算法识别时，世界的影像被投影到一个平行于目前摄像头平面的二维平面上，它们之间的距离则是焦距，此时焦距单位按照像素计算。如下图所示：</p>
-<p><img src="/2024/10/28/2/fushitu.png" alt></p>
-<p>​    在平视情况下，我们也可以通过该种计算方法来直接旋转到目标转角。</p>
-<p>​    <strong>P.S.按照理论来说这种方法很准，但是我个人在使用的时候，实际部署到上位机的时候确实不怎么准确（应该是我把焦距搞错了），没找到特别具体的原因，欢迎一试。</strong></p>
-<h3 id="（3）下位机控制代码"><a href="#（3）下位机控制代码" class="headerlink" title="（3）下位机控制代码"></a>（3）下位机控制代码</h3><p>​    基于单纯的坐标系转换方法，使用STM32CUBEIDE编写和配置下位机。经过配置和引脚分配，配置如下图所示：</p>
-<p>​    总体引脚:</p>
-<p><img src="/2024/10/28/2/1.png" alt></p>
-<p>​    时钟树：</p>
-<p><img src="/2024/10/28/2/2.png" alt></p>
-<p>PWM波：</p>
-<p><img src="/2024/10/28/2/3.png" alt></p>
-<p>烧录与通讯口：（usart3未使用）</p>
-<p><img src="/2024/10/28/2/4.png" alt></p>
-<p>使用最简单方案：坐标转换法</p>
-<p>这里只对部分代码进行解析：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">int x1=changebuff[0]*100+changebuff[1]*10+changebuff[2];</span><br><span class="line">int y1=changebuff[3]*100+changebuff[4]*10+changebuff[5];</span><br><span class="line">int x=changebuff[0]*100+changebuff[1]*10+changebuff[2]-320;</span><br><span class="line">int y=-(changebuff[3]*100+changebuff[4]*10+changebuff[5]-240);</span><br><span class="line">//从缓冲区读取并将坐标转换为中心坐标系</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">int quadrant;//判断坐标系</span><br><span class="line">if(x&gt;0&amp;&amp;y&gt;0)</span><br><span class="line">&#123;</span><br><span class="line">	quadrant=1;</span><br><span class="line">&#125;</span><br><span class="line">else if(x&lt;0&amp;&amp;y&gt;0)</span><br><span class="line">&#123;</span><br><span class="line">    quadrant=2;</span><br><span class="line">&#125;</span><br><span class="line">else if(x&lt;0&amp;&amp;y&lt;0)</span><br><span class="line">&#123;</span><br><span class="line">    quadrant=3;</span><br><span class="line">&#125;</span><br><span class="line">else if(x&gt;0&amp;&amp;y&lt;0)</span><br><span class="line">&#123;</span><br><span class="line">    quadrant=4;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">//控制左右旋转，确定当x在正负50以内为锁定成功，当其远不在锁定范围内时，移动步长为5，当其小于120时，移动步长为1，精确锁定。</span><br><span class="line">      int change_angle=5;</span><br><span class="line">	  int change_angle1=1;</span><br><span class="line">	  int range_max=100;</span><br><span class="line">	  int range_min=50;</span><br><span class="line">	  if(abs(x)&gt;50)</span><br><span class="line">	  &#123;</span><br><span class="line">	   if(abs(x)&gt;120)</span><br><span class="line">	   &#123;</span><br><span class="line">	   if(quadrant==1||quadrant==4)</span><br><span class="line">	     &#123;</span><br><span class="line">	       orgin1=orgin1-change_angle;</span><br><span class="line">	       if(orgin1&gt;=180)</span><br><span class="line">	       &#123;</span><br><span class="line">	    	   orgin1=180;</span><br><span class="line">	       &#125;</span><br><span class="line">	       if(orgin1&lt;5)</span><br><span class="line">	       &#123;</span><br><span class="line">	      	   orgin1=5;</span><br><span class="line">	       &#125;</span><br><span class="line">	       servo_angle_left_right(orgin1);</span><br><span class="line">	     &#125;</span><br><span class="line">	   if(quadrant==2||quadrant==3)</span><br><span class="line">	     &#123;</span><br><span class="line">	       orgin1=orgin1+change_angle;</span><br><span class="line">	       if(orgin1&gt;=180)</span><br><span class="line">	       &#123;</span><br><span class="line">	       	   orgin1=180;</span><br><span class="line">	       &#125;</span><br><span class="line">	       if(orgin1&lt;5)</span><br><span class="line">	       &#123;</span><br><span class="line">	       	   orgin1=5;</span><br><span class="line">	       &#125;</span><br><span class="line">	       servo_angle_left_right(orgin1);</span><br><span class="line">	     &#125;</span><br><span class="line">	   if(quadrant==1||quadrant==2)</span><br><span class="line">	     &#123;</span><br><span class="line">	       orgin2=orgin2+change_angle;																																																		change_angle;</span><br><span class="line">	       if(orgin2&gt;=180)</span><br><span class="line">		 &#123;</span><br><span class="line">			   orgin2=180;</span><br><span class="line">	     &#125;</span><br><span class="line">		   if(orgin2&lt;5)</span><br><span class="line">		 &#123;</span><br><span class="line">			   orgin2=5;</span><br><span class="line">		 &#125;</span><br><span class="line">	       //servo_angle_up_down(orgin2);</span><br><span class="line">	     &#125;</span><br><span class="line">	   if(quadrant==3||quadrant==4)</span><br><span class="line">	     &#123;</span><br><span class="line">	       orgin2=orgin2-change_angle;</span><br><span class="line">	       if(orgin2&gt;=180)</span><br><span class="line">	     &#123;</span><br><span class="line">			   orgin2=180;</span><br><span class="line">	     &#125;</span><br><span class="line">		   if(orgin2&lt;5)</span><br><span class="line">	     &#123;</span><br><span class="line">			   orgin2=5;</span><br><span class="line">	     &#125;</span><br><span class="line">	       //servo_angle_up_down(orgin2);</span><br><span class="line">	     &#125;</span><br><span class="line">	   &#125;</span><br><span class="line">	   else</span><br><span class="line">	   &#123;</span><br><span class="line">		   if(quadrant==1||quadrant==4)</span><br><span class="line">		   	     &#123;</span><br><span class="line">		   	       orgin1=orgin1-change_angle1;</span><br><span class="line">		   	       if(orgin1&gt;=180)</span><br><span class="line">		   	       &#123;</span><br><span class="line">		   	    	   orgin1=180;</span><br><span class="line">		   	       &#125;</span><br><span class="line">		   	       if(orgin1&lt;5)</span><br><span class="line">		   	       &#123;</span><br><span class="line">		   	      	   orgin1=5;</span><br><span class="line">		   	       &#125;</span><br><span class="line">		   	       servo_angle_left_right(orgin1);</span><br><span class="line">		   	     &#125;</span><br><span class="line">		   	   if(quadrant==2||quadrant==3)</span><br><span class="line">		   	     &#123;</span><br><span class="line">		   	       orgin1=orgin1+change_angle1;</span><br><span class="line">		   	       if(orgin1&gt;=180)</span><br><span class="line">		   	       &#123;</span><br><span class="line">		   	       	   orgin1=180;</span><br><span class="line">		   	       &#125;</span><br><span class="line">		   	       if(orgin1&lt;5)</span><br><span class="line">		   	       &#123;</span><br><span class="line">		   	       	   orgin1=5;</span><br><span class="line">		   	       &#125;</span><br><span class="line">		   	       servo_angle_left_right(orgin1);</span><br><span class="line">		   	     &#125;</span><br><span class="line">	   &#125;</span><br><span class="line"></span><br><span class="line">	  &#125;</span><br></pre></td></tr></table></figure>
-<h1 id="4-在树莓派（地平线X3派）中使用yolov5算法（fcos目标检测算法）。"><a href="#4-在树莓派（地平线X3派）中使用yolov5算法（fcos目标检测算法）。" class="headerlink" title="4.在树莓派（地平线X3派）中使用yolov5算法（fcos目标检测算法）。"></a>4.在树莓派（地平线X3派）中使用yolov5算法（fcos目标检测算法）。</h1><p>地平线X3派中已经部署完毕，有机会再补充这部分部署代码（官方代码抄录）；</p>
-<p>树莓派中部署：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import cv2</span><br><span class="line">import numpy as np</span><br><span class="line">import onnxruntime as ort</span><br><span class="line">import time</span><br><span class="line"> </span><br><span class="line">def plot_one_box(x, img, color=None, label=None, line_thickness=None):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    description: Plots one bounding box on image img,</span><br><span class="line">                 this function comes from YoLov5 project.</span><br><span class="line">    param: </span><br><span class="line">        x:      a box likes [x1,y1,x2,y2]</span><br><span class="line">        img:    a opencv image object</span><br><span class="line">        color:  color to draw rectangle, such as (0,255,0)</span><br><span class="line">        label:  str</span><br><span class="line">        line_thickness: int</span><br><span class="line">    return:</span><br><span class="line">        no return</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    tl = (</span><br><span class="line">        line_thickness or round(0.002 * (img.shape[0] + img.shape[1]) / 2) + 1</span><br><span class="line">    )  # line/font thickness</span><br><span class="line">    color = color or [random.randint(0, 255) for _ in range(3)]</span><br><span class="line">    c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))</span><br><span class="line">    cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)</span><br><span class="line">    if label:</span><br><span class="line">        tf = max(tl - 1, 1)  # font thickness</span><br><span class="line">        t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]</span><br><span class="line">        c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3</span><br><span class="line">        cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled</span><br><span class="line">        cv2.putText(</span><br><span class="line">            img,</span><br><span class="line">            label,</span><br><span class="line">            (c1[0], c1[1] - 2),</span><br><span class="line">            0,</span><br><span class="line">            tl / 3,</span><br><span class="line">            [225, 255, 255],</span><br><span class="line">            thickness=tf,</span><br><span class="line">            lineType=cv2.LINE_AA,</span><br><span class="line">        )</span><br><span class="line"> </span><br><span class="line">def _make_grid( nx, ny):</span><br><span class="line">        xv, yv = np.meshgrid(np.arange(ny), np.arange(nx))</span><br><span class="line">        return np.stack((xv, yv), 2).reshape((-1, 2)).astype(np.float32)</span><br><span class="line"> </span><br><span class="line">def cal_outputs(outs,nl,na,model_w,model_h,anchor_grid,stride):</span><br><span class="line">    </span><br><span class="line">    row_ind = 0</span><br><span class="line">    grid = [np.zeros(1)] * nl</span><br><span class="line">    for i in range(nl):</span><br><span class="line">        h, w = int(model_w/ stride[i]), int(model_h / stride[i])</span><br><span class="line">        length = int(na * h * w)</span><br><span class="line">        if grid[i].shape[2:4] != (h, w):</span><br><span class="line">            grid[i] = _make_grid(w, h)</span><br><span class="line"> </span><br><span class="line">        outs[row_ind:row_ind + length, 0:2] = (outs[row_ind:row_ind + length, 0:2] * 2. - 0.5 + np.tile(</span><br><span class="line">            grid[i], (na, 1))) * int(stride[i])</span><br><span class="line">        outs[row_ind:row_ind + length, 2:4] = (outs[row_ind:row_ind + length, 2:4] * 2) ** 2 * np.repeat(</span><br><span class="line">            anchor_grid[i], h * w, axis=0)</span><br><span class="line">        row_ind += length</span><br><span class="line">    return outs</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">def post_process_opencv(outputs,model_h,model_w,img_h,img_w,thred_nms,thred_cond):</span><br><span class="line">    conf = outputs[:,4].tolist()</span><br><span class="line">    c_x = outputs[:,0]/model_w*img_w</span><br><span class="line">    c_y = outputs[:,1]/model_h*img_h</span><br><span class="line">    w  = outputs[:,2]/model_w*img_w</span><br><span class="line">    h  = outputs[:,3]/model_h*img_h</span><br><span class="line">    p_cls = outputs[:,5:]</span><br><span class="line">    if len(p_cls.shape)==1:</span><br><span class="line">        p_cls = np.expand_dims(p_cls,1)</span><br><span class="line">    cls_id = np.argmax(p_cls,axis=1)</span><br><span class="line"> </span><br><span class="line">    p_x1 = np.expand_dims(c_x-w/2,-1)</span><br><span class="line">    p_y1 = np.expand_dims(c_y-h/2,-1)</span><br><span class="line">    p_x2 = np.expand_dims(c_x+w/2,-1)</span><br><span class="line">    p_y2 = np.expand_dims(c_y+h/2,-1)</span><br><span class="line">    areas = np.concatenate((p_x1,p_y1,p_x2,p_y2),axis=-1)</span><br><span class="line">    </span><br><span class="line">    areas = areas.tolist()</span><br><span class="line">    ids = cv2.dnn.NMSBoxes(areas,conf,thred_cond,thred_nms)</span><br><span class="line">    if len(ids)&gt;0:</span><br><span class="line">        return  np.array(areas)[ids],np.array(conf)[ids],cls_id[ids]</span><br><span class="line">    else:</span><br><span class="line">        return [],[],[]</span><br><span class="line">def infer_img(img0,net,model_h,model_w,nl,na,stride,anchor_grid,thred_nms=0.4,thred_cond=0.5):</span><br><span class="line">    # 图像预处理</span><br><span class="line">    img = cv2.resize(img0, [model_w,model_h], interpolation=cv2.INTER_AREA)</span><br><span class="line">    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)</span><br><span class="line">    img = img.astype(np.float32) / 255.0</span><br><span class="line">    blob = np.expand_dims(np.transpose(img, (2, 0, 1)), axis=0)</span><br><span class="line"> </span><br><span class="line">    # 模型推理</span><br><span class="line">    outs = net.run(None, &#123;net.get_inputs()[0].name: blob&#125;)[0].squeeze(axis=0)</span><br><span class="line"> </span><br><span class="line">    # 输出坐标矫正</span><br><span class="line">    outs = cal_outputs(outs,nl,na,model_w,model_h,anchor_grid,stride)</span><br><span class="line"> </span><br><span class="line">    # 检测框计算</span><br><span class="line">    img_h,img_w,_ = np.shape(img0)</span><br><span class="line">    boxes,confs,ids = post_process_opencv(outs,model_h,model_w,img_h,img_w,thred_nms,thred_cond)</span><br><span class="line"> </span><br><span class="line">    return  boxes,confs,ids</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line"> </span><br><span class="line">    # 模型加载切换为自己的权重矩阵</span><br><span class="line">    model_pb_path = &quot;best.onnx&quot;</span><br><span class="line">    so = ort.SessionOptions()</span><br><span class="line">    net = ort.InferenceSession(model_pb_path, so)</span><br><span class="line">    </span><br><span class="line">    # 标签字典，切换为官方的字典，并且修改为只检测一类</span><br><span class="line">    dic_labels= &#123;0:&#x27;drug&#x27;,</span><br><span class="line">            1:&#x27;glue&#x27;,</span><br><span class="line">            2:&#x27;prime&#x27;&#125;</span><br><span class="line">    </span><br><span class="line">    # 模型参数</span><br><span class="line">    model_h = 320</span><br><span class="line">    model_w = 320</span><br><span class="line">    nl = 3</span><br><span class="line">    na = 3</span><br><span class="line">    stride=[8.,16.,32.]</span><br><span class="line">    anchors = [[10, 13, 16, 30, 33, 23], [30, 61, 62, 45, 59, 119], [116, 90, 156, 198, 373, 326]]</span><br><span class="line">    anchor_grid = np.asarray(anchors, dtype=np.float32).reshape(nl, -1, 2)</span><br><span class="line">    </span><br><span class="line">    video = 0</span><br><span class="line">    cap = cv2.VideoCapture(video)</span><br><span class="line">    flag_det = False</span><br><span class="line">    while True:</span><br><span class="line">        success, img0 = cap.read()</span><br><span class="line">        if success:</span><br><span class="line">            </span><br><span class="line">            if flag_det:</span><br><span class="line">                t1 = time.time()</span><br><span class="line">                det_boxes,scores,ids = infer_img(img0,net,model_h,model_w,nl,na,stride,anchor_grid,thred_nms=0.4,thred_cond=0.5)</span><br><span class="line">                t2 = time.time()</span><br><span class="line">            </span><br><span class="line">                </span><br><span class="line">                for box,score,id in zip(det_boxes,scores,ids):</span><br><span class="line">                    label = &#x27;%s:%.2f&#x27;%(dic_labels[id],score)</span><br><span class="line">            </span><br><span class="line">                    plot_one_box(box.astype(np.int16), img0, color=(255,0,0), label=label, line_thickness=None)</span><br><span class="line">                    </span><br><span class="line">                str_FPS = &quot;FPS: %.2f&quot;%(1./(t2-t1))</span><br><span class="line">                </span><br><span class="line">                cv2.putText(img0,str_FPS,(50,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,255,0),3)</span><br><span class="line">                </span><br><span class="line">            </span><br><span class="line">            cv2.imshow(&quot;video&quot;,img0)</span><br><span class="line">        key=cv2.waitKey(1) &amp; 0xFF    </span><br><span class="line">        if key == ord(&#x27;q&#x27;):</span><br><span class="line">        </span><br><span class="line">            break</span><br><span class="line">        elif key &amp; 0xFF == ord(&#x27;s&#x27;):</span><br><span class="line">            flag_det = not flag_det</span><br><span class="line">            print(flag_det)</span><br><span class="line">            </span><br><span class="line">    cap.release() </span><br></pre></td></tr></table></figure>
-<h1 id="5-地平线x3派与下位机通讯。"><a href="#5-地平线x3派与下位机通讯。" class="headerlink" title="5.地平线x3派与下位机通讯。"></a>5.地平线x3派与下位机通讯。</h1><p>基于以上部署，我们做出以下修改：</p>
-<p>首先修改为自己权重矩阵的绝对路径和字典库罗列。</p>
-<p>修改为只检测一类：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">if label == &#x27;person&#x27;</span><br><span class="line">	 plot_one_box(box.astype(np.int16), img0, color=(255,0,0), label=label, line_thickness=None)</span><br><span class="line">                    </span><br><span class="line">                str_FPS = &quot;FPS: %.2f&quot;%(1./(t2-t1))</span><br><span class="line">                </span><br><span class="line">                cv2.putText(img0,str_FPS,(50,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,255,0),3)</span><br><span class="line">                </span><br><span class="line">            </span><br><span class="line">            cv2.imshow(&quot;video&quot;,img0)</span><br></pre></td></tr></table></figure>
-<p><strong>[warning]此种方法依然检测了多种类，只是只显示和输出了一类结果，实时性有待提高，还是应该自己训练为最佳。</strong></p>
-<p>若实现通讯，上位机应该在plot中加入修改以下内容（以YOLO为例）：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#修改plots.py中plot_one_box内容</span><br><span class="line">def plot_one_box(x, img, color=None, label=None, line_thickness=3):</span><br><span class="line">    # Plots one bounding box on image img</span><br><span class="line">    tl = line_thickness or round(0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness</span><br><span class="line">    color = color or [random.randint(0, 255) for _ in range(3)]</span><br><span class="line">    c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))</span><br><span class="line">    cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)</span><br><span class="line">    cv2.circle(img, ((c1[0] + c2[0]) // 2, (c1[1] + c2[1]) // 2), 3, (0, 0, 255), thickness=tl)</span><br><span class="line">    # 创建了个中心点坐标变量</span><br><span class="line">    Center = (((c2[0] - c1[0]) / 2 + c1[0]), ((c2[1] - c1[1]) / 2 + c1[1]))</span><br><span class="line">    cv2.putText(img, str(Center), ((c1[0] + c2[0]) // 2, (c1[1] + c2[1]) // 2), 0, 0.8, (0, 0, 255),  thickness=4, lineType=cv2.LINE_AA)</span><br><span class="line">    #print(&quot;左上点的坐标为：(&quot; + str(c1[0]) + &quot;,&quot; + str(c1[1]) + &quot;)，右下点的坐标为(&quot; + str(c2[0]) + &quot;,&quot; + str(c2[1]) + &quot;)&quot;)</span><br><span class="line">    #print(str(int((c2[0] - c1[0]) / 2) + c1[0])+str(int((c2[1] - c1[1]) / 2) + c1[1]))</span><br><span class="line">    ##ser = serial.Serial(&#x27;COM6&#x27;, 115200, timeout=1)  # &#x27;COM5&#x27;是你的串口号，115200是波特率，timeout是超时时间（单位为秒）</span><br><span class="line">    ##if ser.is_open:</span><br><span class="line">    ##   print(&quot;串口已打开&quot;)</span><br><span class="line">    if 10&lt;=Center[0]&lt;100:</span><br><span class="line">        #print(str(0)+str(int(Center[0])) + str(int(Center[1])))</span><br><span class="line">        str2=str(0)+str(int(Center[0])) + str(int(Center[1]))</span><br><span class="line">        #encoded_str = str2.encode(&#x27;utf-8&#x27;)</span><br><span class="line">        ##    send_data_hex = bytes.fromhex(str2)</span><br><span class="line">        ##   ser.write(send_data_hex)</span><br><span class="line">        sleep(0.1)</span><br><span class="line">        ##   data=ser.read_all().hex()</span><br><span class="line">        ##   print(data)</span><br><span class="line"></span><br><span class="line">    if Center[0]&lt;10:</span><br><span class="line">        #print(str(0)+str(0) + str(int(Center[0])) + str(int(Center[1])))</span><br><span class="line">        str2 = str(0)+str(0) + str(int(Center[0])) + str(int(Center[1]))</span><br><span class="line">        #encoded_str = str2.encode(&#x27;utf-8&#x27;)</span><br><span class="line">        send_data_hex = bytes.fromhex(str2)</span><br><span class="line">        ##   ser.write(send_data_hex)</span><br><span class="line">        sleep(0.1)</span><br><span class="line">        ##  data = ser.read_all().hex()</span><br><span class="line">        ##    print(data)</span><br><span class="line"></span><br><span class="line">    if 10&lt;=Center[1]&lt;100:</span><br><span class="line">        #print(str(int(Center[0])) + str(0)+str(int(Center[1])))</span><br><span class="line">        str2 = str(int(Center[0])) + str(0)+str(int(Center[1]))</span><br><span class="line">        #encoded_str = str2.encode(&#x27;utf-8&#x27;)</span><br><span class="line">        send_data_hex = bytes.fromhex(str2)</span><br><span class="line">    ##   ser.write(send_data_hex)</span><br><span class="line">    sleep(0.1)</span><br><span class="line">    ##   data = ser.read_all().hex()</span><br><span class="line">    ##  print(data)</span><br><span class="line"></span><br><span class="line">if Center[1]&lt;10:</span><br><span class="line">    #print(str(int(Center[0])) + str(0)+str(0)+str(int(Center[1])))</span><br><span class="line">    str2 = str(int(Center[0])) + str(0)+str(0)+str(int(Center[1]))</span><br><span class="line">    #encoded_str = str2.encode(&#x27;utf-8&#x27;)</span><br><span class="line">    ##   send_data_hex = bytes.fromhex(str2)</span><br><span class="line">    ##   ser.write(send_data_hex)</span><br><span class="line">    sleep(0.1)</span><br><span class="line">    ##   data = ser.read_all().hex()</span><br><span class="line">    ##  print(data)</span><br><span class="line"></span><br><span class="line">if Center[0]&gt;100 and Center[1]&gt;100:</span><br><span class="line">    print(str(int(Center[0])) + str(int(Center[1])))</span><br><span class="line">    str2 = str(int(Center[0])) + str(int(Center[1]))</span><br><span class="line">    #print(str2)</span><br><span class="line">    #encoded_str = str2.encode(&#x27;utf-8&#x27;)</span><br><span class="line">    ##  send_data_hex = bytes.fromhex(str2)</span><br><span class="line">    ##  ser.write(send_data_hex)</span><br><span class="line">    sleep(0.1)</span><br><span class="line">    ##  data = ser.read_all()</span><br><span class="line">   # print(data)</span><br><span class="line">##  data1 = data.hex()</span><br><span class="line">    ##  print(data1)</span><br><span class="line"></span><br><span class="line">if label:</span><br><span class="line">    tf = max(tl - 1, 1)  # font thickness</span><br><span class="line">    t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]</span><br><span class="line">    c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3</span><br><span class="line">    cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled</span><br><span class="line">    cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)</span><br></pre></td></tr></table></figure>
-<p>因为是使用十六进制传递坐标信息，因此下位机应该将所传输的十六进制ASCII码值解码，如下图所示：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">HAL_UART_Receive(&amp;huart3,buff,3,HAL_MAX_DELAY);</span><br><span class="line">HAL_UART_Transmit(&amp;huart3,buff,3,HAL_MAX_DELAY);</span><br><span class="line">intbuff[0]=buff[0];</span><br><span class="line">intbuff[1]=buff[1];</span><br><span class="line">intbuff[2]=buff[2];</span><br><span class="line">intbuff[0]=floor(intbuff[0]/16)*10+intbuff[0]%16;</span><br><span class="line">intbuff[1]=floor(intbuff[1]/16)*10+intbuff[1]%16;</span><br><span class="line">intbuff[2]=floor(intbuff[2]/16)*10+intbuff[2]%16;</span><br><span class="line">changebuff[0]=floor(intbuff[0]/10);</span><br><span class="line">changebuff[1]=intbuff[0]-changebuff[0]*10;</span><br><span class="line">changebuff[2]=floor(intbuff[1]/10);</span><br><span class="line">changebuff[3]=intbuff[1]-changebuff[2]*10;</span><br><span class="line">changebuff[4]=floor(intbuff[2]/10);</span><br><span class="line">changebuff[5]=intbuff[2]-changebuff[4]*10;</span><br></pre></td></tr></table></figure>
-<h1 id="6-其它"><a href="#6-其它" class="headerlink" title="6.其它"></a>6.其它</h1><p>训练过程：遥遥无期ing</p>
-<p>抄录fcos部署源代码：遥遥无期ing</p>
-<p>下位机使用CUBEIDE配置，全部代码已经开源至git仓库：<a href="https://github.com/SAINT784167/YOLO-LOW-CONTORL">https://github.com/SAINT784167/YOLO-LOW-CONTORL</a></p>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> yolov5 </tag>
+            
+            <tag> STM32 </tag>
+            
+            <tag> python </tag>
+            
+            <tag> 计算机视觉 </tag>
+            
+            <tag> fcos </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>hexo+github+zeabur博客部署方案&amp;git项目管理</title>
+      <link href="/2024/10/23/1/"/>
+      <url>/2024/10/23/1/</url>
+      
+        <content type="html"><![CDATA[<h1 id="hexo-github-zeabur博客部署方案-amp-git项目管理"><a href="#hexo-github-zeabur博客部署方案-amp-git项目管理" class="headerlink" title="hexo+github+zeabur博客部署方案&amp;git项目管理"></a>hexo+github+zeabur博客部署方案&amp;git项目管理</h1><h1 id="1-方案流程大概介绍"><a href="#1-方案流程大概介绍" class="headerlink" title="1.方案流程大概介绍"></a>1.方案流程大概介绍</h1><p>​    使用hexo开源框架进行部署，从github仓库下载hexo源代码，使用gitbash工具在源码文件夹下打开，进行调试等工作后，在本地运行查看效果是否满意。</p><p>​    从腾讯云购买符合自己喜欢的域名，推荐买.cn结尾的域名，价格较为合适，并将其解析到我们的服务器。</p><p>​    服务器使用第三方CI服务zeabur平台，该平台可以实时从在线的githubio仓库中识别网站版本更新及其代码，省去我们手动将其再部署到服务器上的过程。</p><h1 id="2-hexo本地运行。"><a href="#2-hexo本地运行。" class="headerlink" title="2.hexo本地运行。"></a>2.hexo本地运行。</h1><p>​    在调试、下载源代码之前，我们需要先行下载如下软件与环境：</p><blockquote><p>​    安装git：<a href="https://soft.aijiaer11.cn/soft/124420.html?bd_vid=10376755935823706615">https://soft.aijiaer11.cn/soft/124420.html?bd_vid=10376755935823706615</a></p><p>​    安装node.js:<a href="https://nodejs.org/zh-cn">https://nodejs.org/zh-cn</a></p><p>​    其中，node.js在安装时要选择ADD TO PATH默认选项，这样就不用再单独配置全局变量了。</p></blockquote><p>​    除此之外，还需要提前注册好属于自己的github账号，并提前创建仓库用来存放我们deploy的项目，仓库名为自己的git账号名。例如：你的名字.github.io。之后，进入git账号的developer-settings，创建token。    </p><p>​    配置环境完成后，我们登录hexo网站，跳转github后下载源码.zip文件至文件夹。点击空白处，选择用gitbash打开。接下来，我们需要对gitbash的账户进行设置：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">`git config --global user.name &quot;github上注册的用户名&quot; # 配置用户名`</span><br><span class="line">`git config --global user.email &quot;github上注册的邮箱&quot; # 配置用户邮箱`</span><br><span class="line">`git config --global user.name # 查看配置的用户名`</span><br><span class="line">`git config --global user.email # 查看配置的用户邮箱`</span><br></pre></td></tr></table></figure><p>由于github登录需要科学上网，所以我们还需要配置gitbash的网络</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">`git config --global --unset http.proxy#取消代理`</span><br><span class="line">`git config --global --unset https.proxy#取消代理`</span><br></pre></td></tr></table></figure><p>这里我用的是clash，使用的网络端口是127.0.0.1:7890，clash使用的端口都是127.0.0.1:port，我们输入如下两条指令：（自己使用时请使用自己的clash端口）</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global http.proxy http://127.0.0.1:7890</span><br><span class="line">git config --global https.proxy https://127.0.0.1:7890</span><br></pre></td></tr></table></figure><p>在默认情况下，右键blog文件夹，依次输入如下命令：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo cl#清理生成文件</span><br><span class="line">hexo g#生成项目</span><br><span class="line">hexo s#本地运行</span><br><span class="line">hexo d#将项目deploy至你设置好的仓库中，提前开启VPN</span><br></pre></td></tr></table></figure><p>输入命令<code>hexo d</code>前，我们还需要进入文件夹中，修改_config.yml文件，在文件末端，完善以下deploy相关配置：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: &#x27;git&#x27;</span><br><span class="line">  repo: #你的仓库链接</span><br><span class="line">  branch: main #仓库分支，注意区分main和master</span><br></pre></td></tr></table></figure><p>可以查看自己的环境是否配置成功</p><p>关于博客个性化以及新增页面，发布博客的内容，网上有很多教学，自行查阅，附几条链接：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">https://hexo.io/zh-cn/ #官方查看内容</span><br><span class="line">https://blog.csdn.net/mjh1667002013/article/details/129290903 #butterfly主题美化</span><br><span class="line">https://butterfly.zhheo.com/create.html #butterfly官方主题</span><br></pre></td></tr></table></figure><h1 id="3-域名解析与服务器网络测试"><a href="#3-域名解析与服务器网络测试" class="headerlink" title="3.域名解析与服务器网络测试"></a>3.域名解析与服务器网络测试</h1><p>​    我们登录腾讯云后，首先进行实名验证，进入到控制台页面即可看到自己购买的域名。我们点击解析，通过zeabur给定的cname等信息将网址解析到zeabur的服务器上，zeabur服务器新建后，你可以通过新建项目，并同时登陆你的github，选择你新建的io库即可，此时，你本地运行的代码通过gitbash已经deploy到git仓库中去，因此，你可以在github中看到其更新，zeabur会实时重新帮您部署这一版网站。</p><h1 id="4-网站迭代更新"><a href="#4-网站迭代更新" class="headerlink" title="4.网站迭代更新"></a>4.网站迭代更新</h1><p>常用：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo cl#清理生成文件，每次修改后重新本地查看时，一定要clean</span><br><span class="line">hexo g#生成项目</span><br><span class="line">hexo s#本地运行</span><br><span class="line">hexo d#将项目deploy至你设置好的仓库中，提前开启VPN</span><br></pre></td></tr></table></figure><p>新建页面：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo new page about#创建”关于我“新页面</span><br><span class="line">#创建页面后会在source文件夹中创建文件夹，其中会有一个index.md文件，修改页面配置。一些特殊页面还需要特殊配置，如link还需要在source中创建_data</span><br></pre></td></tr></table></figure><p>文章添加图片：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">_config.yml:post_asset_folder: true</span><br><span class="line">安装插件:npm install https://github.com/CodeFalling/hexo-asset-image -- save在/source/_posts目录下新建XXXXXX的文件夹将图片放入其中</span><br><span class="line">![](XXXXXX/1.png)即可</span><br></pre></td></tr></table></figure><p>文章支持公式渲染：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">npm uninstall hexo-renderer-marked --save</span><br><span class="line">npm install hexo-renderer-kramed --save//卸载并安装kramed渲染引擎</span><br><span class="line">解决语义冲突问题：</span><br><span class="line">escape: /^\\([`*\[\]()#$+\-.!_&gt;])/, //node_modules\kramed\lib\rules\inline.js中修改第11行</span><br><span class="line">em: /^\*((?:\*\*|[\s\S])+?)\*(?!\*)/, //修改第20行</span><br><span class="line">在主题中开启mathjax开关</span><br><span class="line">在文章的Front-matter里打开mathjax开关</span><br><span class="line">公式块文章换行问题：</span><br><span class="line">在每个公式块加上\begin&#123;align&#125;\end&#123;align&#125;</span><br></pre></td></tr></table></figure><h1 id="5-git-bash-将项目上传至仓库"><a href="#5-git-bash-将项目上传至仓库" class="headerlink" title="5.git bash 将项目上传至仓库"></a>5.git bash 将项目上传至仓库</h1><p>基本流程：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git init#创建新文件夹作为仓库，并将项目复制进来，使用初始化命令将其变成git仓库</span><br><span class="line">git add .#将项目添加到仓库</span><br><span class="line">git commit -m &quot;注释&quot;#将项目提交至仓库</span><br><span class="line">ssh-keygen -t rsa -C &quot;youemail@163.com&quot;#配置SSH密钥并添加至库中</span><br><span class="line">git remote add origin YOURURL#将本地仓库与git关联</span><br><span class="line">git push -u origin master#若远程仓库中不是空的，那么则去掉-u</span><br></pre></td></tr></table></figure><p>一些bug：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git remote rm origin</span><br><span class="line">git remote add origin newurl#出现已经建立remote链接，但是自己又想改成另一个仓库时</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#记得也要提前配置好自己的git账号和name</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
       <categories>
-        <category>计算机视觉</category>
+          
+          <category> 部署 </category>
+          
       </categories>
-      <tags>
-        <tag>yolov5</tag>
-        <tag>STM32</tag>
-        <tag>python</tag>
-        <tag>计算机视觉</tag>
-        <tag>fcos</tag>
-      </tags>
-  </entry>
+      
+      
+        <tags>
+            
+            <tag> hexo </tag>
+            
+            <tag> github </tag>
+            
+            <tag> zeabur </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+  
+  
 </search>
