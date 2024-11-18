@@ -244,114 +244,50 @@
 <h2 id="模型预测控制"><a href="#模型预测控制" class="headerlink" title="模型预测控制"></a>模型预测控制</h2><p>​        模型预测控制是一类算法的统称，其包含了<strong>预测模型、滚动优化、以及反馈矫正</strong>的过程。我们使用<strong>二阶泰勒展开</strong>将函数展开为一阶<strong>梯度</strong>与二阶<strong>海森矩阵</strong>的形式。在这其中，我们需要通过搜索的方法来探索最优控制，为了使性能指标最小化，我们规定搜索步长，并且使用不同的方法来规定搜索方向，如<strong>最速下降法，牛顿法，拟牛顿法</strong>等。当函数存在等式或不等式约束时，通过<strong>拉格朗日乘子法</strong>以及<strong>KKT条件</strong>的方法将约束加入性能指标中，最终得到搜索方向与结果。为了求解最优控制，使用<strong>打靶法</strong>和<strong>多重打靶法</strong>进行优化迭代。</p>
 <h1 id="经典最优控制方法。"><a href="#经典最优控制方法。" class="headerlink" title="经典最优控制方法。"></a>经典最优控制方法。</h1><h2 id="变分法。"><a href="#变分法。" class="headerlink" title="变分法。"></a>变分法。</h2><h3 id="泛函基本理论。"><a href="#泛函基本理论。" class="headerlink" title="泛函基本理论。"></a>泛函基本理论。</h3><p><strong>定义1</strong>.泛函：从任意集合M到实数域R或复数域C的映射称为“泛函”；在变分学和最优控制中，泛函定义域为函数集合，泛函只取实数值。</p>
 <p>例如：</p>
-<script type="math/tex; mode=display">
-\begin{align}
-x∈R,M=C(R)是R->R的一阶连续可导全体函数，对于u∈M，\\
-I_1=max_{x∈R}|u(x)|,I_2(u)=u(x_1),I_3(u)=\int_{-∞}^{+∞}{u^2(x)dx}都是关于x的泛函
-\end{align}</script><p><strong>定义2</strong>.范数与距离：范数|| · || 可用于度量空间中两点之间的距离d(x,x<em>)=||x-x</em>||。其具有如下性质：</p>
-<script type="math/tex; mode=display">
-\begin{align}正定性：||x||>=0，且||x||=0 ,if ,x=0\\
-齐次性：||ax||=|a|||x||,a∈R\\
-次可加性：||x_1+x_2||=<||x_1||+||x_2||
-\end{align}</script><p><strong>定义3</strong>.泛函极小值及增量</p>
-<script type="math/tex; mode=display">
-\begin{align}假设定义域M是一类函数的集合，若存在e>0,使得：\\
-J(x^*)=<J(x),if||x-x^*||<e,x∈M\\
-则称泛函J:M->R在x^*达到局部极小值
-\end{align}</script><script type="math/tex; mode=display">
-\begin{align}若x和x+δx都在泛函J的定义域Ω中，δx∈C(Ω),\\
-则泛函J的增量ΔJ定义为：\\
-ΔJ:=J(x+δx)-J(x)计为ΔJ(x,δx)
-\end{align}</script><p><strong>定义4</strong>.线性泛函</p>
-<script type="math/tex; mode=display">
-\begin{align}若泛函J满足齐次性条件：\\
-J(ax)=aJ(x),∀a∈R,x∈Ω,ax∈Ω\\
-以及可加性条件：
-J(x^1+x^2)=J(x^1)+J(x^2),∀x^1,x^2,x^1+x^2∈Ω\\
-则称J是x的线性泛函
-\end{align}</script><p><strong>定义5</strong>.泛函的变分</p>
-<script type="math/tex; mode=display">
-\begin{align}泛函增量可写为变分的线性泛函和变分的高阶无穷小两部分：\\
-ΔJ(x,δx)=δJ(x,δx)+g(x,δx)*||δx||\\
-其中，前项δJ(x,δx)是δx的线性泛函\\
-后项满足：
-\lim_{||δx->0||}{g(x,δx)=0}
-\end{align}</script><p><strong>通过泛函增量的定义求解</strong>.求解泛函变分，如上</p>
+<p><img src="/2024/11/18/3/2-1.png" alt></p>
+<p><strong>定义2</strong>.范数与距离：范数|| · || 可用于度量空间中两点之间的距离d(x,x<em>)=||x-x</em>||。其具有如下性质：</p>
+<p><img src="/2024/11/18/3/2-2.png" alt></p>
+<p><strong>定义3</strong>.泛函极小值及增量</p>
+<p><img src="/2024/11/18/3/2-3.png" alt></p>
+<p><strong>定义4</strong>.线性泛函</p>
+<p><img src="/2024/11/18/3/2-4.png" alt></p>
+<p><strong>定义5</strong>.泛函的变分</p>
+<p><img src="/2024/11/18/3/2-5.png" alt></p>
+<p><strong>通过泛函增量的定义求解</strong>.求解泛函变分，如上</p>
 <p><strong>通过求导法求解</strong>求解泛函变分</p>
 <p>泛函的变分满足：</p>
-<script type="math/tex; mode=display">
-δJ(x(t),δx(t))=\frac{∂}{∂α}J(x(t)+αδx(t))|_{α=0}</script><p><strong>证明</strong>.泛函求解变分的求导法：</p>
-<script type="math/tex; mode=display">
-ΔJ(x,δx)=J(x,δx)-J(x)=δJ(x,δx)+g(x,δx)*||δx||</script><p>同时，</p>
-<script type="math/tex; mode=display">
-ΔJ(x,δx)=J(x,αδx)-J(x)=δJ(x,αδx)+g(x,αδx)*||αδx||</script><script type="math/tex; mode=display">
-ΔJ(x,δx)=J(x,αδx)-J(x)=αδJ(x,δx)+g(x,αδx)*||αδx||</script><p>此时δx-&gt;0,变化为αδx-&gt;0，可以等价转换为α-&gt;0。</p>
+<p><img src="/2024/11/18/3/2-63.png" alt></p>
+<p><strong>证明</strong>.泛函求解变分的求导法：</p>
+<p><img src="/2024/11/18/3/2-64.png" alt></p>
+<p>同时，</p>
+<p><img src="/2024/11/18/3/2-65.png" alt></p>
+<p>此时δx-&gt;0,变化为αδx-&gt;0，可以等价转换为α-&gt;0。</p>
 <p>令其对α求偏导数，在α=0时得到：</p>
-<script type="math/tex; mode=display">
-\begin{align}δJ(x(t),δx(t))=\frac{∂}{∂α}J(x(t)+αδx(t))|_{α=0}\\=
-\lim_{α->0}{\frac{J(x(t)+αδx(t))-J(x)}{α}}\\
-=δJ(x,δx)+\lim_{α->0}{\frac{g(x,αδx)*||αδx||}{α}}\\
-=δJ(x,δx)+\lim_{||αδx||->0}{\frac{g(x,αδx)*||αδx||}{αδx}δx}\\
-=δJ(x,δx)
-\end{align}</script><p>证得通过求导法可以求得泛函变分。</p>
+<p><img src="/2024/11/18/3/2-6.png" alt></p>
+<p>证得通过求导法可以求得泛函变分。</p>
 <h3 id="欧拉-拉格朗日问题。"><a href="#欧拉-拉格朗日问题。" class="headerlink" title="欧拉-拉格朗日问题。"></a>欧拉-拉格朗日问题。</h3><p>​        欧拉-拉格朗日问题研究的是针对于一个有初始和终值解的可微函数，求其关于代价函数（连续函数累计代价）的极值问题。我们最终求解出来的结果是<strong>一种关于x(t)关于t为自变量的构造方式</strong>。</p>
 <p>​        对于一个连续可微函数x(t):[t0,tf]-&gt;Rn，满足初始条件x(t0)=x0，在给定的终端时刻tf，达到给定的终端状态x(tf)=xf，求性能指标的极值条件:</p>
-<script type="math/tex; mode=display">
-J(x(t))=\int_{t_0}^{t_f}{l(x(t),x^.(t),t)dt}</script><p>其中，此处代价函数l二阶连续可微。</p>
+<p><img src="/2024/11/18/3/2-66.png" alt></p>
+<p>其中，此处代价函数l二阶连续可微。</p>
 <p><strong>解：</strong></p>
 <p>计算泛函增量：</p>
-<script type="math/tex; mode=display">
-ΔJ=J(x+δx)-J(x)</script><script type="math/tex; mode=display">
-\begin{align}ΔJ(x,δx)=J(x+δx)-J(x)\\
-=\int_{t_0}^{t_f}{l(x(t)+δx(t),x^.(t)+δx^.(t),t)dt-\int_{t_0}^{t_f}{l(x(t),x^.(t),t)dt}}
-\end{align}</script><p>计算泛函变分，将积分在x(t),x(t)处进行泰勒展开：</p>
-<script type="math/tex; mode=display">
-∫ ^f
-_0
-[l(x(t), x˙ (t), t) + lx(x(t), x˙ (t), t)δx(t) + lx˙ (x(t), x˙ (t), t)δx˙ (t)
-+o(||(δx, δx˙ )||) − l(x(t), x˙ (t), t)]dt</script><p>得到泛函变分：</p>
-<script type="math/tex; mode=display">
-\begin{align}δJ(x, δx, x˙ , δx˙ ) \\=
-∫ ^f
-_0
-[lx(x(t), x˙ (t), t)δx(t) + lx˙ (x(t), x˙ (t), t)δx˙ (t)] dt
-\end{align}</script><p>使用分部积分法去导数与变分之间的依赖：</p>
-<script type="math/tex; mode=display">
-\begin{align}δJ(x, δx, x˙ , δx˙ ) \\=
-∫ ^f
-_0
-[lx(x(t), x˙ (t), t)δx(t) + lx˙ (x(t), x˙ (t), t)δx˙ (t)]dt
-\\=
-∫ ^f
-_0
-lx(x(t), x˙ (t), t)δxdt
-+ [lx˙ (x(t), x˙ (t), t)δx]|tf
-t0
-−
-∫ ^f
-_0
-d
-dt
-lx˙ (x(t), x˙ (t), t)δxdt
-\\=
-∫ ^f
-_0
-[
-lx(x(t), x˙ (t), t) − d
-dt
-lx˙ (x(t), x˙ (t), t)
-]
-δxdt
-+ [lx˙ (x(t), x˙ (t), t)δx]|tf
-t0 .\end{align}</script><p>通过泛函极值一阶条件，整理为：</p>
-<script type="math/tex; mode=display">
-δJ(x,δx)=\int_{t_0}^{t_f}{[l_x(x(t),x^.(t),t)-\frac{d}{dt}l_{x^.}(x(t)),x^.(t),t]δxdt}</script><p>得到欧拉-拉格朗日方程：</p>
-<script type="math/tex; mode=display">
-l_x(x(t),x^.(t),t)-\frac{d}{dt}[l_{x^.}(x(t),x^.(t),t)]=0</script><p>泛函 <strong>J</strong> 取极值的必要条件是满足欧拉-拉格朗日方程。</p>
+<p><img src="/2024/11/18/3/2-67.png" alt></p>
+<p><img src="/2024/11/18/3/2-7.png" alt></p>
+<p>计算泛函变分，将积分在x(t),x(t)处进行泰勒展开：</p>
+<p><img src="/2024/11/18/3/2-8.png" alt></p>
+<p>得到泛函变分：</p>
+<p><img src="/2024/11/18/3/2-9.png" alt></p>
+<p>使用分部积分法去导数与变分之间的依赖：</p>
+<p><img src="/2024/11/18/3/2-10.png" alt></p>
+<p>通过泛函极值一阶条件，整理为：</p>
+<p><img src="/2024/11/18/3/2-68.png" alt></p>
+<p>得到欧拉-拉格朗日方程：</p>
+<p><img src="/2024/11/18/3/2-69.png" alt></p>
+<p>泛函 <strong>J</strong> 取极值的必要条件是满足欧拉-拉格朗日方程。</p>
 <h3 id="拉格朗日乘子法。"><a href="#拉格朗日乘子法。" class="headerlink" title="拉格朗日乘子法。"></a>拉格朗日乘子法。</h3><p>​        在欧拉-拉格朗日问题的基础上，当此问题不仅有函数初始值、终值，并且还有微分方程的约束时，我们通常会用引入<strong>拉格朗日乘子</strong>构造拉格朗日函数的形式来进行求解。</p>
 <p>​        已知x(t)初值为x(t0)=x0，终值为x(tf)=xf,tf固定，需满足约束如下,（以某种阶次的微分方程约束）：</p>
-<script type="math/tex; mode=display">
-f(x(t), x˙ (t), t)=0</script><p>​        最小化性能指标：</p>
+<p><img src="/2024/11/18/3/2-70.png" alt></p>
+<p>​        最小化性能指标：</p>
 <script type="math/tex; mode=display">
 J(x)=∫^f _0 l(x(t),x^.(t),t)</script><p><strong>解：</strong>        </p>
 <p>考虑时间相关的拉格朗日函数：</p>
@@ -361,34 +297,21 @@ J(x, p) =
 _0
 l(x, x˙ , t) + p(t)^T f(x, x˙ , t)dt</script><p>因为此处的微分方程约束为f，因此可以通过将其构造为拉格朗日算子与其相乘的方式来将微分方程约束转化为我们所求的基本欧拉-拉格朗日方程的一部分来求解。这样，一个我们不会的、有约束前提的问题，就被转化为了一个基础的有初始值和终值的欧拉-拉格朗日问题。</p>
 <p>接下来，我们对其求解泛函变分：</p>
-<script type="math/tex; mode=display">
-\begin{align}δJ(x,δx,p,δp)\\
-=\frac{δ}{δα}\int_{t_0}^{t_f}l(x+αδx,x^.+αδx^.,t)+(p+αδp)^Tf(x+αδx,x^.+αδx^.,t)dt|_{α=0}\\
-=\int_{t_0}^{t_f}{l_xδx+l_{x^.}δx^.+δp^Tf+p^Tf_xδx+p^Tf_{x^.}δx^{.}}dt\\
-=\int_{t_0}^{t_f}\{[l_x+p^Tf_x]δx+{[l_{x^.}+p^Tf_{x^.}]δx^.+f^Tδp}\}dt\\
-=\int_{t_0}^{t_f}\{[l_x+p^Tf_x-\frac{d}{dt}(l_{x^.+}+p^Tf_{x^.})]δx+f^Tδp\}dt\\
-令\overline{l}(x,δx,p,δp)=l(x(t),x^.(t),t)+p^Tf(x(t),x^.(t),t)
-\end{align}</script><p>我们可以看到，此处直接使用了求导法求解泛函变分。将其整理后，得到：</p>
+<p><img src="/2024/11/18/3/2-11.png" alt></p>
+<p>我们可以看到，此处直接使用了求导法求解泛函变分。将其整理后，得到：</p>
 <script type="math/tex; mode=display">
 \overline{l}(x,δx,p,δp)=\int_{t_0}^{t_f}[(\overline{l_x}-\frac{d}{dt}\overline{l_{x^.}})δx+f^Tδp]dt</script><p>我们统称引入拉格朗日乘子的函数叫<strong>增广代价函数</strong>；</p>
 <p>由泛函极值的一阶条件可知：</p>
-<script type="math/tex; mode=display">
-\begin{align}\overline{l_x}(x(t),x^.(t),t)-\frac{d}{dt}\overline{l_{x^.}}(x(t),x^.(t),t)=0\\
-f(x(t),x^.(t),t)=0
-\end{align}</script><p>如果在以上问题的基础上，将状态方程的微分约束修改为如下非齐次形式：</p>
+<p><img src="/2024/11/18/3/2-12.png" alt></p>
+<p>如果在以上问题的基础上，将状态方程的微分约束修改为如下非齐次形式：</p>
 <script type="math/tex; mode=display">
 f(x(t), x˙ (t), t)=x^.(t)</script><p>引入拉格朗日乘子，有：</p>
 <script type="math/tex; mode=display">
 \overline{J}(u,p)=\int_{t_0}^{t_f}\{l(x(t),u(t),t)+p^T(t)[f(x(t),u(t),t)-x^.(t)] \}dt</script><p>我们将在过程中，加入分部积分的方法去除变分和微分之间的关系，如下图所示：</p>
-<script type="math/tex; mode=display">
-\begin{align}\overline{J}=\int_{t_0}^{t_f}\{l+p^T[f-x^.]\}dt\\
-δJ=\int_{t_0}^{t_f}\{[l_x+p^Tf_x+p^{.T}]δx+[l_u+p^Tf_u]δu+(f-x^.)^Tδp\}dt-p^Tδx|^{t_f}_{t_0}
-\end{align}</script><p>最终得到一阶方程组：</p>
-<script type="math/tex; mode=display">
-\begin{align}l_x+P^Tf_x+P^{.T}=0\\
-l_u+P^Tf_u=0\\
-f-x^.=0
-\end{align}</script><p>​        <strong>如若具有多个微分状态方程进行约束，那么我们应该引入多个拉格朗日乘子来解决这个问题。构建一个更大的增广代价函数。在对这种复杂的状态函数，我们可以直接对其使用E-L方程，分别对状态方程的自变量函数进行求导。再带入状态方程即可求出待定系数。具体情况，具体分析。从这里我们也可以看出，掌握推导E-L方程是很重要的，也即针对简单的拉格朗日乘子问题，我们可以通过简单的求变分+一阶条件求解，对于复杂一些的情况，我们可以求E-L</strong></p>
+<p><img src="/2024/11/18/3/2-13.png" alt></p>
+<p>最终得到一阶方程组：</p>
+<p><img src="/2024/11/18/3/2-14.png" alt></p>
+<p>​        <strong>如若具有多个微分状态方程进行约束，那么我们应该引入多个拉格朗日乘子来解决这个问题。构建一个更大的增广代价函数。在对这种复杂的状态函数，我们可以直接对其使用E-L方程，分别对状态方程的自变量函数进行求导。再带入状态方程即可求出待定系数。具体情况，具体分析。从这里我们也可以看出，掌握推导E-L方程是很重要的，也即针对简单的拉格朗日乘子问题，我们可以通过简单的求变分+一阶条件求解，对于复杂一些的情况，我们可以求E-L</strong></p>
 <h3 id="求解泛函极值的各种情况。（E-L问题、自由泛函问题）"><a href="#求解泛函极值的各种情况。（E-L问题、自由泛函问题）" class="headerlink" title="求解泛函极值的各种情况。（E-L问题、自由泛函问题）"></a>求解泛函极值的各种情况。（E-L问题、自由泛函问题）</h3><p><strong>case1</strong>.初值终值固定。如上</p>
 <p><strong>case2</strong>.初值固定，终值自由，终止时刻固定，求性能指标的极值条件：</p>
 <script type="math/tex; mode=display">
@@ -396,31 +319,12 @@ J(x) =
 ∫ ^f
 _0
 l(x(t), x˙ (t), t)dt.</script><p>得出结果：</p>
-<script type="math/tex; mode=display">
-\begin{align}l_x(x(t),x^.(t),t)-\frac{d}{dt}[l_{x^.}(x(t),x^.(t),t)]=0\\
-[l_{x^.}(x,x^.,t)]|^{t_f}_{t_0}=0\\
-由于初值条件x(t_0)=x_0确定，δx(t_0)=0,有：\\
-l_{x^.}(x,x^.,t)=0
-\end{align}</script><p><strong>case3</strong>.初值固定，终值自由，终止时刻自由，求性能指标的极值条件：</p>
-<script type="math/tex; mode=display">
-\begin{align}J(x) =
-∫ ^f
-_0
-l(x(t), x˙ (t), t)dt.\\
-代入泛函变分，由一阶条件可得：\\
-\frac{δl}{δx}(x(t),x(t^.),t)-\frac{d}{dt}[\frac{δl}{δx^.}(x(t),x(t^.),t)]=0\\
-l_x(x(t),x^.(t),t)-\frac{δl}{δx^.}(x(t),x^.(t),t)x^.(t_F)=0\\
-\end{align}</script><p><strong>case4.</strong>初值固定，终值自由，终止时刻自由，且终值与终止时刻无关，求性能指标的极值条件：</p>
-<script type="math/tex; mode=display">
-\begin{align}J(x) =
-∫ ^f
-_0
-l(x(t), x˙ (t), t)dt.\\
-对任一时刻t∈[t_0,t_f],\\
-\frac{δl}{δx}(x(t),x_.(t),t)-\frac{d}{dt}[\frac{δl}{δx^.}(x(t),x(t^.),t)]=0\\
-终端时刻满足：\\
-l=0,\frac{δl}{δx^.}(x(t),x^.(t),t)x^.(t_F)=0
-\end{align}</script><h3 id="变分法求解最优控制问题。（博尔查问题）"><a href="#变分法求解最优控制问题。（博尔查问题）" class="headerlink" title="变分法求解最优控制问题。（博尔查问题）"></a>变分法求解最优控制问题。（博尔查问题）</h3><p>一般最优控制问题：</p>
+<p><img src="/2024/11/18/3/2-15.png" alt></p>
+<p><strong>case3</strong>.初值固定，终值自由，终止时刻自由，求性能指标的极值条件：</p>
+<p><img src="/2024/11/18/3/2-17.png" alt></p>
+<p><strong>case4.</strong>初值固定，终值自由，终止时刻自由，且终值与终止时刻无关，求性能指标的极值条件：</p>
+<p><img src="/2024/11/18/3/2-18.png" alt></p>
+<h3 id="变分法求解最优控制问题。（博尔查问题）"><a href="#变分法求解最优控制问题。（博尔查问题）" class="headerlink" title="变分法求解最优控制问题。（博尔查问题）"></a>变分法求解最优控制问题。（博尔查问题）</h3><p>一般最优控制问题：</p>
 <p>最小化性能指标：</p>
 <script type="math/tex; mode=display">
 J(u) = ϕ(x(t_f ), t_f ) +
@@ -491,13 +395,8 @@ _0
 [H_x + p˙^T ]δx + H_uδu + (f − x˙ )^T δp
 }
 dt</script><p>得到哈密顿量表示的一阶条件：</p>
-<script type="math/tex; mode=display">
-\begin{align}H_u=0\\
-f-x^.=0\\
-H_x+p^{.T}=0\\
-[ϕ_x(x(t_f),t_f)-p(t_f)^T]δx_f=0\\
-[ϕ_t(x(t_f),t_f)+H]δt_f=0
-\end{align}</script><h3 id="变分法总结。"><a href="#变分法总结。" class="headerlink" title="变分法总结。"></a>变分法总结。</h3><p><strong>1.使用拉格朗日乘子法处理各类等式约束</strong>。<br><strong>2.求增广形式性能指标的泛函变分。</strong><br><strong>3.使用分部积分公式处理变分之间的导数依赖。</strong><br><strong>4.将终止时刻状态变分δxf 分为由状态自身变分δx(tf ) 和终止时刻变分δtf 组成的两部分。</strong><br><strong>5.得到泛函极值的一阶条件。</strong></p>
+<p><img src="/2024/11/18/3/2-19.png" alt></p>
+<h3 id="变分法总结。"><a href="#变分法总结。" class="headerlink" title="变分法总结。"></a>变分法总结。</h3><p><strong>1.使用拉格朗日乘子法处理各类等式约束</strong>。<br><strong>2.求增广形式性能指标的泛函变分。</strong><br><strong>3.使用分部积分公式处理变分之间的导数依赖。</strong><br><strong>4.将终止时刻状态变分δxf 分为由状态自身变分δx(tf ) 和终止时刻变分δtf 组成的两部分。</strong><br><strong>5.得到泛函极值的一阶条件。</strong></p>
 <h2 id="庞特里亚金极值原理（PMP）。"><a href="#庞特里亚金极值原理（PMP）。" class="headerlink" title="庞特里亚金极值原理（PMP）。"></a>庞特里亚金极值原理（PMP）。</h2><p>​        针对<strong>博尔查问题</strong>，最小化性能指标：</p>
 <script type="math/tex; mode=display">
 J(u) = ϕ(x(t_f ), t_f ) +
@@ -526,67 +425,35 @@ H(x(t), u(t), p(t), t) = l(x(t), u(t), t) + p^T (t)f(x(t), u(t), t)</script><p>�
 ^∗
 (t) = −∂H
 /∂x</script><p>​        处理边界条件：</p>
-<script type="math/tex; mode=display">
-\begin{align}[\frac{∂ϕ}{∂x}(x^*(t_f),t_f)-p^*(t_f)]^T∂x_f+[H(x^*(t_f),u^*(t_f),p^*(t_f),t_f)+\frac{∂ϕ}{∂x}(x^*(t^f),t_f)]∂t_f=0\\
-t_f|fixed,x_f|fixed:x^*(t_f)=x_f\\
-t_f|fixed,x_f|free:ϕ_x(x^*(t_f),t_f)-p^*(t_f)=0\\
-t_f|free,x_f|fixed:x^*(t_f)=x_f且H+ϕ_t=0\\
-t_f|free,x_f|free:ϕ_x(x^*(t_f),t_f)-p^*(t_f)=0且H+ϕ_t=0\\
-\end{align}</script><h2 id="动态规划方法。"><a href="#动态规划方法。" class="headerlink" title="动态规划方法。"></a>动态规划方法。</h2><h3 id="最优性原理。"><a href="#最优性原理。" class="headerlink" title="最优性原理。"></a>最优性原理。</h3><p>​        <strong>贝尔曼最优性原理</strong>，具有如下性质：无论过去的状态和决策如何，对于前面的决策而言，余下的诸多决策必须构成最优策略的性质。</p>
+<p><img src="/2024/11/18/3/2-20.png" alt></p>
+<h2 id="动态规划方法。"><a href="#动态规划方法。" class="headerlink" title="动态规划方法。"></a>动态规划方法。</h2><h3 id="最优性原理。"><a href="#最优性原理。" class="headerlink" title="最优性原理。"></a>最优性原理。</h3><p>​        <strong>贝尔曼最优性原理</strong>，具有如下性质：无论过去的状态和决策如何，对于前面的决策而言，余下的诸多决策必须构成最优策略的性质。</p>
 <p>子问题的局部最优将导致整个问题的全局最优，即问题具有最优子结构的性质。</p>
 <h3 id="Bellman方程的三种类型离散最优控制问题。"><a href="#Bellman方程的三种类型离散最优控制问题。" class="headerlink" title="Bellman方程的三种类型离散最优控制问题。"></a>Bellman方程的三种类型离散最优控制问题。</h3><p>​        我们目前针对于贝尔曼方程所说的是离散化最优控制问题，我们指定优化过程的参数如下所示：</p>
-<script type="math/tex; mode=display">
-\begin{align}最小化性能指标：\\
-J(u)=ϕ_D(x(N),N)+\sum_{k=0}^{N-1}l_D(x(k),u(k),k)\\
-考虑包含初值和初始时段的更广泛性能指标：\\
-J(u;x_0,k_0)=ϕ_D(x(N),N)+\sum_{k=k_0}^{N-1}l_D(x(k),u(k),k)\\
-被控对象状态方程：\\
-x(k+1)=f_D(x(k),u(k),k),x(k_0)=x_0\\
-容许控制：u∈U
-\end{align}</script><p>​        记最优控制的性能指标记为“值函数”，根据最优性原理，最优控制的充要条件是满足贝尔曼方程：</p>
+<p><img src="/2024/11/18/3/2-21.png" alt></p>
+<p>​        记最优控制的性能指标记为“值函数”，根据最优性原理，最优控制的充要条件是满足贝尔曼方程：</p>
 <p>​        我们将最优控制的性能指标标记为值函数如下：</p>
 <p>​        </p>
 <script type="math/tex; mode=display">
 V (x0, k0) = \min
 _{u∈U}
 J(u; x0, k0)</script><p>​        Bellman方程如下：</p>
-<script type="math/tex; mode=display">
-\begin{align}V(x(k),k)=\min_{u(k)∈U}[l_D(x(k),u(k),k)+V(x(k+1),k+1)]\\
-V(x(N),N)=ϕ_D(x(N),N)
-\end{align}</script><p>​        <strong>也即，当前最优是由无数个链式下一个状态的最优决定的，在状态转换的过程中，存在代价函数，此时代价函数由于是离散的，积分会变成累加的形式，马尔可夫决策中的贝尔曼期望方程或贝尔曼最优方程的思想由此而来。</strong></p>
+<p><img src="/2024/11/18/3/2-22.png" alt></p>
+<p>​        <strong>也即，当前最优是由无数个链式下一个状态的最优决定的，在状态转换的过程中，存在代价函数，此时代价函数由于是离散的，积分会变成累加的形式，马尔可夫决策中的贝尔曼期望方程或贝尔曼最优方程的思想由此而来。</strong></p>
 <p>​        <strong>解释上述bellman方程：我们可以看到，最后一个状态的值函数由求和外决定，它可以是一个不同的形式，一般是确定的；而每一步迭代都是在求和号内部迭代的，它通常由本身的代价函数和上一个状态的值函数决定本状态的值函数。而我们对于链式法则的每一步骤都求解其局部最优，那么我们会得到全局最优的结果。</strong></p>
 <h4 id="a-通过直接迭代求解离散最优控制问题"><a href="#a-通过直接迭代求解离散最优控制问题" class="headerlink" title="a.通过直接迭代求解离散最优控制问题"></a>a.通过直接迭代求解离散最优控制问题</h4><p>​        我们通过一道例题来理解直接迭代求解离散最优控制问题：</p>
 <p><strong>例.直接迭代求解Bellman方程</strong></p>
-<script type="math/tex; mode=display">
-\begin{align}minJ=x^2(3)+\sum_{k=0}^{2}(x^2(k)+u^2(k))\\
-s.t.x(k+1)=x(k)+u(k),k=0,1,2......\\
-终止时刻值函数:V(x(3),3)=ϕ(x(3),3)=x(3)^2
-\end{align}</script><p>使用<strong>倒推法</strong>进行求局部最优，我们需要求解使得整体的J全局最优，因此我们需要对V（x(2),2）求解在倒推至K=2时的局部最优：</p>
+<p><img src="/2024/11/18/3/2-23.png" alt></p>
+<p>使用<strong>倒推法</strong>进行求局部最优，我们需要求解使得整体的J全局最优，因此我们需要对V（x(2),2）求解在倒推至K=2时的局部最优：</p>
 <p>我们将k=2时的值函数表示为如下所示：</p>
-<script type="math/tex; mode=display">
-\begin{align}V(x(2),2)=\min_{u}\{x(2)^2+u(2)^2+V(x(3),3)\}\\
-=\min_{u}\{x(2)^2+u(2)^2+x(3)^2\}\\
-=\min_{u}\{x(2)^2+u(2)^2+[x(2)+u(2)]^2\}\\
-\end{align}</script><p>我们求其泛函的一阶极值有：</p>
-<script type="math/tex; mode=display">
-\begin{align}\frac{∂}{∂u}\{x(2)^2+u(2)^2+[x(2)+u(2)]^2\}=0,得到:u(2)=-\frac12x(2)\\
-V(x(2),2)=x(2)^2+[-\frac12x(2)]+[x(2)-\frac12x(2)]^2=\frac32x(2)^2
-\end{align}</script><p>我们可以得到K=2时的局部最优解控制如上所示；</p>
+<p><img src="/2024/11/18/3/2-24.png" alt></p>
+<p>我们求其泛函的一阶极值有：</p>
+<p><img src="/2024/11/18/3/2-25.png" alt></p>
+<p>我们可以得到K=2时的局部最优解控制如上所示；</p>
 <p>我们将上述的局部最优解导入K=1时的局部最优解可得：</p>
-<script type="math/tex; mode=display">
-\begin{align}V(x(1),1)=\min_{u}\{x(1)^2+u(1)^2+V(x(2),2)\}\\
-=\min_{u}\{x(1)^2+u(1)^2+\frac32x(2)^2\}\\
-=\min_{u}\{x(1)^2+u(1)^2+\frac32[x(1)+u(1)]^2\}\\
-\frac{∂}{∂u}\{x(1)^2+u(1)^2+\frac32[x(1)+u(1)]^2\}=0,得到:u(1)=-\frac35x(1)\\
-V(x(1),1)=x(1)^2+[-\frac35x(1)]+\frac32[x(1)-\frac35x(1)]^2=\frac85x(1)^2
-\end{align}</script><p>同理，我们可以迭代至最后一层K=0：</p>
-<script type="math/tex; mode=display">
-\begin{align}V(x(0),0)=\min_{u}\{x(0)^2+u(0)^2+V(x(1),1)\}\\
-=\min_{u}\{x(0)^2+u(0)^2+\frac85x(1)^2\}\\
-=\min_{u}\{x(0)^2+u(0)^2+\frac85[x(0)+u(0)]^2\}\\
-\frac{∂}{∂u}\{x(0)^2+u(0)^2+\frac85[x(0)+u(0)]^2\}=0,得到:u(0)=-\frac8{13}x(0)\\
-V(x(0),0)=x(0)^2+[-\frac{8}{13}x(0)]+\frac85[x(0)-\frac{8}{13}x(0)]^2=\frac{21}{13}x(0)^2
-\end{align}</script><p>我们便可以得到闭环形式的最终的最优控制：</p>
+<p><img src="/2024/11/18/3/2-26.png" alt></p>
+<p>同理，我们可以迭代至最后一层K=0：</p>
+<p><img src="/2024/11/18/3/2-27.png" alt></p>
+<p>我们便可以得到闭环形式的最终的最优控制：</p>
 <script type="math/tex; mode=display">
 u(x(0), 0) = − \frac{8}{13}
 
@@ -597,62 +464,21 @@ x(1);
 u(x(2), 2) = − \frac12
 x(2)</script><h4 id="b-通过遍历离散状态和离散控制空间求解-直接查表法"><a href="#b-通过遍历离散状态和离散控制空间求解-直接查表法" class="headerlink" title="b.通过遍历离散状态和离散控制空间求解(直接查表法)"></a>b.通过遍历离散状态和离散控制空间求解(直接查表法)</h4><p>​        假设我们现在知道对于K+1状态所有的值函数空间，我们对于特定的离散化控制和状态能保证生成的容许状态x(k+1)均在离散化状态空间内：我们则可以得到x(k+1)的状态方程，通过查表则可得到k+1状态的局部最优解。此时所对应的u即为最优控制。</p>
 <h4 id="c-通过遍历当下和下时刻离散状态空间"><a href="#c-通过遍历当下和下时刻离散状态空间" class="headerlink" title="c.通过遍历当下和下时刻离散状态空间"></a>c.通过遍历当下和下时刻离散状态空间</h4><p>​        一般解决线性问题，可以直接求解得出解。</p>
-<script type="math/tex; mode=display">
-\begin{align}对于上述遍历当前状态和下时刻状态的最优控制算法，若系统状态方程对控制变量是线性的，即x(k+1)=A(x(k),k)+B(x(k),k)u(k)\\
-则可直接解得状态x(k),x(k+1)对应的控制\\
-u(k)=B(x(k),k)^{-1}(x(k+1)-A(x(k),k))
-\end{align}</script><p>​        求出解析解的过程很精确，但是由于存储数据量较大，会面临维度灾难的问题，求解时空复杂度很高。</p>
+<p><img src="/2024/11/18/3/2-28.png" alt></p>
+<p>​        求出解析解的过程很精确，但是由于存储数据量较大，会面临维度灾难的问题，求解时空复杂度很高。</p>
 <h3 id="Hamilton-Jacobi-Bellman-方程。"><a href="#Hamilton-Jacobi-Bellman-方程。" class="headerlink" title="Hamilton-Jacobi-Bellman 方程。"></a>Hamilton-Jacobi-Bellman 方程。</h3><p>​        证明太复杂，看不懂，只需要知道结论即可：</p>
-<script type="math/tex; mode=display">
-\begin{align}对于任意的x,t∈[t_0,t_f],最优控制u^*下的性能指标标记为值函数：\\
-v(x,t)=\min_{x^*∈U}J(u^*;x,t)\\
-最优控制的充要条件是Hamilton-Jacobi-Bellman方程：\\
--V_t(x(t),t)=\min_{u∈U}{x(t),u(t),V_x(x(t),t),t∈[t_0,t_f]}\\
-其边界条件为：\\
-V(x(t_f),t_f)=ϕ(x(t_f),t_f)
-\end{align}</script><p>​    </p>
+<p><img src="/2024/11/18/3/2-29.png" alt></p>
 <h3 id="HJB方程求解连续最优性问题。"><a href="#HJB方程求解连续最优性问题。" class="headerlink" title="HJB方程求解连续最优性问题。"></a>HJB方程求解连续最优性问题。</h3><p>​    我们从一个简单的例题来解决这个问题，该问题的性能指标条件类似于欧拉朗格朗日问题的性能指标。</p>
-<script type="math/tex; mode=display">
-\begin{align}状态方程\\
-x^.(t)=x(t)+u(t)\\
-最小化性能指标\\
-J(u)=\frac14x^2(t_f)+\int_{0}^{t_f}\frac14u^2(t)dt\\
-终止时刻t_f|fixed,x(t_f)free
-\end{align}</script><p><strong>解：</strong></p>
+<p><img src="/2024/11/18/3/2-30.png" alt></p>
+<p><strong>解：</strong></p>
 <p>考虑哈密尔顿量：</p>
-<script type="math/tex; mode=display">
-\begin{align}Hamiltonian为\\
-H(x(t),u(t),V_x)=\frac14u^2(t)+V_x(x(t),t)[x(t)+u(t)]\\
-一阶条件和二阶条件：\\
-0=\frac{∂H}{∂u}=\frac12u(t)+V_x(x(t),t),\frac{∂^2H}{∂u^2}=\frac12>0\\
-于是\\
-u^*(t)=-2V_x(x(t),t)
-\end{align}</script><p><strong>形式上就是用值函数对x的导数作为拉格朗日乘子法中的乘子，这种做法与极值原理是等价的</strong></p>
+<p><img src="/2024/11/18/3/2-31.png" alt></p>
+<p><strong>形式上就是用值函数对x的导数作为拉格朗日乘子法中的乘子，这种做法与极值原理是等价的</strong></p>
 <p>将极值条件带入HJB方程：</p>
-<script type="math/tex; mode=display">
-\begin{align}将极值条件u^*(t)=-2V_x(x(t),t)代入HJB方程\\
-0=V_t+\frac14(-2V_x)^2+V_xx-2(V_x)^2\\
-=V_t-V_x^2+V_xx\\
-以及边界条件：\\
-V(x(t_f),t_f)=\frac14x^2(t_f)
-\end{align}</script><p>使用试凑法化简HJB方程，通过边界条件猜测值函数形式：</p>
-<script type="math/tex; mode=display">
-\begin{align}V(x(t),t)=\frac12K(t)x(t)\\
-其中K(t)待定，于是：\\
-V_x(x(t),t)=K(t)x(t)\\
-u^*(t)=-2K(t)x(t)\\
-引入待定函数后，HJB函数化为：\\
-0=\frac12K^.(t)x^2(t)-K^2(t)x^2(t)+K(t)x^2(t),\\
-0=\frac12K^.(t)-K^2(t)+K(t)\\
-以及边界条件：\\
-\frac12K(t_f)x^2(t_f)=\frac14x^2(t_f)\\
-F(t_f)=\frac12\\
-通过分离变量法求解上述方程得：\\
-K(t)=\frac{e^{t_f-t}}{e^{t_f-t}+e^{-t_f+t}}\\
-得到闭环最优控制:\\
-u^*(t)=-2V_x(x(t),t)\\
-=-\frac{2e^{t_f-t}}{e^{t_f-t}+e^{-t_f+t}}x(t)
-\end{align}</script><p>​        <strong>动态规划算法最核心的点都是基于一种最优性原理，也即时时刻刻都使得其满足最优的条件。对于连续函数来说，就是通过让其时时刻刻满足最优性方程，而对于离散来说，就是在每一步都达到局部最优，连续性会从解析解的角度来讨论整个问题，而离散问题则是从迭代局部最优的角度来解决整个问题。</strong></p>
+<p><img src="/2024/11/18/3/2-32.png" alt></p>
+<p>使用试凑法化简HJB方程，通过边界条件猜测值函数形式：</p>
+<p><img src="/2024/11/18/3/2-33.png" alt></p>
+<p>​        <strong>动态规划算法最核心的点都是基于一种最优性原理，也即时时刻刻都使得其满足最优的条件。对于连续函数来说，就是通过让其时时刻刻满足最优性方程，而对于离散来说，就是在每一步都达到局部最优，连续性会从解析解的角度来讨论整个问题，而离散问题则是从迭代局部最优的角度来解决整个问题。</strong></p>
 <h3 id="HJB方程局限性。"><a href="#HJB方程局限性。" class="headerlink" title="HJB方程局限性。"></a>HJB方程局限性。</h3><p>HJB方程一般难以求解，HJB方程对值函数有可微的要求。</p>
 <h3 id="使用动态规划求解连续最优控制过程。"><a href="#使用动态规划求解连续最优控制过程。" class="headerlink" title="使用动态规划求解连续最优控制过程。"></a>使用动态规划求解连续最优控制过程。</h3><p>使用惩罚函数法将终值条件转化至目标函数中<br>求Hamiltonian 极值情况下最优控制<br>获得HJB 方程，并求解<br>得到与HJB 方程解有关的闭环形式最优控制</p>
 <h2 id="线性二次型控制（LQR）。"><a href="#线性二次型控制（LQR）。" class="headerlink" title="线性二次型控制（LQR）。"></a>线性二次型控制（LQR）。</h2><h3 id="离散动态规划求解LQR。"><a href="#离散动态规划求解LQR。" class="headerlink" title="离散动态规划求解LQR。"></a>离散动态规划求解LQR。</h3><p>我们对离散情况的线性二次型求解最优控制，将离散情况下的LQR问题描述为：</p>
@@ -662,65 +488,27 @@ x_{k+1} = A_kx_k + B_ku_k.</script><p>最小化性能指标：</p>
 <script type="math/tex; mode=display">
 J=\frac{1}{2}x^T_NHx_N+\frac{1}{2}\sum_{k=0}^{N-1}{[x^T_kQ_kx_k+u^T_kR_ku_k]}</script><p>其中，H和Qk是实对称半正定矩阵，Rk是实对称正定矩阵。</p>
 <p>此处类似于动态规划方法中的直接迭代法求解离散最优控制问题，对最小化性能指标进行解释：</p>
-<script type="math/tex; mode=display">
-\begin{align}\frac{1}{2}x^T_NHx_N，终止损失，取值越大则终止装填越接近原点\\
-x^T_kQ_kx_k，过程损失，取值越大则状态尽早接近原点\\
-u^T_kR_ku_k，取值越大则能量损失越小
-\end{align}</script><p><strong>解：</strong></p>
+<p><img src="/2024/11/18/3/2-34.png" alt></p>
+<p><strong>解：</strong></p>
 <p>倒推法，终止值函数：</p>
 <script type="math/tex; mode=display">
 V(x_N,N)=\frac12x^T_NHx_N</script><p>记PN=H</p>
 <p>在k=N-1时，记录N-1时刻的值函数及其推理：</p>
-<script type="math/tex; mode=display">
-\begin{align}V(x_{N-1},N-1)=min_{u_N-1}\lbrace\frac12[x^T_{N-1}Q_{N-1}x_{N-1}+u^T_{N-1}R_{N-1}u_{N-1}]+V(x_N,N)\rbrace\\
-=min_{u_N-1}\lbrace\frac12[x^T_{N-1}Q_{N-1}x_{N-1}+u^T_{N-1}R_{N-1}u_{N-1}]+x_N^TP_Nx_N\rbrace\\
-=min_{u_N-1}\lbrace\frac12[x^T_{N-1}Q_{N-1}x_{N-1}+u^T_{N-1}R_{N-1}u_{N-1}]+(A_{N-1}x_{N-1}+B_{N-1}u_{N-1})^TP_N(A_{N-1}x_{N-1}+B_{N-1}u_{N-1})\rbrace\\
-\frac{∂V(x_{N-1},N-1)}{∂u_{N-1}}=u^T_{N-1}R_{N-1}+(A_{N-1}x_{N-1}+B_{N-1}u_{N-1})^TP_NB_{N-1}=0\\
-u^*_{N-1}=-[R_{N-1}+B^T_{N-1}P_NB_{N-1}]^{-1}B^T_{N-1}P_NA_{N-1}x_{N-1}\\
-=F_{N-1}x_{N-1}
-\end{align}</script><p>我们将反解的矩阵带入k=n-1的最优控制带入值函数，有：</p>
-<script type="math/tex; mode=display">
-\begin{align}V(x_{N-1},N-1)=\frac12x^T_{N-1}\lbrace Q_{N-1}+F_{N-1}^TR_{N-1}F_{N-1}+(A_{N-1}+B_{N-1}F_{N-1})^TP_N(A_{N-1}+B_{N-1}F_{N-1})\rbrace x_{N-1}\\
-进一步化简可得：=\frac12x^T_{N-1}P_{N-1}x_{N-1}
-\end{align}</script><p>迭代得到最优控制方程组</p>
-<script type="math/tex; mode=display">
-\begin{align}最优控制方程如下所示：\\
-u^*_k=F_kx_k\\
-V(x_k,k)=\frac12 x^T_kP_Kx_k\\
-需要满足以上闭环形式最优控制，其中，得到离散黎卡提(Riccati)方程：\\
-P_N=H\\
-F_k=-[R_k+B_k^TP_{K+1}B_K]^{-1}B^T_KP_{K+1}A_K\\
-P_k=Q_k+F^T_KR_KF_k+(A_k+B_KF_K)^TP_{K+1}(A_K+B_KF_K)
-\end{align}</script><h3 id="连续动态规划求解LQR。"><a href="#连续动态规划求解LQR。" class="headerlink" title="连续动态规划求解LQR。"></a>连续动态规划求解LQR。</h3><p>​        我们将一个连续情况下的线性二次型最优控制描述为如下的数学形式：</p>
-<script type="math/tex; mode=display">
-\begin{align}连续状态方程：x^.(t)=A(t)x(t)+B(t)u(t)\\
-最小化性能指标：J=\frac12 x^T(t_f)Hx(t_f)+\frac12 \int_{t_0}^{t_f}[x^T(t)Q(t)x(t)+u^T(t)R(t)u(t)]dt\\
-t_f fixed ,x(t_f)free.H和Q(t)是实对称半正定矩阵，R(t)是实对称正定矩阵
-\end{align}</script><p>我们将其损失条件描述如下所示：</p>
-<script type="math/tex; mode=display">
-\begin{align}\frac12 x^t(t_f)Hx(t_f)是终止损失，取值越大则终止状态越接近原点\\
-x^T(t)Q(t)x(t)过程损失，取值越大则状态尽早收敛至原点\\
-u^T(t)R(t)u(t)取值越大则能量损失越小\\
-H半正定，Q（t）半正定，R（t）正定
-\end{align}</script><p><strong>解：</strong></p>
+<p><img src="/2024/11/18/3/2-35.png" alt></p>
+<p>我们将反解的矩阵带入k=n-1的最优控制带入值函数，有：</p>
+<p><img src="/2024/11/18/3/2-36.png" alt></p>
+<p>迭代得到最优控制方程组</p>
+<p><img src="/2024/11/18/3/2-37.png" alt></p>
+<h3 id="连续动态规划求解LQR。"><a href="#连续动态规划求解LQR。" class="headerlink" title="连续动态规划求解LQR。"></a>连续动态规划求解LQR。</h3><p>​        我们将一个连续情况下的线性二次型最优控制描述为如下的数学形式：</p>
+<p><img src="/2024/11/18/3/2-38.png" alt></p>
+<p>我们将其损失条件描述如下所示：</p>
+<p><img src="/2024/11/18/3/2-39.png" alt></p>
+<p><strong>解：</strong></p>
 <p>考察并计算哈密尔顿量：</p>
-<script type="math/tex; mode=display">
-\begin{align}Halmiltonian:H(x(t),u(t),V_x,t)=\frac12 x(t)^TQ(t)x(t)+\frac12 u^T(t)R(t)u(t)+V_x[A(t)x(t)+B(t)u(t)]\\
-一阶条件求解：0=\frac{∂H}{∂u}=R(t)u^*+B^T(t)V_x(x(t),t)\\
-二阶条件求解：\frac{∂^2H}{∂u^2}=R(t)\\
-其中u^*=-R^{-1}(t)B^T(t)V_x(x(t),t)\\
-将极值一阶条件带入Hamiltonian得到：\\
-H(x(t),u(t),V_x,t)=\frac12x^TQx+V_x^TAx-\frac12V_X^TBR^{-1}B^TV_X
-\end{align}</script><p>得到HJB方程：</p>
-<script type="math/tex; mode=display">
-\begin{align}V_t+\frac12x^TQx+V_x^TAx-\frac12V_X^TBR^{-1}B^TV_X=0\\
-通过边界条件形式猜测HJB方程为二次形式：\\
-V(x(t),t)=\frac12x^T(t)K(t)x(t),其中K(t)为实对称正定矩阵\\
-求解HJB方程后，得到闭环控制的最优控制，连续黎卡提方程:\\
-K^.(t)+Q(t)-K(t)B(t)R^{-1}(t)B^T(t)K(t)+K(t)A(t)+A^T(t)K(t)=0\\
-K(t_f)=H\\
-u^*(t)=-R^{-1}(t)B^T(t)K(t)x(t)
-\end{align}</script><h2 id="经典控制理论运用例题。"><a href="#经典控制理论运用例题。" class="headerlink" title="经典控制理论运用例题。"></a>经典控制理论运用例题。</h2><p><strong>作业一.欧拉-拉格朗日问题：</strong></p>
+<p><img src="/2024/11/18/3/2-40.png" alt></p>
+<p>得到HJB方程：</p>
+<p><img src="/2024/11/18/3/2-41.png" alt></p>
+<h2 id="经典控制理论运用例题。"><a href="#经典控制理论运用例题。" class="headerlink" title="经典控制理论运用例题。"></a>经典控制理论运用例题。</h2><p><strong>作业一.欧拉-拉格朗日问题：</strong></p>
 <p><img src="/2024/11/18/3/1.jpg" alt></p>
 <p><strong>作业2.庞特里亚金极值原理：</strong></p>
 <p><img src="/2024/11/18/3/2.jpg" alt></p>
@@ -738,176 +526,55 @@ F(x+Δx)≈F(x)+Δx^Tg(x)+\frac12Δx^TG(x)Δx+.......</script><p>其中，g是F�
 <script type="math/tex; mode=display">
 x=\begin{bmatrix} x_1  \\ x_2 \\ \vdots\\x_n \end{bmatrix},g=\begin{bmatrix} \frac{∂F}{∂x_1} \\ \vdots\\\frac{∂F}{∂x_n} \end{bmatrix},G=\begin{bmatrix} \frac{∂^2F}{∂x_1^2} & \cdots & \frac{∂^2F}{∂x_1∂x_n}  \\ \vdots & \ddots & \vdots\\\frac{∂^2F}{∂x_n∂x_1} & \cdots & \frac{∂^2F}{∂x_n^2} \end{bmatrix}</script><p>函数极值的一阶条件（必要条件）</p>
 <p>上式中，假定||Δx||&lt;δ，考察泰勒展开的前两项：</p>
-<script type="math/tex; mode=display">
-\begin{align}x^*为极小值点->g(x^*)=0,梯度为0是极值的必要条件，当自变量为一维时，该条件即导数为0\\
-该条件下x^*为驻点，该点可能是鞍点或极大值点，所以是必要条件
-\end{align}</script><p>函数极值的二阶条件（充分条件）：</p>
+<p><img src="/2024/11/18/3/2-42.png" alt></p>
+<p>函数极值的二阶条件（充分条件）：</p>
 <p>若函数此时梯度已为0，由泰勒展开可得：</p>
-<script type="math/tex; mode=display">
-\begin{align}F(x+Δx)≈F(x)+\frac12Δx^TG(x)Δx+.......\\
-此时对于任意的0<||Δx||<δ都有Δx^TG(x)Δx>0,则一定存在F(x^*+Δx)>F(x^*)\\
-因此，此时我们需要让泰勒展开二次项的线性二次型的值恒大于0，因此海森矩阵的顺序主子式全大于0，海森矩阵应正定\\
-得到极值充分条件为：海森矩阵正定
-\end{align}</script><h3 id="无约束非线性规划的线搜索方法"><a href="#无约束非线性规划的线搜索方法" class="headerlink" title="无约束非线性规划的线搜索方法"></a>无约束非线性规划的线搜索方法</h3><p>​        我们将一个无约束非线性规划问题描述如下：</p>
-<script type="math/tex; mode=display">
-\begin{align}\min_{x∈X}F(x)\\
-线搜索方法是通过数值方法迭代地求解函数极值：\\
-给定：对最优解x^*的初步估计x_0\\
-迭代：\hat{x_{k+1}}=\hat{x_{k}}+α_kd_k\\
-其中，α_k为步长，d_k为迭代方向
-\end{align}</script><p>​        其中，线搜索的步长和迭代方向是其特征的值，步长分为<strong>精确搜索和非精确搜索</strong>，迭代方向分为<strong>最速下降法（一阶方法）</strong>、<strong>牛顿法（二阶方法）</strong>、<strong>拟牛顿法</strong>，对于不同的系统，我们要选择不同的迭代方向。这对我们迭代的效果影响非常巨大。</p>
+<p><img src="/2024/11/18/3/2-43.png" alt></p>
+<h3 id="无约束非线性规划的线搜索方法"><a href="#无约束非线性规划的线搜索方法" class="headerlink" title="无约束非线性规划的线搜索方法"></a>无约束非线性规划的线搜索方法</h3><p>​        我们将一个无约束非线性规划问题描述如下：</p>
+<p><img src="/2024/11/18/3/2-44.png" alt></p>
+<p>​        其中，线搜索的步长和迭代方向是其特征的值，步长分为<strong>精确搜索和非精确搜索</strong>，迭代方向分为<strong>最速下降法（一阶方法）</strong>、<strong>牛顿法（二阶方法）</strong>、<strong>拟牛顿法</strong>，对于不同的系统，我们要选择不同的迭代方向。这对我们迭代的效果影响非常巨大。</p>
 <p><strong>步长选择.</strong></p>
 <p>当我们选择了一个迭代方向dk的情况下，步长αk决定了在一个滚动优化周期内部迭代一次沿着所走方向的“走多远”。其中，精确搜索指的是固定迭代方向dk，寻找何时的步长αk以最小化F(xk+αkdk)；非精确搜索是为了追求高效率快速给出“适当的”步长，迭代方向对线搜索性能影响极大。</p>
 <p>我们以下面的题为例，解释我们的非线性规划的固定（精确）步长线搜索方法：</p>
-<script type="math/tex; mode=display">
-\begin{align}性能指标：F(x_1,x_2)=x_1^2+x_2^2\\
-给定\hat{x_0}=(1,1)^T,d_0=(0,2)^T,精确搜索最优步长α_0，以最小化F(x_0+α_0d_0)
-\end{align}</script><script type="math/tex; mode=display">
-\begin{align}根据线搜索迭代公式可知，\\
-\hat{x_0}+α_0\hat{d_0}=\begin{bmatrix}1\\ 1+2α_0\end{bmatrix}\\
-于是F(\hat{x_0}+α_0d_0)=1+(1+2α_0)^2\\
-为了满足必要条件，因此我们需要让其对α_0的导数为0\\
-0=\frac{∂F}{∂α_0}=4(1+2α_0)\\
-因此,α_0=-\frac12
-\end{align}</script><p>当我们的步长不精确时，就可以经此引出迭代方向的不同确定方法，最常见的就是<strong>最速下降法（梯度下降）</strong>：</p>
-<script type="math/tex; mode=display">
-\begin{align}对函数F(\hat{x_{k+1}})进行泰勒展开：\\
-对F(\hat{x_{k+1}})≈F(\hat{x_k})+∇F(\hat{x_k})^T(\hat{x_{k+1}}-\hat{x_k})=F(\hat{x_k})+∇F(\hat{x_k})^Tα_k\hat{d_k}\\
-令∇F为F的梯度，F、∇F的表达式如下:\\
-x=\begin{bmatrix}x_1\\x_2\\ \vdots\\x_n\end{bmatrix},∇F=\begin{bmatrix}\frac{∂F}{∂x_1}\\ \vdots\\\frac{∂F}{∂x_n} \end{bmatrix}\\
-假定α_0>0,迭代能使得函数值序列单调递减，则存在：\\
-∇F(\hat{x_k})^T\hat{d_k}<0\\
-选择负梯度方向为线搜索方向（最速下降法）\\
-\hat{d_k}=-∇F(\hat{x_k})
-\end{align}</script><script type="math/tex; mode=display">
-\begin{align}二阶泰勒展开F(\hat{x})得到：\\
-F(\hat{x_{k+1}})≈F(\hat{x_{k}})+(\hat{x_{k+1}}-\hat{x_k})^T∇F(\hat{x_k})+\frac12(\hat{x_{k+1}}-\hat{x_k})^T∇^2F(\hat{x_k})(\hat{x_{k+1}}-\hat{x_k})\\
-令∇^2F为F的海森矩阵\\
-∇^2F=\begin{bmatrix}\frac{∂^2F}{∂x^2_1}&\cdots&\frac{∂^2F}{∂x_1∂x_n}\\\vdots&\ddots&\vdots\\\frac{∂^2F}{∂x_n∂x_1} &\cdots&\frac{∂^2F}{∂x_n^2}\end{bmatrix}
-\end{align}</script><p>将一阶条件导入二阶泰勒展开，推导出<strong>牛顿法</strong>：</p>
-<script type="math/tex; mode=display">
-\begin{align}0≈∇F(\hat{x_{k+1}})≈∇F(\hat{x_k})+∇^2F(\hat{x_k})(\hat{x_{k+1}}-\hat{x_k})\\
-\hat{d_k}=-∇^2F^{-1}(\hat{x_k})∇F(\hat{x_k})
-\end{align}</script><p>由于海森矩阵计算复杂，<strong>拟牛顿法</strong>在xk附近考虑F(x)的二次逼近</p>
-<script type="math/tex; mode=display">
-\begin{align}F(\hat{x_{k+1}})≈F(\hat{x_{k}})+(\hat{x_{k+1}}-\hat{x_k})^T∇F(\hat{x_k})+\frac12(\hat{x_{k+1}}-\hat{x_k})^TB_k^{-1}(\hat{x_{k+1}}-\hat{x_k})\\
-\hat{d_k}=-B_k∇F(\hat{x_k})
-\end{align}</script><p>常见的拟牛顿法包括DFP,BFGS等。</p>
+<p><img src="/2024/11/18/3/2-45.png" alt></p>
+<p><img src="/2024/11/18/3/2-46.png" alt></p>
+<p>当我们的步长不精确时，就可以经此引出迭代方向的不同确定方法，最常见的就是<strong>最速下降法（梯度下降）</strong>：</p>
+<p><img src="/2024/11/18/3/2-47.png" alt></p>
+<p><img src="/2024/11/18/3/2-48.png" alt></p>
+<p>将一阶条件导入二阶泰勒展开，推导出<strong>牛顿法</strong>：</p>
+<p><img src="/2024/11/18/3/2-49.png" alt></p>
+<p>由于海森矩阵计算复杂，<strong>拟牛顿法</strong>在xk附近考虑F(x)的二次逼近</p>
+<p><img src="/2024/11/18/3/2-50.png" alt></p>
+<p>常见的拟牛顿法包括DFP,BFGS等。</p>
 <h2 id="有约束非线性规划"><a href="#有约束非线性规划" class="headerlink" title="有约束非线性规划"></a>有约束非线性规划</h2><p>最小化性能指标minF(x)，约束条件为f(x)=&lt;0。</p>
 <h3 id="使用等式约束的函数极值"><a href="#使用等式约束的函数极值" class="headerlink" title="使用等式约束的函数极值"></a>使用等式约束的函数极值</h3><p>使用<strong>直接带入法</strong>求解有等式约束的函数极值：</p>
 <p><strong>解：</strong></p>
-<script type="math/tex; mode=display">
-\begin{align}x_1,x_2∈R,满x_1+x_2+2=0，最小化性能指标：\\
-F(x_1,x_2)=x_1^2+x_2^2\\
-解：将x_1=-2-x_2代入F得到：\\
-\min_{x_2}F_1(x_2)=(-2-x_2)^2+x_2^2\\
-求导得到结果。x_2=-1,x_1=-1
-\end{align}</script><p>使用<strong>拉格朗日乘子法</strong>求解等式约束的函数极值：</p>
+<p><img src="/2024/11/18/3/2-51.png" alt></p>
+<p>使用<strong>拉格朗日乘子法</strong>求解等式约束的函数极值：</p>
 <p><strong>定理.</strong></p>
-<script type="math/tex; mode=display">
-\begin{align}对于有等式约束f(x_1,x_2)=0的情况下求F(x_1,x_2)极值问题，引入拉格朗日乘子λ：\\
-F(x_1,x_2,λ)=F(x_1,x_2)+λf(x_1,x_2)\\
-F(x_1,x_2)取极值的必要条件是：\\
-\frac{∂F}{∂λ}=f(x_1,x_2)=0\\
-\frac{∂F}{∂x_1}=0\\
-\frac{∂F}{∂x_2}=0\\
-\end{align}</script><h3 id="使用不等式约束的函数极值"><a href="#使用不等式约束的函数极值" class="headerlink" title="使用不等式约束的函数极值"></a>使用不等式约束的函数极值</h3><p>将一个使用不等式约束的函数极值问题描述为如下所示：</p>
-<script type="math/tex; mode=display">
-\begin{align}最小化性能指标：F(x_1,x_2)=x_1^2+x_2^2+x_1x_2\\
-满足约束:x_2>1.x_1+x_2<=3
-\end{align}</script><p>我们将不等式约束的函数极值的条件描述为一个<strong>KKT条件</strong>：</p>
-<script type="math/tex; mode=display">
-\begin{align}不等式约束f(x)<=0，求F(x)极值。引入拉格朗日乘子λ：\\
-F(x,λ)=F(x)+λ^Tf(x)\\
-F(x)取极值的必要条件是KKT条件：\\
-∇_xF=0\\
-λ^Tf(x)=0\\
-λ>=0\\
-f(x)<=0\\
-f(x^*)=0,称为激活约束，f(x^*)<0，称为非激活约束
-\end{align}</script><p><strong>解：</strong></p>
+<p><img src="/2024/11/18/3/2-52.png" alt></p>
+<h3 id="使用不等式约束的函数极值"><a href="#使用不等式约束的函数极值" class="headerlink" title="使用不等式约束的函数极值"></a>使用不等式约束的函数极值</h3><p>将一个使用不等式约束的函数极值问题描述为如下所示：</p>
+<p><img src="/2024/11/18/3/2-53.png" alt></p>
+<p>我们将不等式约束的函数极值的条件描述为一个<strong>KKT条件</strong>：</p>
+<p><img src="/2024/11/18/3/2-54.png" alt></p>
+<p><strong>解：</strong></p>
 <p>求解拉格朗日函数并写出其<strong>KKT条件</strong>：</p>
-<script type="math/tex; mode=display">
-\begin{align}F(x_1,x_2)=x_1^2+x_2^2+x_1x_2+λ_1(1-x_2)+λ_2(x_2+x_2-3)\\
-KKT条件：\\
-\frac{∂F}{∂x_1}=2x_1+x_2+λ_2=0\\
-\frac{∂F}{∂x_2}=x_1+2x_2-λ_1+λ_2=0\\
-λ_1(1-x_2)=0\\
-λ_2(x_1+x_2-3)=0\\
-令λ_1=λ_2=0，得到x_1=x_2=0，不满足约束，舍去；\\
-令λ_1=0，λ_2>0，得到λ_2=-9/2，舍去\\
-令λ_2=0，λ_1>0，得到最优解F=0.75
-\end{align}</script><h3 id="（等式约束）二次规划问题（QP）"><a href="#（等式约束）二次规划问题（QP）" class="headerlink" title="（等式约束）二次规划问题（QP）"></a>（等式约束）二次规划问题（QP）</h3><p>将一个在等式约束下的二次规划问题描述为：</p>
-<script type="math/tex; mode=display">
-\begin{align}最小化性能指标：\min_{x∈R^n}\frac12x^TQx-x^Tb\\
-约束条件为：Ax=a\\
-其中，Q恰好是函数F的海森矩阵
-\end{align}</script><p><strong>解：</strong></p>
-<script type="math/tex; mode=display">
-\begin{align}引入拉格朗日乘子：\\
-F(x,λ)=\frac12x^TQx-x^Tb+λ^T(Ax-a)\\
-由KKT条件有：\\
-0=∇_xF=Qx-b+A^Tλ(此步骤是由矩阵求导的性质得出的)\\
-0=Ax-a(此步骤是KKT条件的激活函数)\\
-将函数构造为矩阵形式：\\
-\begin{bmatrix}Q&A^T\\A&0\end{bmatrix}\begin{bmatrix}x\\λ\end{bmatrix}=\begin{bmatrix}b\\a\end{bmatrix}
-\end{align}</script><h2 id="最优策略求解方法"><a href="#最优策略求解方法" class="headerlink" title="最优策略求解方法"></a>最优策略求解方法</h2><h3 id="间接法求解最优控制"><a href="#间接法求解最优控制" class="headerlink" title="间接法求解最优控制"></a>间接法求解最优控制</h3><p>​        间接法求解最优控制问题借助了极值原理和打靶法的思想，也即根据极值原理得到最优控制问题的必要条件（关于状态和协态变量的微分方程组，结合边界条件和横截条件），构建两点边值问题，之后采用<strong>单重或多重打靶法</strong>进行优化求解。</p>
-<p>​        </p>
-<script type="math/tex; mode=display">
-\begin{align}初值问题IVP：\\
-x^._1=x_2\\
-x^._2=λsinhλx^._1\\
-x_1(0)=0,x_2(0)=-0.518621\\
-边值问题BVP：\\
-x^._1=x_2\\
-x^._2=λsinhλx^._1\\
-x_1(0)=0,x_1(1)=1\\
-\end{align}</script><p>通过以下例子来解释使用<strong>单重打靶法</strong>进行滚动优化：</p>
-<script type="math/tex; mode=display">
-\begin{align}x^.=x\\
-可以得到解析解：x=x(t_0)e^{t-t_0}\\
-寻找合适的初值x(t_0)以使得x(t_f)=x_f.假定初值为s，终止时刻打靶误差为：\\
-c(s)=x_f-x(t_f)=x_f-x_0e^{t_f-t_0}=x_f-se^{t_f-t_0}\\
-此时我们构造了误差函数只需要我们进行对误差函数的优化问题，也即找到合适的s使得c(s)=0成立\\
-初始化s=x(t_0)(此处为猜测)\\
-打靶：求解常微分方程初值问题IVP，得到x(t_f;s)\\
-得到停止时刻的误差c(s)=x(t_f;s)-x_f\\
-使用非线性规划方法重复以上过程，求解c(s)=0\\
-滚动优化过程,使用牛顿法实现打靶：0=c(s_{k+1})=c(s_k)+\frac{∂c}{∂s}(s_k)(s_{k+1}-s_k)\\
-s_{k+1}=s_k-\frac{∂c}{∂s}(s_k)^{-1}c(s_k)
-\end{align}</script><p>​        单重打靶法存在弊端，初值是通过猜测的方式产生，若猜测不好可能会导致无解或不收敛，同样，对非线性问题的收敛性也较差。为了解决这样的问题，使用<strong>多重打靶法</strong>实现，以下是使用多重打靶法求解上述问题的过程：</p>
-<script type="math/tex; mode=display">
-\begin{align}在以上时间的一半处t_1=(t_0+t_f)/2再立一靶，猜测t_0点取值为s_1=x(t_0),猜测在t_1点取值为s_2=x(t_1),s=(s_1,s_2)^T\\
-于是应满足二维约束条件：\\
-0=c_1(s1,s2)=s_2-s_1e^{t_1-t_0}\\
-0=c_2(s1,s2)=x_f-s_2e^{t_f-t_1}\\
-通过上述方法，我们可以将整个时域过程划分为多份，将问题转化为多个时间段内对误差函数的最优问题，\\将一个长时域上的IVP问题化解为多个IVP问题
-\end{align}</script><p>​        多重打靶法相比于单重打靶法，其优势在于可运用整个轨迹的初始已知信息，并且分块后系统更加线性，收敛效果更好；其缺点就是需要猜测整个状态轨迹作为初值，计算上较为复杂。</p>
-<h3 id="直接法求解最优控制"><a href="#直接法求解最优控制" class="headerlink" title="直接法求解最优控制"></a>直接法求解最优控制</h3><script type="math/tex; mode=display">
-\begin{align}将最优控制指标写为：\\
-\min_uϕ(x(T))+\int_{0}^{T}l(x(T),u(T))dt，其中T确定\\
-约束条件写为：\\
-s.t.x(0)=x_0\\
-x^.(t)-f(x(t),u(t))=0\\
-c(x(t),u(t))<=0\\
-m(x(T))=0\\
-引入时间变换，将自由终止时间转化为固定终止时间(1),我们可以得到：\\
-t=τT,τ∈[0, 1]\\
-\frac{d}{dτ}x(τ)=Tf(x(τ),u(τ))\\
-上述控制指标被写为：\\
-minϕ(x(1))+\int_{0}^{1}l(x(τ),u(τ))dτ\\
-将时间轴分成n个这样时间变换的过程，并直接利用打靶法，将最优控制问题转化为非线性规划问题\\
-自变量是控制u(t;q)的参数q，状态可以写成q的数值积分
-\end{align}</script><p><strong>以下是使用LQR线性二次型控制器加上MPC模型预测控制方法的连续形式预测控制的例子：</strong></p>
-<script type="math/tex; mode=display">
-\begin{align}预测模型：在[t_k,t_k+T]上，以x(t_k)为初值的定常线性二次型控制\\
-滚动优化：[t_k,t_k+T]时段可求得开环最优控制\\
-u^*(τ)=ϕ(x(t_k),τ;t_k,T)\\
-在该轮滚动优化中只进行[t_k,t_{k+1}]部分\\
-反馈矫正：求解下个滚动优化前，更新预测模型的初值x(t_{k+1})\\
-在[t_k,t_k+T],控制仅依赖于t_k时刻反馈矫正的初值x(t_k)\\
-当|t_{k+1}-t_k|->0时，x(τ)≈x(t_k)
-\end{align}</script><h2 id="最优控制例题。"><a href="#最优控制例题。" class="headerlink" title="最优控制例题。"></a>最优控制例题。</h2><p><strong>作业4.通过matlab求解LMPC：</strong></p>
+<p><img src="/2024/11/18/3/2-55.png" alt></p>
+<h3 id="（等式约束）二次规划问题（QP）"><a href="#（等式约束）二次规划问题（QP）" class="headerlink" title="（等式约束）二次规划问题（QP）"></a>（等式约束）二次规划问题（QP）</h3><p>将一个在等式约束下的二次规划问题描述为：</p>
+<p><img src="/2024/11/18/3/2-56.png" alt></p>
+<p><strong>解：</strong></p>
+<p><img src="/2024/11/18/3/2-57.png" alt></p>
+<h2 id="最优策略求解方法"><a href="#最优策略求解方法" class="headerlink" title="最优策略求解方法"></a>最优策略求解方法</h2><h3 id="间接法求解最优控制"><a href="#间接法求解最优控制" class="headerlink" title="间接法求解最优控制"></a>间接法求解最优控制</h3><p>​        间接法求解最优控制问题借助了极值原理和打靶法的思想，也即根据极值原理得到最优控制问题的必要条件（关于状态和协态变量的微分方程组，结合边界条件和横截条件），构建两点边值问题，之后采用<strong>单重或多重打靶法</strong>进行优化求解。</p>
+<p>​        <img src="/2024/11/18/3/2-58.png" alt></p>
+<p>通过以下例子来解释使用<strong>单重打靶法</strong>进行滚动优化：</p>
+<p><img src="/2024/11/18/3/2-59.png" alt></p>
+<p>​        单重打靶法存在弊端，初值是通过猜测的方式产生，若猜测不好可能会导致无解或不收敛，同样，对非线性问题的收敛性也较差。为了解决这样的问题，使用<strong>多重打靶法</strong>实现，以下是使用多重打靶法求解上述问题的过程：</p>
+<p><img src="/2024/11/18/3/2-60.png" alt></p>
+<p>​        多重打靶法相比于单重打靶法，其优势在于可运用整个轨迹的初始已知信息，并且分块后系统更加线性，收敛效果更好；其缺点就是需要猜测整个状态轨迹作为初值，计算上较为复杂。</p>
+<h3 id="直接法求解最优控制"><a href="#直接法求解最优控制" class="headerlink" title="直接法求解最优控制"></a>直接法求解最优控制</h3><p><img src="/2024/11/18/3/2-61.png" alt></p>
+<p><strong>以下是使用LQR线性二次型控制器加上MPC模型预测控制方法的连续形式预测控制的例子：</strong></p>
+<p><img src="/2024/11/18/3/2-62.png" alt></p>
+<h2 id="最优控制例题。"><a href="#最优控制例题。" class="headerlink" title="最优控制例题。"></a>最优控制例题。</h2><p><strong>作业4.通过matlab求解LMPC：</strong></p>
 <p><img src="/2024/11/18/3/4.jpg" alt></p>
 <p><strong>使用matlab求解mpc控制器：</strong></p>
 <figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line">clc</span><br><span class="line">clear all;</span><br><span class="line">close all;</span><br><span class="line"></span><br><span class="line">t=<span class="number">10</span>;<span class="comment">%迭代时间</span></span><br><span class="line">dt=<span class="number">0.1</span>;<span class="comment">%记录一个步长的距离</span></span><br><span class="line">dx=<span class="built_in">zeros</span>(<span class="number">2</span>,<span class="number">1</span>);</span><br><span class="line">N=t./dt+<span class="number">1</span>;<span class="comment">%离散点的计算个数</span></span><br><span class="line">A=[<span class="number">0</span>,<span class="number">1</span>;<span class="number">-1</span>,<span class="number">-1</span>];<span class="comment">%状态转移矩阵</span></span><br><span class="line">B=[<span class="number">1</span>;<span class="number">1</span>];</span><br><span class="line"><span class="comment">%我们维护三个表。分别记录被控制量、控制量、步长的变化</span></span><br><span class="line">x=<span class="built_in">zeros</span>(<span class="number">2</span>,N);</span><br><span class="line">u=<span class="built_in">zeros</span>(<span class="number">1</span>,N);</span><br><span class="line">t=<span class="built_in">zeros</span>(<span class="number">1</span>,N);</span><br><span class="line">x(:,<span class="number">1</span>)=[<span class="number">1</span>;<span class="number">0</span>];<span class="comment">%x初值</span></span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:<span class="number">1</span>:N</span><br><span class="line">    t(<span class="built_in">i</span>)=(<span class="built_in">i</span><span class="number">-1</span>)*dt;<span class="comment">%每一步的步长（时间记录）</span></span><br><span class="line">    u(:,<span class="built_in">i</span>)=controller(x(<span class="number">1</span>,<span class="built_in">i</span>),x(<span class="number">2</span>,<span class="built_in">i</span>));</span><br><span class="line">    dx=A*x(:,<span class="built_in">i</span>)+B*u(:,<span class="built_in">i</span>);</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">i</span>&lt;N</span><br><span class="line">        x(:,<span class="built_in">i</span>+<span class="number">1</span>)=x(:,<span class="built_in">i</span>)+dx*dt;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="built_in">disp</span>(u);</span><br><span class="line"><span class="built_in">plot</span>(t,x(<span class="number">1</span>,:));</span><br><span class="line"><span class="built_in">hold</span> on;</span><br><span class="line"><span class="built_in">plot</span>(t,u(<span class="number">1</span>,:))</span><br><span class="line"><span class="built_in">legend</span>(<span class="string">&#x27;x(t)&#x27;</span>,<span class="string">&#x27;u(t)&#x27;</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">%函数存放一次滚动优化的LMPC</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">u</span>=<span class="title">L_MPC</span><span class="params">(x1,x2)</span>;</span></span><br><span class="line">    N_=<span class="number">40</span>;<span class="comment">%向前预测步数</span></span><br><span class="line">    Q_=<span class="number">0.01</span>*<span class="built_in">eye</span>(<span class="number">2</span>*N_);<span class="comment">%Q代表过程状态，乘以置信度，此处我们不那么关心过程状态的惩罚</span></span><br><span class="line">    R_=<span class="number">10</span>*<span class="built_in">eye</span>(N);<span class="comment">%R代表控制量的惩罚，乘以置信度，此处我们关心控制量的惩罚，R足够大，如果想要J足够小，那么就需要控制量u足够小</span></span><br><span class="line">    x=[x1;x2];</span><br><span class="line">    S_=<span class="built_in">zeros</span>(<span class="number">2</span>*N_,N_);</span><br><span class="line">    T_=<span class="built_in">zeros</span>(<span class="number">2</span>*N_,<span class="number">2</span>);</span><br><span class="line">    A=[<span class="number">0</span>    <span class="number">1</span>;</span><br><span class="line">      <span class="number">-1</span>   <span class="number">-1</span>];</span><br><span class="line">    B=[<span class="number">1</span>;</span><br><span class="line">        <span class="number">1</span>];</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:<span class="number">1</span>:N_</span><br><span class="line">        T_(<span class="built_in">i</span>*<span class="number">2</span><span class="number">-1</span>:<span class="built_in">i</span>*<span class="number">2</span>,:)=A^<span class="built_in">i</span>;</span><br><span class="line">        <span class="keyword">for</span> <span class="built_in">j</span>=<span class="number">1</span>:<span class="number">1</span>:<span class="built_in">i</span></span><br><span class="line">            S_(<span class="built_in">i</span>*<span class="number">2</span><span class="number">-1</span>:<span class="built_in">i</span>*<span class="number">2</span>,<span class="built_in">j</span>)=A^(<span class="built_in">i</span>-<span class="built_in">j</span>)*B;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    H=<span class="number">2</span>*(S_&#x27;*Q_*S_+R_);</span><br><span class="line">    F=(<span class="number">2</span>*(T_*x)&#x27;*Q_*S_)&#x27;;</span><br><span class="line">    U=quadprog(H,F);</span><br><span class="line">    u=<span class="number">0</span>;</span><br><span class="line">    u=U(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
